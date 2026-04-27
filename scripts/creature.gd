@@ -8,36 +8,53 @@ var damage: float
 var speed: float
 var IQ: int
 
-# AI
+# AI Movement
 @export var target: Node2D
+@export var nav_agent: NavigationAgent2D
+@export var nav_timer: Timer
 var look_direction: Vector2 = Vector2.ZERO
+var attack_range: float = 150.0 # Min distance from target
+var acceleration: float = 50.0
 
-# Movement
-@export var acceleration: float = 10.0
-var distance_to_keep: float = 100.0 # Min distance from target
+# Attacking
+var can_attack: bool = true
+var is_attacking: bool = false
 
 func _ready() -> void:
 	base_health = stat_config.base_health
 	damage = stat_config.damage
 	speed = stat_config.speed
 	IQ = stat_config.IQ
+	
+	# Navigation setup
+	nav_agent.target_position = target.global_position
+	nav_agent.target_desired_distance = attack_range
+	nav_timer.connect("timeout", Callable(self, "_on_nav_timer_timeout"))
 
 func _physics_process(delta: float) -> void:
 	
 	# Basic movement
-	if target:
-		var dir = (target.global_position - global_position).normalized()
-		look_direction = dir
-		
-		var distance = global_position.distance_to(target.global_position)
-		
-		if distance > distance_to_keep:
-			velocity = velocity.lerp(dir * speed, acceleration * delta)
-		else:
-			velocity = Vector2.ZERO
-		
-		move_and_slide()
+	movement(delta)
 	
-	# Sprite flipping
-	if is_instance_valid($Sprite2D):
-		$Sprite2D.flip_h = look_direction.x > 0
+	
+	# Attacking
+	
+func movement(delta: float) -> void:
+	if target:
+		if !nav_agent.target_position == target.global_position:
+			nav_agent.target_position = target.global_position
+		var direction = global_position.direction_to(nav_agent.get_next_path_position())
+		
+		if !nav_agent.is_target_reached():
+			velocity = velocity.lerp(direction * speed, acceleration * delta)
+			move_and_slide()
+
+func attack() -> void:
+	can_attack = false
+	is_attacking = true
+
+func spell_1() -> void:
+	pass
+
+func spell_2() -> void:
+	pass
