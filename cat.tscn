@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://b7h2lf0hml4cd"]
+
+[ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/cat.gd" id="1_52fj1"]
+[ext_resource type="Texture2D" uid="uid://3myklrdq3t8r" path="res://art/creature-sprites/cat-orange.png" id="1_hcucf"]
+[ext_resource type="Resource" uid="uid://cc6ecguht7jk2" path="res://resources/cat_data.tres" id="2_6fl1u"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
+radius = 12.0
+height = 34.0
+
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073]
+script = ExtResource("1_52fj1")
+stat_config = ExtResource("2_6fl1u")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1760680003]
+scale = Vector2(2, 2)
+texture = ExtResource("1_hcucf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1607564269]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_52fj1")
+disabled = true
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1985582477]
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true

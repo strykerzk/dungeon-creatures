@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://btap8s0pk3v85"]
+
+[ext_resource type="PackedScene" uid="uid://b7h2lf0hml4cd" path="res://cat.tscn" id="1_37kl0"]
+
+[node name="Node2D" type="Node2D" unique_id=1685375835]
+
+[node name="Marker2D" type="Marker2D" parent="." unique_id=629064002]
+position = Vector2(439, 510)
+
+[node name="Cat" parent="." unique_id=2142137073 node_paths=PackedStringArray("target") instance=ExtResource("1_37kl0")]
+position = Vector2(588, 319)
+motion_mode = 1
+target = NodePath("../Marker2D")
