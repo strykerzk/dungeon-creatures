@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cwt632p108fiy"]
+
+[ext_resource type="Script" uid="uid://dp8hap1tfylvq" path="res://scripts/context_steering.gd" id="1_nugsn"]
+[ext_resource type="Texture2D" uid="uid://wgp0w4k2fdaq" path="res://icon.svg" id="2_1k0n7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w7hms"]
+size = Vector2(64, 64)
+
+[node name="Creature" type="CharacterBody2D" unique_id=440573451 node_paths=PackedStringArray("target")]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_nugsn")
+target = NodePath("")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=80112905]
+modulate = Color(1, 0.3421521, 0.31648144, 1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_1k0n7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1069520219]
+shape = SubResource("RectangleShape2D_w7hms")

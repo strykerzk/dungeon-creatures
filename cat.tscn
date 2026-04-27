@@ -82,15 +82,17 @@ advance_mode = 2
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_giwe8")]
 graph_offset = Vector2(-64, -8)
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "attack_timer", "nav_agent", "nav_timer")]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "nav_agent", "nav_timer", "los_ray")]
+collision_layer = 4
+collision_mask = 3
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_52fj1")
 animation_tree = NodePath("AnimationTree")
-attack_timer = NodePath("AttackTimer")
 stat_config = ExtResource("2_6fl1u")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
+los_ray = NodePath("LOSRay")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1760680003]
 scale = Vector2(2, 2)
@@ -99,7 +101,6 @@ texture = ExtResource("1_hcucf")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1607564269]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_52fj1")
-disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=336441858]
 libraries/ = SubResource("AnimationLibrary_2hdoq")
@@ -116,14 +117,12 @@ one_shot = true
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=327231989]
 path_desired_distance = 5.0
 target_desired_distance = 100.0
-avoidance_enabled = true
-radius = 100.0
 debug_enabled = true
 
 [node name="NavTimer" type="Timer" parent="." unique_id=1058623270]
 wait_time = 0.1
-one_shot = true
 autostart = true
 
+[node name="LOSRay" type="RayCast2D" parent="." unique_id=503088827]
+
 [connection signal="timeout" from="AttackTimer" to="." method="_on_attack_timer_timeout"]
-[connection signal="timeout" from="NavTimer" to="." method="_on_nav_timer_timeout"]
