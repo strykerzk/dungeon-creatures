@@ -122,9 +122,6 @@ script = ExtResource("1_cq01h")
 hitbox = NodePath("Hitbox")
 swing_sprite = NodePath("Swing")
 animation_player = NodePath("AnimationPlayer")
-damage_mult = 2.0
-attack_range = 150.0
-cooldown_mod = 5.0
 sprite = NodePath("Sprite")
 audio = NodePath("Audio")
 

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://m6rog86jgg5g"]
+
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_poam1"]
+
+[resource]
+script = ExtResource("1_poam1")
+mutation_name = "Juggernaut"
+health_mult = 1.5
+damage_mult = 1.2
+speed_mult = 0.6
+size_mult = 2.0
+dexterity_bonus = -0.5
+precision_bonus = -0.2
+metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

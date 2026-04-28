@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnbc52crjhssd"
-path="res://.godot/imported/cat-siamese.png-4e889be922348a110cc009d707cdd8ab.ctex"
+uid="uid://d4l2r0m7du504"
+path="res://.godot/imported/cat-calico.png-4c8c6f73251edf577201425627468480.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/creature-sprites/cat-siamese.png"
-dest_files=["res://.godot/imported/cat-siamese.png-4e889be922348a110cc009d707cdd8ab.ctex"]
+source_file="res://art/creature_sprites/cat-calico.png"
+dest_files=["res://.godot/imported/cat-calico.png-4c8c6f73251edf577201425627468480.ctex"]
 
 [params]
 

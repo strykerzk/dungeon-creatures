@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b7h2lf0hml4cd"]
 
 [ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/creature/cat.gd" id="1_52fj1"]
-[ext_resource type="Texture2D" uid="uid://3myklrdq3t8r" path="res://art/creature-sprites/cat-orange.png" id="1_hcucf"]
+[ext_resource type="Texture2D" uid="uid://3myklrdq3t8r" path="res://art/creature_sprites/cat-orange.png" id="1_hcucf"]
 [ext_resource type="Resource" uid="uid://cc6ecguht7jk2" path="res://resources/cat_data.tres" id="2_6fl1u"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="4_w46py"]
 
@@ -91,7 +91,7 @@ height = 34.0
 radius = 12.0
 height = 34.0
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "weapon_node", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
 collision_layer = 4
 collision_mask = 3
 motion_mode = 1
@@ -99,7 +99,6 @@ wall_min_slide_angle = 0.0
 script = ExtResource("1_52fj1")
 animation_tree = NodePath("AnimationTree")
 stat_config = ExtResource("2_6fl1u")
-weapon_node = NodePath("")
 body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
@@ -174,4 +173,23 @@ debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=1692315444]
 
-[connection signal="area_entered" from="Hitbox" to="Hitbox" method="_on_area_entered"]
+[node name="Button" type="Button" parent="." unique_id=1912629050]
+offset_left = -13.0
+offset_top = 27.0
+offset_right = 13.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 4
+text = "WEAPON"
+
+[node name="Button2" type="Button" parent="." unique_id=1398277591]
+offset_left = -13.0
+offset_top = 44.0
+offset_right = 13.0
+offset_bottom = 59.0
+theme_override_font_sizes/font_size = 4
+text = "MUTATE"
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=585712811]
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

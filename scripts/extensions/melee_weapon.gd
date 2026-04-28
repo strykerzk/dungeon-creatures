@@ -1,5 +1,4 @@
-extends Weapon
-class_name MeleeWeapon
+class_name MeleeWeapon extends Weapon
 
 @export_group("Melee Settings")
 @export var is_tackle_modifier: bool = false
@@ -8,9 +7,10 @@ class_name MeleeWeapon
 @export var animation_player: AnimationPlayer
 var is_swinging: bool = false
 
-func activate(base_damage: float, attacker: CharacterBody2D) -> void:
+func activate(base_damage: float, p_attacker: Creature) -> void:
+	super(base_damage,p_attacker)
+	
 	is_swinging = true
-	var final_damage = base_damage * damage_mult
 	var target_hb = hitbox
 	
 	# If this weapon is a Tackle Modifier (like Spikes), use the creature's body hitbox
@@ -19,7 +19,7 @@ func activate(base_damage: float, attacker: CharacterBody2D) -> void:
 	
 	if not target_hb: return
 	
-	target_hb.damage_value = final_damage
+	target_hb.damage_value = base_damage
 	target_hb.attacker = attacker
 	
 	if animation_player:

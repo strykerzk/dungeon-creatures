@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://3myklrdq3t8r"
-path="res://.godot/imported/cat-orange.png-ee506514242be2275b2edf6453c4ee85.ctex"
+uid="uid://dnbc52crjhssd"
+path="res://.godot/imported/cat-siamese.png-bfc7e86c05fde8e74ff80882cfc791d2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/creature-sprites/cat-orange.png"
-dest_files=["res://.godot/imported/cat-orange.png-ee506514242be2275b2edf6453c4ee85.ctex"]
+source_file="res://art/creature_sprites/cat-siamese.png"
+dest_files=["res://.godot/imported/cat-siamese.png-bfc7e86c05fde8e74ff80882cfc791d2.ctex"]
 
 [params]
 

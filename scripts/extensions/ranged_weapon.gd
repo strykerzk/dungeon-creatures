@@ -1,14 +1,12 @@
-extends Weapon
-class_name RangedWeapon
+class_name RangedWeapon extends Weapon
 
 @export_group("Ranged Settings")
 @export var projectile_scene: PackedScene
 @export var muzzle: Marker2D
 
-func _physics_process(delta: float) -> void:
-	look_at(look_direction)
-
-func activate(base_damage: float, attacker: CharacterBody2D) -> void:
+func activate(base_damage: float, p_attacker: Creature) -> void:
+	super(base_damage, p_attacker)
+	
 	if not projectile_scene: return
 	
 	var proj = projectile_scene.instantiate()
@@ -23,4 +21,9 @@ func activate(base_damage: float, attacker: CharacterBody2D) -> void:
 		direction = attacker.global_position.direction_to(attacker.target.global_position)
 	
 	if proj.has_method("launch"):
-		proj.launch(direction, base_damage * damage_mult, attacker)
+		proj.launch(direction, base_damage, attacker)
+
+func look_at_direction(look_direction: Vector2) -> void:
+	var look_angle = look_direction.angle()
+	rotation = look_angle
+	sprite.flip_h = look_direction.x > 0
