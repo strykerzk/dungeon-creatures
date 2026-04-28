@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://cjolbybxr0tjf"]
+
+[ext_resource type="Script" uid="uid://8veymti2eff3" path="res://scripts/extensions/melee_weapon.gd" id="1_cq01h"]
+[ext_resource type="Texture2D" uid="uid://e2l1avqlqga2" path="res://art/tiles/sword.png" id="2_wfft3"]
+[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_ch5i5"]
+[ext_resource type="Texture2D" uid="uid://dqav7tvv6cisp" path="res://art/weapons/effects/sword-swing.png" id="3_wfft3"]
+
+[sub_resource type="Animation" id="Animation_ch5i5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Swing:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox:monitoring")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_wfft3"]
+resource_name = "attack"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Swing:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox:monitoring")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite:position")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2(0, 8), Vector2(0, -8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite:rotation")
+tracks/3/interp = 2
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [3.1415927, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ch5i5"]
+_data = {
+&"RESET": SubResource("Animation_ch5i5"),
+&"attack": SubResource("Animation_wfft3")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wfft3"]
+size = Vector2(14, 28)
+
+[node name="Sword" type="Node2D" unique_id=982423695 node_paths=PackedStringArray("hitbox", "swing_sprite", "animation_player", "sprite", "audio")]
+script = ExtResource("1_cq01h")
+hitbox = NodePath("Hitbox")
+swing_sprite = NodePath("Swing")
+animation_player = NodePath("AnimationPlayer")
+damage_mult = 2.0
+attack_range = 150.0
+cooldown_mod = 5.0
+sprite = NodePath("Sprite")
+audio = NodePath("Audio")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1606063971]
+position = Vector2(0, -8)
+texture = ExtResource("2_wfft3")
+flip_h = true
+
+[node name="Swing" type="Sprite2D" parent="." unique_id=1476148435]
+visible = false
+texture = ExtResource("3_wfft3")
+flip_h = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681061666]
+libraries/ = SubResource("AnimationLibrary_ch5i5")
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="." unique_id=508341698]
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=388148083]
+collision_layer = 16
+collision_mask = 8
+monitoring = false
+script = ExtResource("3_ch5i5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1755945850]
+position = Vector2(8, 0)
+shape = SubResource("RectangleShape2D_wfft3")
+debug_color = Color(0.9999555, 0, 0.111179434, 0.41960785)

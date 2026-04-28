@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://b7h2lf0hml4cd"]
 
-[ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/cat.gd" id="1_52fj1"]
+[ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/creature/cat.gd" id="1_52fj1"]
 [ext_resource type="Texture2D" uid="uid://3myklrdq3t8r" path="res://art/creature-sprites/cat-orange.png" id="1_hcucf"]
 [ext_resource type="Resource" uid="uid://cc6ecguht7jk2" path="res://resources/cat_data.tres" id="2_6fl1u"]
+[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="4_w46py"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
 radius = 12.0
@@ -82,7 +83,15 @@ advance_mode = 2
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_giwe8")]
 graph_offset = Vector2(-64, -8)
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6fl1u"]
+radius = 12.0
+height = 34.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w46py"]
+radius = 12.0
+height = 34.0
+
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "weapon_node", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
 collision_layer = 4
 collision_mask = 3
 motion_mode = 1
@@ -90,6 +99,8 @@ wall_min_slide_angle = 0.0
 script = ExtResource("1_52fj1")
 animation_tree = NodePath("AnimationTree")
 stat_config = ExtResource("2_6fl1u")
+weapon_node = NodePath("")
+body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
 los_ray = NodePath("LOSRay")
@@ -111,13 +122,10 @@ advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 "parameters/Sprite Flip/blend_position" = -1.0
 
-[node name="AttackTimer" type="Timer" parent="." unique_id=1821511085]
-one_shot = true
-
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=327231989]
 path_desired_distance = 5.0
 target_desired_distance = 100.0
-debug_enabled = true
+path_postprocessing = 1
 
 [node name="NavTimer" type="Timer" parent="." unique_id=1058623270]
 wait_time = 0.1
@@ -125,4 +133,45 @@ autostart = true
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=503088827]
 
-[connection signal="timeout" from="AttackTimer" to="." method="_on_attack_timer_timeout"]
+[node name="DamageNumber" type="Label" parent="." unique_id=2123951624]
+visible = false
+offset_left = -16.0
+offset_top = 13.0
+offset_right = 17.0
+offset_bottom = 30.0
+theme_override_colors/font_color = Color(0.839331, 0, 0.13222402, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "100"
+horizontal_alignment = 1
+
+[node name="DodgeLabel" type="Label" parent="." unique_id=937751828]
+visible = false
+offset_left = -32.0
+offset_top = -41.0
+offset_right = 32.0
+offset_bottom = -18.0
+text = "Dodged!"
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=595703484]
+collision_layer = 8
+collision_mask = 48
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=439714809]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_6fl1u")
+debug_color = Color(0, 0.64612925, 0.2515669, 0.41960785)
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=267291814]
+collision_layer = 16
+collision_mask = 8
+script = ExtResource("4_w46py")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=686162303]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_w46py")
+debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
+
+[node name="Marker2D" type="Marker2D" parent="." unique_id=1692315444]
+
+[connection signal="area_entered" from="Hitbox" to="Hitbox" method="_on_area_entered"]

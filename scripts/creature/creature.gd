@@ -2,6 +2,16 @@ class_name Creature extends CharacterBody2D
 
 @export var stat_config: CreatureData
 
+enum AttackStyle { MELEE_TACKLE, MELEE_SWING, RANGED }
+
+# --- WEAPON & HITBOX SETUP ---
+@export_group("Equipment")
+@export var current_attack_style: AttackStyle = AttackStyle.MELEE_TACKLE
+@export var weapon_pivot: Node2D # Pivot node for rotating hitboxes/spawn points toward target
+@export var weapon_node: Node2D # Reference to an equipped weapon sprite/visual scene
+@export var body_hitbox: Area2D # The creature's internal "Tackle" hitbox (should have Hitbox script)
+@export var projectile_scene: PackedScene # For Ranged style
+
 # --- TEST OVERRIDES (Inspector) ---
 @export_group("Test Overrides")
 @export var override_health: float = 0.0
@@ -11,9 +21,12 @@ class_name Creature extends CharacterBody2D
 @export var override_dexterity: float = 0.0
 @export var override_size: float = 0.0
 @export var override_precision: float = 0.0
+@export var override_attack_range: float = 0.0
 
 # --- SIGNALS ---
-signal attack_started(attacker: Creature)
+signal attack_started(attacker: Creature, defender: Creature)
+signal health_changed(current: float, total: float)
+signal died()
 
 # --- CORE STATS ---
 var base_health: float = 100.0
@@ -33,7 +46,7 @@ var precision: float = 0.5
 @export var nav_agent: NavigationAgent2D
 @export var nav_timer: Timer
 @export var los_ray: RayCast2D
-var look_direction: Vector2 = Vector2.ZERO
+var look_direction: Vector2 = Vector2.RIGHT
 
 # --- INTERNAL LOGIC ---
 var attack_range: float = 150.0 
@@ -51,6 +64,7 @@ var is_attacking: bool = false
 var is_dashing: bool = false 
 var is_telegraphing: bool = false 
 var is_recovering: bool = false 
+var is_invulnerable: bool = false
 
 func _ready() -> void:
 	if stat_config:
@@ -74,6 +88,12 @@ func _ready() -> void:
 	current_health = base_health
 	self.scale = Vector2.ONE * size
 	acceleration = 10.0 / size 
+	
+	if override_attack_range > 0:
+		attack_range = override_attack_range
+	else:
+		_update_attack_range_by_style()
+
 	retreat_threshold = attack_range * (1.1 - aggression)
 	
 	nav_agent.path_desired_distance = 20.0
@@ -82,13 +102,46 @@ func _ready() -> void:
 	if nav_timer:
 		nav_timer.timeout.connect(_on_nav_timer_timeout)
 	
+	if body_hitbox:
+		body_hitbox.monitoring = false
+	
 	_randomize_behavior()
+
+func _update_attack_range_by_style() -> void:
+	match current_attack_style:
+		AttackStyle.MELEE_TACKLE:
+			if weapon_node and "attack_range" in weapon_node:
+				attack_range = weapon_node.attack_range
+			else:
+				attack_range = 150.0 * size
+		AttackStyle.MELEE_SWING:
+			if weapon_node and "attack_range" in weapon_node:
+				attack_range = weapon_node.attack_range
+			else:
+				attack_range = 200.0 * size
+		AttackStyle.RANGED:
+			if weapon_node and "attack_range" in weapon_node:
+				attack_range = weapon_node.attack_range
+			else:
+				attack_range = 500.0
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(target):
 		target = null
 		if not is_attacking: search_for_target()
 		return
+	
+	# Only update looking and rotation when NOT locked in an attack sequence
+	if not is_attacking:
+		look_direction = global_position.direction_to(target.global_position)
+		
+		# Rotate pivot for hitboxes/projectiles
+		if weapon_pivot:
+			weapon_pivot.rotation = look_direction.angle()
+			
+		# Handle visual rotation per weapon script
+		if weapon_node and weapon_node.has_method("look_at_direction"):
+			weapon_node.look_at_direction(look_direction)
 		
 	if los_ray:
 		los_ray.target_position = los_ray.to_local(target.global_position)
@@ -102,10 +155,33 @@ func _physics_process(delta: float) -> void:
 	_update_behavior_timer(delta)
 	movement(delta)
 
+func take_damage(amount: float) -> void:
+	if is_invulnerable or current_health <= 0:
+		return
+		
+	current_health -= amount
+	health_changed.emit(current_health, base_health)
+	
+	if current_health <= 0:
+		die()
+	else:
+		_trigger_hit_iframe()
+
+func _trigger_hit_iframe() -> void:
+	is_invulnerable = true
+	await get_tree().create_timer(0.1).timeout
+	is_invulnerable = false
+
+func die() -> void:
+	died.emit()
+	set_physics_process(false)
+	queue_free()
+
 func search_for_target() -> void:
 	var creatures = get_tree().get_nodes_in_group("creature")
 	var nearest_dist = INF
 	var nearest_node = null
+	
 	for c in creatures:
 		if c == self: continue
 		var dist = global_position.distance_to(c.global_position)
@@ -114,48 +190,44 @@ func search_for_target() -> void:
 			nearest_node = c
 			
 	if nearest_node and nearest_node is Creature:
-		if target and target.attack_started.is_connected(_on_target_attack_started):
-			target.attack_started.disconnect(_on_target_attack_started)
-		target = nearest_node
-		target.attack_started.connect(_on_target_attack_started)
+		var should_switch = false
+		if not is_instance_valid(target):
+			should_switch = true
+		elif nearest_node != target:
+			var current_dist = global_position.distance_to(target.global_position)
+			var switch_threshold = 0.8 - (aggression * 0.3)
+			if nearest_dist < current_dist * switch_threshold:
+				should_switch = true
+		
+		if should_switch:
+			if is_instance_valid(target) and target.attack_started.is_connected(_on_target_attack_started):
+				target.attack_started.disconnect(_on_target_attack_started)
+			target = nearest_node
+			target.attack_started.connect(_on_target_attack_started)
 
-func _on_target_attack_started(attacker: Creature) -> void:
-	if is_attacking: 
-		print("[", name, "] Ignoring attack from ", attacker.name, " (already busy)")
-		return
+func _on_target_attack_started(attacker: Creature, defender: Creature) -> void:
+	if defender != self or is_attacking: return
 	
 	var dodge_chance = 0.15 + (IQ * 0.07)
-	var health_pct = current_health / base_health
-	if health_pct < 0.3 and aggression > 0.5:
+	if (current_health / base_health) < 0.3 and aggression > 0.5:
 		dodge_chance *= 0.2 
 	
-	var roll = randf()
-	print("[", name, "] Reaction Check vs ", attacker.name, ": Roll ", snapped(roll, 0.01), " < Chance ", snapped(dodge_chance, 0.01))
-		
-	if roll < dodge_chance:
-		print("[", name, "] Reaction SUCCESS: Initiating Dodge")
+	if randf() < dodge_chance:
 		dodge(attacker)
-	else:
-		print("[", name, "] Reaction FAILED: Taking incoming strike")
 
 func dodge(attacker: Creature) -> void:
 	is_attacking = true 
 	is_dashing = true
-	
 	var attack_dir = attacker.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
-	
 	var dodge_duration = 0.2
 	var dodge_distance = (140.0 + (speed * 0.2) + (40.0 * dexterity)) / max(0.5, size)
 	var dodge_speed = dodge_distance / dodge_duration
-	
 	velocity = dodge_dir * dodge_speed
 	await get_tree().create_timer(dodge_duration).timeout
-	
 	is_dashing = false
 	await get_tree().create_timer(0.1).timeout
 	is_attacking = false
-	print("[", name, "] Dodge sequence finished")
 
 func _update_behavior_timer(delta: float) -> void:
 	behavior_timer += delta
@@ -169,6 +241,7 @@ func _randomize_behavior() -> void:
 	circle_direction = 1 if randf() > 0.5 else -1
 	is_circling = randf() < aggression
 	speed_multiplier = randf_range(0.8, 1.2)
+	if not is_attacking: search_for_target()
 
 func has_line_of_sight() -> bool:
 	if not los_ray: return true 
@@ -181,10 +254,8 @@ func movement(delta: float) -> void:
 	var has_los = has_line_of_sight()
 	
 	var effective_retreat = retreat_threshold
-	var health_pct = current_health / base_health
-	if health_pct < 0.3:
-		if aggression > 0.5: effective_retreat = 0.0 
-		else: effective_retreat *= 2.0 
+	if (current_health / base_health) < 0.3:
+		effective_retreat = 0.0 if aggression > 0.5 else effective_retreat * 2.0 
 
 	if distance_to_target > attack_range + 20.0 or not has_los:
 		var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
@@ -209,54 +280,73 @@ func movement(delta: float) -> void:
 
 func attack() -> void:
 	if is_attacking: return
-	
-	print("[", name, "] ATTACK: Starting Windup")
 	is_attacking = true
 	can_attack = false
 	is_telegraphing = true
-	
-	# 1. TELEGRAPH (Windup)
 	velocity = Vector2.ZERO
-	var telegraph_time = max(0.05, 0.3 / dexterity)
-	await get_tree().create_timer(telegraph_time).timeout 
-	
+	await get_tree().create_timer(max(0.05, 0.3 / dexterity)).timeout 
 	is_telegraphing = false
 	
-	# Accuracy logic
-	var base_dir = global_position.direction_to(target.global_position)
-	var max_deviation = deg_to_rad(45.0)
-	var actual_deviation = randf_range(-max_deviation, max_deviation) * (1.0 - precision)
+	# Current aiming direction is now frozen because is_attacking is true
+	var base_dir = look_direction
+	var actual_deviation = randf_range(-PI/6, PI/6) * (1.0 - precision) # Max deviation of 30'
 	var dash_dir = base_dir.rotated(actual_deviation)
 	
-	# 2. LUNGE (Dash)
-	var dash_duration = 0.25
-	var target_distance = attack_range * 1.3
-	var required_speed = target_distance / dash_duration
+	attack_started.emit(self, target)
 	
-	print("[", name, "] ATTACK: Launching Lunge")
-	attack_started.emit(self)
+	match current_attack_style:
+		AttackStyle.MELEE_TACKLE, AttackStyle.MELEE_SWING:
+			var dash_duration = 0.25
+			var target_distance = attack_range * 1.3
+			velocity = dash_dir * (target_distance / dash_duration)
+			is_dashing = true
+			
+			if weapon_node:
+				_trigger_weapon_action()
+			elif current_attack_style == AttackStyle.MELEE_TACKLE and body_hitbox:
+				_manual_hitbox_activate(body_hitbox, damage)
+				
+			await get_tree().create_timer(dash_duration).timeout
+			is_dashing = false
+			
+		AttackStyle.RANGED:
+			_fire_projectile(dash_dir)
+			await get_tree().create_timer(0.2).timeout
 	
-	velocity = dash_dir * required_speed
-	is_dashing = true
-	await get_tree().create_timer(dash_duration).timeout
-	
-	# 3. RECOVERY
-	print("[", name, "] ATTACK: Recovery Phase")
-	is_dashing = false
 	is_recovering = true 
 	await get_tree().create_timer(0.15).timeout
-	
 	is_recovering = false
 	is_attacking = false 
 	
 	_on_attack_cooldown_finished()
 
+func _trigger_weapon_action() -> void:
+	if weapon_node.has_method("activate"):
+		weapon_node.activate(damage, self)
+
+func _manual_hitbox_activate(hb: Area2D, dmg: float) -> void:
+	if hb is Hitbox:
+		hb.damage_value = dmg
+		hb.attacker = self
+	
+	hb.monitoring = true
+	await get_tree().create_timer(0.2).timeout
+	hb.monitoring = false
+
+func _fire_projectile(direction: Vector2) -> void:
+	if not projectile_scene: return
+	var proj = projectile_scene.instantiate()
+	get_parent().add_child(proj)
+	proj.global_position = global_position
+	if proj.has_method("launch"):
+		proj.launch(direction, damage, self)
+
 func _on_attack_cooldown_finished() -> void:
-	var cooldown_base = 3.0
-	var cooldown = cooldown_base / (1.0 + (dexterity * 0.5))
+	# Safety check for denominator and tree status
+	if not is_inside_tree(): return
+	var cooldown = 3.0 / max(0.1, (1.0 + (dexterity * 0.5)))
 	await get_tree().create_timer(cooldown).timeout
 	can_attack = true
-	print("[", name, "] Cooldown Finished: Ready to strike")
 
 func _on_nav_timer_timeout() -> void:
 	if target: nav_agent.target_position = target.global_position
