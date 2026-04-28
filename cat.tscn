@@ -82,7 +82,7 @@ advance_mode = 2
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_giwe8")]
 graph_offset = Vector2(-64, -8)
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "nav_agent", "nav_timer", "los_ray")]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
 collision_layer = 4
 collision_mask = 3
 motion_mode = 1
