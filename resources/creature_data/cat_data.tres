@@ -4,4 +4,9 @@
 
 [resource]
 script = ExtResource("1_6acst")
+speed = 350.0
+IQ = 6
+aggression = 0.3
+dexterity = 1.6
+precision = 0.7
 metadata/_custom_type_script = "uid://dural1irvvi75"

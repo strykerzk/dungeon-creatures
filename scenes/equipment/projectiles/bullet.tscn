@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c04wsubj34onr"]
+
+[ext_resource type="Script" uid="uid://fqkvtri6firg" path="res://scripts/extensions/projectile.gd" id="1_sxkg5"]
+[ext_resource type="Texture2D" uid="uid://4gfjomtyoyty" path="res://art/weapons/projectiles/iron_bullet.png" id="2_ldyhp"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_eykkr"]
+radius = 2.0
+
+[node name="Bullet" type="Area2D" unique_id=1583564142]
+collision_layer = 32
+collision_mask = 5
+script = ExtResource("1_sxkg5")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=2062471475]
+texture = ExtResource("2_ldyhp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2037903311]
+shape = SubResource("CircleShape2D_eykkr")
+debug_color = Color(0.94706625, 2.3102762e-06, 0.5871683, 0.41960785)

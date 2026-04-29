@@ -7,10 +7,13 @@ var attacker: Creature
 # Values local to the node for quick access
 var attack_range: float = 150.0
 var attack_cd: float = 3.0
-var attack_style: Creature.AttackStyle = Creature.AttackStyle.MELEE_TACKLE
+var attack_style: Creature.AttackStyle = Creature.AttackStyle.TACKLE
 
 @export var sprite: Sprite2D
 @export var audio: AudioStreamPlayer2D
+
+func _ready() -> void:
+	pass
 
 ## Called by Creature.equip() immediately after instantiation
 func setup(equipment_resource: EquipmentData) -> void:

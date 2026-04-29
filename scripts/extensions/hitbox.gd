@@ -9,7 +9,10 @@ func _enter_tree() -> void:
 
 func _init():
 	# Hitboxes should usually only detect Hurtboxes (Layer/Mask setup)
+	set_collision_layer_value(1, false)
 	set_collision_layer_value(5, true)
+	
+	set_collision_mask_value(1, false)
 	set_collision_mask_value(4, true)
 	monitoring = false # Controlled by weapon/creature
 
@@ -19,5 +22,5 @@ func _on_area_entered(area: Area2D) -> void:
 		if entity == attacker: return
 		
 		if entity.has_method("take_damage"):
-			entity.take_damage(damage_value)
+			entity.take_damage(damage_value, attacker)
 			print("Damage dealt!")

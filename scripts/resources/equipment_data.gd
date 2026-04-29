@@ -13,7 +13,8 @@ class_name EquipmentData extends Resource
 @export var precision_bonus: float = 0.0
 
 @export_group("Combat (Weapon Only)")
-@export var attack_style: Creature.AttackStyle = Creature.AttackStyle.MELEE_TACKLE
+@export var attack_style: Creature.AttackStyle = Creature.AttackStyle.TACKLE
 @export var attack_range: float = 150.0
 @export var damage_bonus: float = 0.0 # Added to base creature damage
 @export var attack_cooldown: float = 3.0 # Attack cooldowns
+@export var projectile_speed: float = 800.0 # For ranged weapons

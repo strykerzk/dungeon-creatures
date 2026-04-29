@@ -1,0 +1,369 @@
+[gd_scene format=3 uid="uid://b0j644l7vr1qc"]
+
+[ext_resource type="Script" uid="uid://5v58krf65cy2" path="res://scripts/creature/duck.gd" id="1_p7nrc"]
+[ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
+[ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
+[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
+radius = 6.0
+height = 22.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_601gp"]
+radius = 6.0
+height = 22.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6a5ah"]
+radius = 6.0
+height = 22.0
+
+[sub_resource type="Animation" id="Animation_601gp"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Marker/HeadMarker:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -8)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Marker/BodyMarker:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-2, 3)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Marker/WeaponMarker:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 2)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Marker/BootsMarker:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2, 9)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Marker/BackMarker:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(5, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_6a5ah"]
+resource_name = "sprite_left"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Marker/HeadMarker:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -8)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Marker/BodyMarker:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-2, 3)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Marker/WeaponMarker:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 2)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Marker/BootsMarker:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2, 9)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Marker/BackMarker:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(5, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_ygove"]
+resource_name = "sprite_right"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Marker/HeadMarker:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -8)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Marker/BodyMarker:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2, 3)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Marker/WeaponMarker:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1, 2)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Marker/BootsMarker:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-2, 9)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Marker/BackMarker:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-5, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rhggd"]
+_data = {
+&"RESET": SubResource("Animation_601gp"),
+&"sprite_left": SubResource("Animation_6a5ah"),
+&"sprite_right": SubResource("Animation_ygove")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_601gp"]
+animation = &"sprite_left"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6a5ah"]
+animation = &"sprite_right"
+
+[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_ygove"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_601gp")
+blend_point_0/pos = -1.0
+blend_point_1/node = SubResource("AnimationNodeAnimation_6a5ah")
+blend_point_1/pos = 1.0
+blend_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_rhggd"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_601gp"]
+"states/Sprite Flip/node" = SubResource("AnimationNodeBlendSpace1D_ygove")
+"states/Sprite Flip/position" = Vector2(445.5, 100)
+states/Start/position = Vector2(240, 100)
+transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_rhggd")]
+
+[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+script = ExtResource("1_p7nrc")
+animation_tree = NodePath("AnimationTree")
+stat_config = ExtResource("2_6a5ah")
+head_marker = NodePath("Marker/HeadMarker")
+body_marker = NodePath("Marker/BodyMarker")
+weapon_marker = NodePath("Marker/WeaponMarker")
+boots_marker = NodePath("Marker/BootsMarker")
+back_marker = NodePath("Marker/BackMarker")
+body_hitbox = NodePath("Hitbox")
+nav_agent = NodePath("NavigationAgent2D")
+nav_timer = NodePath("NavTimer")
+los_ray = NodePath("LOSRay")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1402462917]
+texture = ExtResource("1_sqg2a")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1247753892]
+shape = SubResource("CapsuleShape2D_p7nrc")
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=78693573]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1339448640]
+shape = SubResource("CapsuleShape2D_601gp")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=2074689619]
+script = ExtResource("3_601gp")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1655568817]
+shape = SubResource("CapsuleShape2D_6a5ah")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1195328751]
+libraries/ = SubResource("AnimationLibrary_rhggd")
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=134393038]
+tree_root = SubResource("AnimationNodeStateMachine_601gp")
+anim_player = NodePath("../AnimationPlayer")
+"parameters/Sprite Flip/blend_position" = -0.5633383
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
+path_desired_distance = 5.0
+target_desired_distance = 100.0
+path_postprocessing = 1
+
+[node name="NavTimer" type="Timer" parent="." unique_id=421130563]
+wait_time = 0.1
+autostart = true
+
+[node name="LOSRay" type="RayCast2D" parent="." unique_id=28601178]
+
+[node name="Marker" type="Node2D" parent="." unique_id=202572742]
+
+[node name="HeadMarker" type="Marker2D" parent="Marker" unique_id=1167370184]
+position = Vector2(0, -8)
+
+[node name="BodyMarker" type="Marker2D" parent="Marker" unique_id=1968812501]
+position = Vector2(-2, 3)
+
+[node name="WeaponMarker" type="Marker2D" parent="Marker" unique_id=1360154661]
+position = Vector2(1, 2)
+
+[node name="BootsMarker" type="Marker2D" parent="Marker" unique_id=262784826]
+position = Vector2(2, 9)
+
+[node name="BackMarker" type="Marker2D" parent="Marker" unique_id=616509319]
+position = Vector2(5, 0)
+
+[node name="Button" type="Button" parent="." unique_id=1611022800]
+offset_left = -13.0
+offset_top = 27.0
+offset_right = 13.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 4
+text = "SWORD"
+
+[node name="Button2" type="Button" parent="." unique_id=24867526]
+offset_left = -13.0
+offset_top = 44.0
+offset_right = 13.0
+offset_bottom = 59.0
+theme_override_font_sizes/font_size = 4
+text = "MUTATE"
+
+[node name="Button3" type="Button" parent="." unique_id=1607619499]
+offset_left = 15.0
+offset_top = 27.0
+offset_right = 41.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 4
+text = "GUN"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]

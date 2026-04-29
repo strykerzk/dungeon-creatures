@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3 uid="uid://bpgdogjqoy37x"]
+
+[ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_uouuc"]
+[ext_resource type="PackedScene" uid="uid://cyot1hty3c6mv" path="res://scenes/equipment/weapons/ranged/pistol.tscn" id="2_flcvd"]
+
+[resource]
+script = ExtResource("1_uouuc")
+item_name = "Pistol"
+slot = "weapon"
+visual_scene = ExtResource("2_flcvd")
+aggression_bonus = -0.2
+dexterity_bonus = 0.2
+precision_bonus = 0.2
+attack_style = 2
+attack_range = 600.0
+damage_bonus = 10.0
+attack_cooldown = 6.0
+metadata/_custom_type_script = "uid://cne6whdroxgp7"

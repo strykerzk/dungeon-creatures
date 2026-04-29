@@ -20,7 +20,7 @@ Aggression		0.5			0.0 - 1.0	Low (0.0): Cowardly. Stays far away, retreats often.
 										High (1.0): Relentless. Stays close, never retreats.
 Dexterity		1.0			0.1 - 3.0	Wind-up: 0.3 / dexterity
 										Cooldown: Divides the base attack cooldown by max(0.1, (1.0 + (dexterity * 0.5)))
-Precision		0.5			0.0 - 1.0	Accuracy: 1.0 is perfect aim. 0.0 has ±30° jitter.
+Precision		0.3			0.0 - 1.0	Accuracy: 1.0 is perfect aim. 0.0 has ±30° jitter.
 Size			1.0			0.5 - 5.0	Physics: Scale and Acceleration (10.0 / size).
 
 ## 2. Equipment Resource Stats

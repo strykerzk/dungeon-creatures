@@ -15,6 +15,11 @@ run/main_scene="uid://btap8s0pk3v85"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+CreatureManager="*uid://c0bdb53vnj3gi"
+NetworkManager="*uid://bhknutagcttrd"
+
 [display]
 
 window/size/viewport_width=1920
@@ -26,6 +31,15 @@ window/stretch/aspect="ignore"
 
 version_control/plugin_name="GitPlugin"
 version_control/autoload_on_startup=true
+
+[file_customization]
+
+folder_colors={
+"res://art/": "red",
+"res://resources/": "purple",
+"res://scenes/": "blue",
+"res://scripts/": "green"
+}
 
 [global_group]
 

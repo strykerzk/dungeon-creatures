@@ -2,7 +2,7 @@ class_name Creature extends CharacterBody2D
 
 @export var stat_config: CreatureData
 
-enum AttackStyle { MELEE_TACKLE, MELEE_SWING, RANGED } # MELEE_TACKLE is default
+enum AttackStyle { TACKLE, MELEE, RANGED } # TACKLE is default
 
 # --- EQUIPMENT SLOTS & MARKERS ---
 @export_group("Equipment Markers")
@@ -13,7 +13,7 @@ enum AttackStyle { MELEE_TACKLE, MELEE_SWING, RANGED } # MELEE_TACKLE is default
 @export var back_marker: Marker2D
 
 @export_group("Equipment Settings")
-@export var current_attack_style: AttackStyle = AttackStyle.MELEE_TACKLE
+@export var current_attack_style: AttackStyle = AttackStyle.TACKLE
 @export var body_hitbox: Area2D # Creature's internal tackle hitbox
 @export var projectile_scene: PackedScene # Fallback/Default projectile
 
@@ -27,6 +27,13 @@ enum AttackStyle { MELEE_TACKLE, MELEE_SWING, RANGED } # MELEE_TACKLE is default
 @export var override_size: float = 0.0
 @export var override_precision: float = 0.0
 @export var override_attack_range: float = 0.0
+
+# --- AI & INTERNAL LOGIC ---
+@export_group("AI & Logic")
+@export var target: Creature 
+@export var nav_agent: NavigationAgent2D
+@export var nav_timer: Timer
+@export var los_ray: RayCast2D
 
 # --- SIGNALS ---
 signal attack_started(attacker: Creature, defender: Creature)
@@ -54,11 +61,7 @@ var active_minor_mutations: Array[MutationData]
 var equipment: Dictionary = {}
 var weapon_node: Weapon = null # Shortcut for the current weapon
 
-# --- AI & INTERNAL LOGIC ---
-@export var target: Creature 
-@export var nav_agent: NavigationAgent2D
-@export var nav_timer: Timer
-@export var los_ray: RayCast2D
+
 
 var look_direction: Vector2 = Vector2.RIGHT
 var attack_range: float = 150.0 
@@ -88,6 +91,8 @@ func _ready() -> void:
 	if body_hitbox:
 		body_hitbox.monitoring = false
 	
+	setup_physics_layers()
+	
 	_randomize_behavior()
 
 func _initialize_base_stats() -> void:
@@ -112,8 +117,15 @@ func _initialize_base_stats() -> void:
 	
 	current_health = max_health
 
+func setup_physics_layers() -> void:
+	set_collision_layer_value(1, false)
+	set_collision_layer_value(3, true)
+	
+	set_collision_mask_value(1, true)
+	set_collision_mask_value(2, true)
+
 func set_mutation(data: MutationData) -> void:
-	if not data or not ("type" in data):
+	if not data or not ("mutation_type" in data):
 		print("[Creature] Error: Invalid MutationData")
 		return
 	
@@ -146,8 +158,12 @@ func equip(data: EquipmentData) -> void:
 	# 3. Determine parent marker
 	var marker = _get_marker_for_slot(slot)
 	if marker:
-		marker.add_child(new_item)
-		new_item.position = Vector2.ZERO
+		if marker == weapon_marker and new_item.has_method("reposition_visual"):
+			add_child(new_item)
+			new_item.reposition_visual(marker)
+		else:
+			marker.add_child(new_item)
+			new_item.position = Vector2.ZERO
 	else:
 		add_child(new_item)
 		
@@ -160,6 +176,7 @@ func equip(data: EquipmentData) -> void:
 	if slot == "weapon":
 		weapon_node = new_item
 		base_cooldown = weapon_node.attack_cd
+		current_attack_style = weapon_node.attack_style
 	recalculate_stats()
 	print("[Creature] Equipped ", data.item_name, " to ", slot)
 
@@ -187,7 +204,7 @@ func recalculate_stats() -> void:
 	
 	
 	# Apply modifiers from all equipped items
-	for slot: Weapon in equipment:
+	for slot in equipment:
 		var item_node = equipment[slot]
 		# We check for a 'data' property on the node which usually holds its Resource
 		if "data" in item_node and item_node.data:
@@ -197,13 +214,13 @@ func recalculate_stats() -> void:
 			speed_mod += d.speed_mod
 			iq_bonus += d.IQ_bonus
 			aggro_bonus += d.aggression_bonus
-			dex_bonus += d.dexterity_mod
+			dex_bonus += d.dexterity_bonus
 			precision_bonus += d.precision_bonus
 	
 	# Apply modifiers from all mutations
 	# Major Mutation
 	if active_major_mutation:
-		max_health += active_major_mutation.health_mod
+		max_health += active_major_mutation.health_bonus
 		damage_bonus += active_major_mutation.damage_bonus
 		speed_mod += active_major_mutation.speed_mod
 		iq_bonus += active_major_mutation.IQ_bonus
@@ -255,12 +272,12 @@ func recalculate_stats() -> void:
 
 func _update_attack_range_by_style() -> void:
 	match current_attack_style:
-		AttackStyle.MELEE_TACKLE:
+		AttackStyle.TACKLE:
 			if weapon_node and "attack_range" in weapon_node:
 				attack_range = weapon_node.attack_range
 			else:
 				attack_range = 150.0 * size
-		AttackStyle.MELEE_SWING:
+		AttackStyle.MELEE:
 			if weapon_node and "attack_range" in weapon_node:
 				attack_range = weapon_node.attack_range
 			else:
@@ -279,8 +296,6 @@ func _physics_process(delta: float) -> void:
 	
 	if not is_attacking:
 		look_direction = global_position.direction_to(target.global_position)
-		if weapon_marker:
-			weapon_marker.rotation = look_direction.angle()
 		if weapon_node and weapon_node.has_method("look_at_direction"):
 			weapon_node.look_at_direction(look_direction)
 		
@@ -296,7 +311,7 @@ func _physics_process(delta: float) -> void:
 	_update_behavior_timer(delta)
 	movement(delta)
 
-func take_damage(amount: float) -> void:
+func take_damage(amount: float, attacker: Creature = null) -> void:
 	if is_invulnerable or current_health <= 0:
 		return
 	
@@ -308,6 +323,7 @@ func take_damage(amount: float) -> void:
 		die()
 	else:
 		_trigger_hit_iframe()
+		search_for_target(attacker)
 
 func _trigger_hit_iframe() -> void:
 	is_invulnerable = true
@@ -319,30 +335,50 @@ func die() -> void:
 	set_physics_process(false)
 	queue_free()
 
-func search_for_target() -> void:
-	var creatures = get_tree().get_nodes_in_group("creature")
-	var nearest_dist = INF
-	var nearest_node = null
-	for c in creatures:
-		if c == self: continue
-		var dist = global_position.distance_to(c.global_position)
-		if dist < nearest_dist:
-			nearest_dist = dist
-			nearest_node = c
-			
-	if nearest_node and nearest_node is Creature:
-		var should_switch = false
-		if not is_instance_valid(target): should_switch = true
-		elif nearest_node != target:
-			var switch_threshold = 0.8 - (aggression * 0.3)
-			if nearest_dist < global_position.distance_to(target.global_position) * switch_threshold:
-				should_switch = true
+func search_for_target(attacker: Creature = null) -> void:
+	var creatures: Array[Node] = get_tree().get_nodes_in_group("creature")
+	var best_score = INF
+	var best_node = null
+	
+	for c: Creature in creatures:
+		if c == self or not is_instance_valid(c) or c.current_health <= 0: continue
 		
-		if should_switch:
+		var dist = global_position.distance_to(c.global_position)
+		# Health Weight (low health = more attractive, high health = less attractive)
+		var health_ratio = c.current_health / c.max_health
+		var health_factor = 0.9 + (health_ratio * 0.2)
+		var score = pow(dist, 1.2) * health_factor
+		
+		# Revenge bonus
+		if c == attacker:
+			score *= 0.8
+		
+		if score < best_score:
+			best_score = score
+			best_node = c
+	# Decide whether to switch from the current target
+	if best_node and best_node != target:
+		var current_score = INF
+		if is_instance_valid(target) and target.current_health > 0:
+			var dist_to_current = global_position.distance_to(target.global_position)
+			var cur_ratio = target.current_health / target.max_health
+			current_score = pow(dist_to_current, 1.2) * (0.9 + (cur_ratio * 0.2))
+			
+		var threshold = 0.7 + (IQ * 0.02) - (aggression * 0.2)
+		
+		if best_score < current_score * threshold:
 			if is_instance_valid(target) and target.attack_started.is_connected(_on_target_attack_started):
 				target.attack_started.disconnect(_on_target_attack_started)
-			target = nearest_node
-			target.attack_started.connect(_on_target_attack_started)
+				
+			target = best_node
+			if is_instance_valid(target):
+				target.attack_started.connect(_on_target_attack_started)
+
+
+func has_line_of_sight() -> bool:
+	if not los_ray: return true
+	los_ray.force_raycast_update()
+	return !los_ray.is_colliding() or los_ray.get_collider() == target
 
 func _on_target_attack_started(attacker: Creature, defender: Creature) -> void:
 	if defender != self or is_attacking: return
@@ -365,13 +401,13 @@ func dodge(attacker: Creature) -> void:
 
 func _update_behavior_timer(delta: float) -> void:
 	behavior_timer += delta
-	var persistence_mod = (IQ * 0.1) + (aggression * 0.5)
-	if behavior_timer >= next_behavior_change / (1.0 + persistence_mod):
+	var persistence_mod = (IQ * 0.15) + (aggression * -0.1)
+	if behavior_timer >= next_behavior_change * (1.0 + persistence_mod):
 		_randomize_behavior()
 		behavior_timer = 0.0
 
 func _randomize_behavior() -> void:
-	next_behavior_change = randf_range(1.5, 4.0)
+	next_behavior_change = randf_range(2.0, 5.0) - (1.5 - aggression)
 	circle_direction = 1 if randf() > 0.5 else -1
 	is_circling = randf() < aggression
 	speed_mult = randf_range(0.8, 1.2)
@@ -381,11 +417,12 @@ func movement(delta: float) -> void:
 	var distance_to_target = global_position.distance_to(target.global_position)
 	var dir_to_target = global_position.direction_to(target.global_position)
 	
+	var has_los = has_line_of_sight()
 	var effective_retreat = retreat_threshold
 	if (current_health / max_health) < 0.3:
 		effective_retreat = 0.0 if aggression > 0.5 else effective_retreat * 2.0 
-
-	if distance_to_target > attack_range + 20.0:
+	
+	if distance_to_target > attack_range + 20.0 or not has_los:
 		var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
 		velocity = velocity.lerp(move_dir * (speed * speed_mult), acceleration * delta)
 	else:
@@ -394,12 +431,37 @@ func movement(delta: float) -> void:
 			return 
 		else:
 			if distance_to_target < effective_retreat:
-				velocity = velocity.lerp(-dir_to_target * (speed * 0.3), acceleration * delta)
+				var retreat_speed_mult = 0.3
+				if current_attack_style == AttackStyle.RANGED:
+					retreat_speed_mult = 0.9 if not can_attack else 0.1
+				
+				# SMART WALL AVOIDANCE: If hitting a wall while retreating, slide along it
+				if get_slide_collision_count() > 0:
+					var col = get_last_slide_collision()
+					var normal = col.get_normal()
+					# Reflect movement to slide instead of getting stuck
+					var target_vel = -dir_to_target * (speed * retreat_speed_mult)
+					velocity = velocity.lerp(target_vel.slide(normal), acceleration * delta)
+				else:
+					velocity = velocity.lerp(-dir_to_target * (speed * retreat_speed_mult), acceleration * delta)
+					
 			elif is_circling:
-				if get_slide_collision_count() > 0: circle_direction *= -1
 				var side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
 				var range_correction = (distance_to_target - attack_range) * 0.05
 				var circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
+				
+				# SMART WALL AVOIDANCE: Check if our circling path is blocked
+				if get_slide_collision_count() > 0:
+					var col = get_last_slide_collision()
+					var normal = col.get_normal()
+					var move_dir = velocity.normalized()
+					# If we are moving largely "into" the wall (negative dot product), flip direction
+					if move_dir.dot(normal) < -0.6:
+						circle_direction *= -1
+						# Recalculate immediate side_dir to prevent vibrating in place
+						side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
+						circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
+				
 				velocity = velocity.lerp(circle_vector * (speed * 0.6 * speed_mult), acceleration * delta)
 			else:
 				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
@@ -415,21 +477,26 @@ func attack() -> void:
 	is_telegraphing = false
 	
 	var base_dir = look_direction
-	var dash_dir = base_dir.rotated(randf_range(-PI/6, PI/6) * (1.0 - precision)) # min/max 30'
+	
+	var jitter_max = PI/9 # 20 degrees for RANGED
+	if current_attack_style != AttackStyle.RANGED:
+		jitter_max = PI/12 # 15 degrees for TACKLE/MELEE
+	var dash_dir = base_dir.rotated(randf_range(-PI/12, PI/12) * (1.0 - precision))
 	attack_started.emit(self, target)
 	
 	match current_attack_style:
-		AttackStyle.MELEE_TACKLE, AttackStyle.MELEE_SWING:
+		AttackStyle.TACKLE, AttackStyle.MELEE:
 			var dash_duration = 0.25
-			velocity = dash_dir * ((attack_range * 1.3) / dash_duration)
+			velocity = dash_dir * ((attack_range * 1.8) / dash_duration)
 			is_dashing = true
 			if weapon_node: _trigger_weapon_action()
-			elif current_attack_style == AttackStyle.MELEE_TACKLE and body_hitbox:
+			elif current_attack_style == AttackStyle.TACKLE and body_hitbox:
 				_manual_hitbox_activate(body_hitbox, damage)
 			await get_tree().create_timer(dash_duration).timeout
 			is_dashing = false
 		AttackStyle.RANGED:
-			_fire_projectile(dash_dir)
+			if weapon_node: _trigger_weapon_action()
+			else: _fire_projectile(dash_dir)
 			await get_tree().create_timer(0.2).timeout
 	
 	is_recovering = true 

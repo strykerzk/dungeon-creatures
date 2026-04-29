@@ -10,7 +10,7 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Swing:visible")
+tracks/0/path = NodePath("AttackSprite:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -55,6 +55,18 @@ tracks/3/keys = {
 "update": 0,
 "values": [0.0]
 }
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Sprite:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_wfft3"]
 resource_name = "attack"
@@ -62,7 +74,7 @@ length = 0.25
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Swing:visible")
+tracks/0/path = NodePath("AttackSprite:visible")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -107,6 +119,18 @@ tracks/3/keys = {
 "update": 1,
 "values": [3.1415927, 0.0]
 }
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Sprite:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.25),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ch5i5"]
 _data = {
@@ -117,20 +141,26 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wfft3"]
 size = Vector2(14, 28)
 
-[node name="Sword" type="Node2D" unique_id=982423695 node_paths=PackedStringArray("hitbox", "swing_sprite", "animation_player", "sprite", "audio")]
+[node name="Sword" type="Node2D" unique_id=982423695 node_paths=PackedStringArray("hitbox", "visual_sprite", "attack_sprite", "animation_player", "sprite", "audio")]
 script = ExtResource("1_cq01h")
 hitbox = NodePath("Hitbox")
-swing_sprite = NodePath("Swing")
+visual_sprite = NodePath("VisualSprite")
+attack_sprite = NodePath("AttackSprite")
 animation_player = NodePath("AnimationPlayer")
 sprite = NodePath("Sprite")
 audio = NodePath("Audio")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=1606063971]
+visible = false
 position = Vector2(0, -8)
 texture = ExtResource("2_wfft3")
 flip_h = true
 
-[node name="Swing" type="Sprite2D" parent="." unique_id=1476148435]
+[node name="VisualSprite" type="Sprite2D" parent="." unique_id=232553000]
+position = Vector2(0, -5)
+texture = ExtResource("2_wfft3")
+
+[node name="AttackSprite" type="Sprite2D" parent="." unique_id=1476148435]
 visible = false
 texture = ExtResource("3_wfft3")
 flip_h = true
