@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://dcdx5gj3yb1wi"]
+
+[node name="Dungeon" type="Node2D" unique_id=234930827]
+
+[node name="Button" type="Button" parent="." unique_id=759349143]
+offset_left = 681.0
+offset_top = 493.0
+offset_right = 1166.0
+offset_bottom = 589.0
+theme_override_font_sizes/font_size = 64
+text = "END DUNGEON"

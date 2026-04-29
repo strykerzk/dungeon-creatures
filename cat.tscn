@@ -271,7 +271,7 @@ advance_mode = 2
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_giwe8")]
 graph_offset = Vector2(-64, -8)
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "skill_container") groups=["creature"]]
 collision_layer = 4
 collision_mask = 3
 motion_mode = 1
@@ -288,6 +288,7 @@ body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
 los_ray = NodePath("LOSRay")
+skill_container = NodePath("SkillContainer")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1760680003]
 scale = Vector2(2, 2)
@@ -315,6 +316,8 @@ script = ExtResource("4_w46py")
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_w46py")
 debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
+
+[node name="SkillContainer" type="Node2D" parent="." unique_id=265705832]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=336441858]
 libraries/ = SubResource("AnimationLibrary_2hdoq")
@@ -355,40 +358,6 @@ position = Vector2(-3.985, 0)
 
 [node name="BackMarker" type="Marker2D" parent="Markers" unique_id=1259181469]
 position = Vector2(5, 4)
-
-[node name="DamageNumber" type="Label" parent="." unique_id=2123951624]
-visible = false
-offset_left = -16.0
-offset_top = 13.0
-offset_right = 17.0
-offset_bottom = 30.0
-theme_override_colors/font_color = Color(0.839331, 0, 0.13222402, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 12
-text = "100"
-horizontal_alignment = 1
-
-[node name="DodgeLabel" type="Label" parent="." unique_id=937751828]
-visible = false
-offset_left = -16.0
-offset_top = -26.0
-offset_right = 16.0
-offset_bottom = -14.0
-theme_override_font_sizes/font_size = 8
-text = "Dodged!"
-horizontal_alignment = 1
-
-[node name="TargetSwitch" type="Label" parent="." unique_id=1183962954]
-visible = false
-offset_left = -19.0
-offset_top = -48.0
-offset_right = 19.0
-offset_bottom = -29.0
-theme_override_constants/line_spacing = -5
-theme_override_font_sizes/font_size = 8
-text = "Switching
-Target"
-horizontal_alignment = 1
 
 [node name="Button" type="Button" parent="." unique_id=1912629050]
 offset_left = -13.0

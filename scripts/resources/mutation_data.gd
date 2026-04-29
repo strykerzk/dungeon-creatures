@@ -1,7 +1,8 @@
 class_name MutationData extends Resource
 
 @export var mutation_name: String
-@export_enum("major", "minor") var mutation_type: String = "major"
+@export_enum("major", "minor") var type: String = "major"
+@export var provided_skill: PackedScene
 
 # Major Mutations have all mults plus choice of additive mods
 @export_group("Major Mutations")

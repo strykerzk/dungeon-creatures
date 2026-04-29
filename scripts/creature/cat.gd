@@ -10,13 +10,13 @@ func _physics_process(delta: float) -> void:
 	# Animations
 	animation_tree.set("parameters/Sprite Flip/blend_position", look_direction.x)
 
-func take_damage(amount: float, _attacker: Creature = null) -> void:
-	super(amount)
-	
-	$DamageNumber.text = str(int(amount))
-	$DamageNumber.show()
-	await get_tree().create_timer(0.3).timeout
-	$DamageNumber.hide()
+#func take_damage(amount: float, _attacker: Creature = null) -> void:
+#	super(amount)
+#	
+#	$DamageNumber.text = str(int(amount))
+#	$DamageNumber.show()
+#	await get_tree().create_timer(0.3).timeout
+#	$DamageNumber.hide()
 
 #func search_for_target(attacker: Creature = null) -> void:
 #	super(attacker)
