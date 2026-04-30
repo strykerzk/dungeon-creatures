@@ -122,7 +122,6 @@ func setup_physics_layers() -> void:
 	set_collision_layer_value(1, false)
 	set_collision_layer_value(3, true)
 	set_collision_mask_value(1, true)
-	set_collision_mask_value(2, true)
 
 func set_mutation(data: MutationData) -> void:
 	if not data: return

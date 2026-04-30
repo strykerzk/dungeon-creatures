@@ -273,7 +273,6 @@ graph_offset = Vector2(-64, -8)
 
 [node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "skill_container") groups=["creature"]]
 collision_layer = 4
-collision_mask = 3
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_52fj1")

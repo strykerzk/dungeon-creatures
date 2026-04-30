@@ -92,7 +92,6 @@ height = 8.0
 
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("sprite", "animation_tree")]
 collision_layer = 2
-collision_mask = 5
 script = ExtResource("1_onrkg")
 sprite = NodePath("AnimatedSprite2D")
 animation_tree = NodePath("AnimationTree")
@@ -109,6 +108,3 @@ shape = SubResource("CapsuleShape2D_onrkg")
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=745080250]
 tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1927130694]
-zoom = Vector2(6, 6)
