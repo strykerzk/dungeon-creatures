@@ -59,7 +59,7 @@ var skill_directory = {
 }
 
 # The action the creature is currently trying to get in range for
-var current_intended_action: Object = null 
+var current_intended_action: Dictionary = {}
 
 # --- INTERNAL STATE ---
 var look_direction: Vector2 = Vector2.RIGHT
@@ -336,7 +336,7 @@ func dodge(attacker_node: Creature) -> void:
 	is_dashing = true
 	var attack_dir = attacker_node.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
-	var dodge_distance = (140.0 + (speed * 0.2) + (40.0 * dexterity)) / max(0.5, size)
+	var dodge_distance = (150.0 + (speed * 0.2) + (20.0 * dexterity)) / max(0.5, size)
 	velocity = dodge_dir * (dodge_distance / 0.2)
 	await get_tree().create_timer(0.2).timeout
 	is_dashing = false
@@ -457,17 +457,17 @@ func attack() -> void:
 		await current_intended_action.action.execute(target, attack_dir)
 	
 	is_recovering = true 
-	await get_tree().create_timer(0.15).timeout
+	await get_tree().create_timer(0.3).timeout
 	is_recovering = false
 	is_attacking = false 
-	current_intended_action = null # Clear intent after attack
+	current_intended_action = {} # Clear intent after attack
 	_on_attack_cooldown_finished()
 
 func _execute_weapon_attack(dir: Vector2) -> void:
 	match current_attack_style:
 		AttackStyle.TACKLE, AttackStyle.MELEE:
 			var dash_dur = 0.25
-			velocity = dir * ((attack_range * 1.8) / dash_dur)
+			velocity = dir * ((attack_range * 2.0) / dash_dur)
 			is_dashing = true
 			if weapon_node: weapon_node.activate(damage, self)
 			elif body_hitbox: _manual_hitbox_activate(body_hitbox, damage)
