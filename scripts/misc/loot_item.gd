@@ -16,8 +16,9 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	
-	if item_data and item_data.sprite_texture:
-		sprite.texture = item_data.sprite_texture
+	# Optional: If your EquipmentData has a texture variable, assign it automatically
+	# if item_data and item_data.texture:
+	# 	sprite.texture = item_data.texture
 
 func _process(delta: float) -> void:
 	# Simple hovering animation (Sine wave)
@@ -37,8 +38,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			player_in_range.try_pickup_item(item_data, self)
 
 func _on_body_entered(body: Node2D) -> void:
-	# Replace "Player" with whatever your class_name is, or check collision layers
-	if body.name == "Player" or body is CharacterBody2D:
+	# FIX: Only react visually and mechanically if the body is OUR local player
+	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
 		player_in_range = body
 		# Visual feedback: Pop scale up slightly when player is near
 		create_tween().tween_property(sprite, "scale", Vector2(1.2, 1.2), 0.1)

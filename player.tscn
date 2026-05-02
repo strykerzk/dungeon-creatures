@@ -90,6 +90,17 @@ height = 8.0
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_i3pqv"]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_onrkg"]
+properties/0/path = NodePath(".:velocity")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:current_state")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:global_position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("sprite", "animation_tree")]
 collision_layer = 2
 script = ExtResource("1_onrkg")
@@ -109,4 +120,5 @@ shape = SubResource("CapsuleShape2D_onrkg")
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=745080250]
 tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1981686629]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1414846589]
+replication_config = SubResource("SceneReplicationConfig_onrkg")
