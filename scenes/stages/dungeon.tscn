@@ -1,11 +1,32 @@
 [gd_scene format=3 uid="uid://dcdx5gj3yb1wi"]
 
+[ext_resource type="Script" uid="uid://du8g3jcomwqv2" path="res://scripts/dungeon/dungeon_instantiator.gd" id="1_y2qtf"]
+[ext_resource type="PackedScene" uid="uid://cw3hoc2x1i4fx" path="res://scenes/dungeon_rooms/center_room.tscn" id="2_fuvjp"]
+[ext_resource type="PackedScene" uid="uid://clkjfyvvptyiu" path="res://scenes/dungeon_rooms/inner_room.tscn" id="3_cvwnr"]
+[ext_resource type="PackedScene" uid="uid://x7b1xg1v2c2h" path="res://scenes/dungeon_rooms/outer_room.tscn" id="4_3dlxy"]
+[ext_resource type="PackedScene" uid="uid://bngysj73nr5nf" path="res://player.tscn" id="5_1o2ik"]
+
 [node name="Dungeon" type="Node2D" unique_id=234930827]
 
+[node name="DungeonBuilder" type="Node2D" parent="." unique_id=38123396]
+script = ExtResource("1_y2qtf")
+center_room_scene = ExtResource("2_fuvjp")
+inner_room_scenes = Array[PackedScene]([ExtResource("3_cvwnr")])
+outer_room_scenes = Array[PackedScene]([ExtResource("4_3dlxy")])
+room_width = 960.0
+room_height = 540.0
+
+[node name="LivingCamera" type="Camera2D" parent="." unique_id=1166032401]
+
+[node name="Player" parent="." unique_id=2000300669 instance=ExtResource("5_1o2ik")]
+position = Vector2(-71, 53)
+scale = Vector2(2, 2)
+
 [node name="Button" type="Button" parent="." unique_id=759349143]
-offset_left = 681.0
-offset_top = 493.0
-offset_right = 1166.0
-offset_bottom = 589.0
-theme_override_font_sizes/font_size = 64
+visible = false
+offset_left = 96.0
+offset_top = 45.0
+offset_right = 224.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 16
 text = "END DUNGEON"

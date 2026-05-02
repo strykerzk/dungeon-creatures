@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ijnoqkgl8bup"]
+
+[ext_resource type="Script" uid="uid://cfrmrfkmiilqe" path="res://scripts/dungeon/dungeon_generator.gd" id="1_0s3ut"]
+
+[node name="TestDungeon" type="Node2D" unique_id=1139708099]
+script = ExtResource("1_0s3ut")

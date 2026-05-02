@@ -348,6 +348,7 @@ offset_right = 13.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 4
 text = "SWORD"
+metadata/_edit_use_anchors_ = true
 
 [node name="Button2" type="Button" parent="." unique_id=24867526]
 offset_left = -13.0
@@ -356,6 +357,7 @@ offset_right = 13.0
 offset_bottom = 59.0
 theme_override_font_sizes/font_size = 4
 text = "MUTATE"
+metadata/_edit_use_anchors_ = true
 
 [node name="Button3" type="Button" parent="." unique_id=1607619499]
 offset_left = 15.0
@@ -364,6 +366,7 @@ offset_right = 41.0
 offset_bottom = 42.0
 theme_override_font_sizes/font_size = 4
 text = "GUN"
+metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
