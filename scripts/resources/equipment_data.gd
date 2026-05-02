@@ -3,6 +3,7 @@ class_name EquipmentData extends Resource
 @export var item_name: String = "Generic Item"
 @export_enum("head", "body", "weapon", "boots", "back") var slot: String = "body"
 @export var visual_scene: PackedScene # The .tscn for the sword/hat/etc.
+@export var sprite_texture: Texture
 @export var provided_skill: PackedScene
 
 @export_group("Primary Bonuses")

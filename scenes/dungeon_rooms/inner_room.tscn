@@ -226,3 +226,17 @@ collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraTrigger" unique_id=1542945186]
 shape = SubResource("RectangleShape2D_4avbj")
+
+[node name="LootSpawns" type="Node2D" parent="." unique_id=20840225]
+
+[node name="Marker2D" type="Marker2D" parent="LootSpawns" unique_id=291164574]
+position = Vector2(-396, 199)
+
+[node name="Marker2D2" type="Marker2D" parent="LootSpawns" unique_id=1906494439]
+position = Vector2(243, 181)
+
+[node name="Marker2D3" type="Marker2D" parent="LootSpawns" unique_id=1371673840]
+position = Vector2(-384, -187)
+
+[node name="Marker2D4" type="Marker2D" parent="LootSpawns" unique_id=420828188]
+position = Vector2(379, -187)

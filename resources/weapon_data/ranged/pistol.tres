@@ -2,12 +2,14 @@
 
 [ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_uouuc"]
 [ext_resource type="PackedScene" uid="uid://cyot1hty3c6mv" path="res://scenes/equipment/weapons/ranged/pistol.tscn" id="2_flcvd"]
+[ext_resource type="Texture2D" uid="uid://dt8xsqa1ykewp" path="res://art/weapons/ranged/pistol.png" id="2_wefls"]
 
 [resource]
 script = ExtResource("1_uouuc")
 item_name = "Pistol"
 slot = "weapon"
 visual_scene = ExtResource("2_flcvd")
+sprite_texture = ExtResource("2_wefls")
 aggression_bonus = -0.2
 dexterity_bonus = 0.2
 precision_bonus = 0.2

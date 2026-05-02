@@ -108,3 +108,5 @@ shape = SubResource("CapsuleShape2D_onrkg")
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=745080250]
 tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1981686629]

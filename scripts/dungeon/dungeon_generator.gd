@@ -26,9 +26,10 @@ func generate_dungeon(size: int = 5) -> Array:
 	center_pos = Vector2i(grid_size / 2, grid_size / 2)
 	
 	_initialize_grid()
+	_open_center_room() # <-- NEW: Force center to be a 4-way hub
 	_carve_doors()
 	_ensure_full_connectivity()
-	_assign_event_rooms() # New Step!
+	_assign_event_rooms() 
 	
 	return grid
 
@@ -42,6 +43,18 @@ func _initialize_grid() -> void:
 			room.ring_level = max(abs(x - center_pos.x), abs(y - center_pos.y))
 			column.append(room)
 		grid.append(column)
+
+## NEW: Forces all 4 doors open on the center room bidirectionally
+func _open_center_room() -> void:
+	var center_room = grid[center_pos.x][center_pos.y]
+	var directions = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
+	
+	for dir in directions:
+		var n_pos = center_room.grid_pos + dir
+		# Check bounds (though center room in odd grids will always have neighbors)
+		if n_pos.x >= 0 and n_pos.x < grid_size and n_pos.y >= 0 and n_pos.y < grid_size:
+			var neighbor = grid[n_pos.x][n_pos.y]
+			_connect_rooms(center_room, neighbor, dir)
 
 func _carve_doors() -> void:
 	var directions = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
