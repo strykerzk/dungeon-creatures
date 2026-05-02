@@ -4,12 +4,10 @@ class_name DungeonGenerator
 class RoomBlueprint:
 	var grid_pos: Vector2i
 	var ring_level: int = 0
-	var template_type: String = "Normal" # Can be changed to "Trap", "Loot", etc.
+	var template_type: String = "Normal" # "Normal", "MajorAltar", "MinorAltar", "Coop"
 	var doors: Dictionary = {
-		Vector2i.UP: false,
-		Vector2i.DOWN: false,
-		Vector2i.RIGHT: false,
-		Vector2i.LEFT: false
+		Vector2i.UP: false, Vector2i.DOWN: false, 
+		Vector2i.RIGHT: false, Vector2i.LEFT: false
 	}
 	
 	func get_door_count() -> int:
@@ -19,23 +17,19 @@ class RoomBlueprint:
 		return count
 
 var grid_size: int = 5
-var grid: Array = [] # 2D Array of RoomBlueprints
+var grid: Array = []
 var center_pos: Vector2i
-
-func _ready() -> void:
-	generate_dungeon(9)
 
 func generate_dungeon(size: int = 5) -> Array:
 	grid_size = size
-	if grid_size % 2 == 0: grid_size += 1 # Force odd number
-	
+	if grid_size % 2 == 0: grid_size += 1 
 	center_pos = Vector2i(grid_size / 2, grid_size / 2)
 	
 	_initialize_grid()
 	_carve_doors()
 	_ensure_full_connectivity()
+	_assign_event_rooms() # New Step!
 	
-	_debug_print_grid()
 	return grid
 
 func _initialize_grid() -> void:
@@ -45,95 +39,86 @@ func _initialize_grid() -> void:
 		for y in range(grid_size):
 			var room = RoomBlueprint.new()
 			room.grid_pos = Vector2i(x, y)
-			
-			# Chebyshev distance: max(abs(x1-x2), abs(y1-y2))
-			# Center is 0, adjacent is 1, corners are 2, etc.
-			var dist_x = abs(x - center_pos.x)
-			var dist_y = abs(y - center_pos.y)
-			room.ring_level = max(dist_x, dist_y)
-			
+			room.ring_level = max(abs(x - center_pos.x), abs(y - center_pos.y))
 			column.append(room)
 		grid.append(column)
 
 func _carve_doors() -> void:
 	var directions = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
-	
 	for x in range(grid_size):
 		for y in range(grid_size):
 			var room: RoomBlueprint = grid[x][y]
-			
-			# Shuffle directions to make the connections random
 			var shuffled_dirs = directions.duplicate()
 			shuffled_dirs.shuffle()
 			
 			for dir in shuffled_dirs:
 				var neighbor_pos = room.grid_pos + dir
-				
-				# Check bounds
 				if neighbor_pos.x >= 0 and neighbor_pos.x < grid_size and neighbor_pos.y >= 0 and neighbor_pos.y < grid_size:
 					var neighbor: RoomBlueprint = grid[neighbor_pos.x][neighbor_pos.y]
-					
-					# Connect if we have less than 2 doors, OR a 40% chance for extra random webbing
-					if room.get_door_count() < 2 or randf() < 0.3:
+					if room.get_door_count() < 2 or randf() < 0.4:
 						_connect_rooms(room, neighbor, dir)
 
-# Flood fill to ensure there are no isolated "islands"
 func _ensure_full_connectivity() -> void:
+	# ... (Keep existing flood fill logic exactly as it was) ...
 	var visited = []
 	var queue = [grid[center_pos.x][center_pos.y]]
-	
-	# Standard Breadth-First Search
 	while queue.size() > 0:
 		var current: RoomBlueprint = queue.pop_front()
 		if current in visited: continue
 		visited.append(current)
-		
-		# Add connected neighbors to queue
 		for dir in current.doors:
 			if current.doors[dir]:
 				queue.append(grid[current.grid_pos.x + dir.x][current.grid_pos.y + dir.y])
 				
-	# If we didn't visit every room, we have an island. Fix it.
 	var expected_total = grid_size * grid_size
 	if visited.size() < expected_total:
 		for x in range(grid_size):
 			for y in range(grid_size):
 				var room = grid[x][y]
 				if not room in visited:
-					# Find an adjacent room that IS in the visited list and smash a door open
 					for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
 						var n_pos = room.grid_pos + dir
 						if n_pos.x >= 0 and n_pos.x < grid_size and n_pos.y >= 0 and n_pos.y < grid_size:
 							var neighbor = grid[n_pos.x][n_pos.y]
 							if neighbor in visited:
 								_connect_rooms(room, neighbor, dir)
-								# Re-run check just to be safe
 								_ensure_full_connectivity()
 								return
 
 func _connect_rooms(room_a: RoomBlueprint, room_b: RoomBlueprint, dir_from_a: Vector2i) -> void:
 	room_a.doors[dir_from_a] = true
-	room_b.doors[-dir_from_a] = true # The opposite direction
+	room_b.doors[-dir_from_a] = true
 
-## Prints a visual representation of the dungeon to the console
-func _debug_print_grid() -> void:
-	print("--- DUNGEON BLUEPRINT ---")
-	for y in range(grid_size):
-		var row_str = ""
-		var bottom_doors = ""
-		for x in range(grid_size):
-			var room = grid[x][y]
-			# Determine Room Type Char (C = Center, 1 = Ring1, etc)
-			var char = "C" if room.ring_level == 0 else str(room.ring_level)
-			
-			# Right Door
-			var right = "-" if room.doors[Vector2i.RIGHT] else " "
-			row_str += "[" + char + "]" + right
-			
-			# Bottom Door
-			var bottom = "|   " if room.doors[Vector2i.DOWN] else "    "
-			bottom_doors += bottom
-			
-		print(row_str)
-		print(bottom_doors)
-	print("-------------------------")
+## NEW: Modifies the blueprint templates based on StageManager's event roll
+func _assign_event_rooms() -> void:
+	# Skip if StageManager isn't available
+	if typeof(StageManager) == TYPE_NIL: return 
+	
+	# Get all rooms in the outermost ring
+	var outer_rooms = []
+	var max_ring = (grid_size / 2)
+	for x in range(grid_size):
+		for y in range(grid_size):
+			if grid[x][y].ring_level == max_ring:
+				outer_rooms.append(grid[x][y])
+				
+	# If we somehow don't have outer rooms, fallback
+	if outer_rooms.is_empty(): return 
+	
+	match StageManager.current_dungeon_event:
+		StageManager.DungeonEvent.MAJOR_ALTARS:
+			# Find the 4 literal corners (x=0,y=0), (x=4,y=0), etc.
+			for room in outer_rooms:
+				if (room.grid_pos.x == 0 or room.grid_pos.x == grid_size - 1) and \
+				   (room.grid_pos.y == 0 or room.grid_pos.y == grid_size - 1):
+					room.template_type = "MajorAltar"
+					
+		StageManager.DungeonEvent.MINOR_MIX:
+			# Pick 3 random outer rooms
+			outer_rooms.shuffle()
+			for i in range(min(3, outer_rooms.size())):
+				outer_rooms[i].template_type = "MinorAltar"
+				
+		StageManager.DungeonEvent.MAJOR_COOP:
+			# Pick 1 random outer room
+			outer_rooms.pick_random().template_type = "CoopRoom"

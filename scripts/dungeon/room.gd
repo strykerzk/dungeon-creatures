@@ -16,13 +16,11 @@ extends Node2D
 signal player_entered_room(room_center_pos: Vector2)
 
 func _ready() -> void:
-	# Connect the camera tripwire
 	if camera_trigger:
 		camera_trigger.body_entered.connect(_on_camera_trigger_body_entered)
 
-## Called by the Instantiator right after the room is spawned
+# Called by the Instantiator right after room is spawned
 func setup(blueprint: DungeonGenerator.RoomBlueprint) -> void:
-	# If the blueprint says the door is open, delete the blocker!
 	if !door_blockers: return
 	
 	if blueprint.doors[Vector2i.UP] and north_blocker: 
@@ -37,7 +35,6 @@ func setup(blueprint: DungeonGenerator.RoomBlueprint) -> void:
 	if blueprint.doors[Vector2i.LEFT] and west_blocker: 
 		west_blocker.queue_free()
 
-## The Tripwire for the "Living Camera"
 func _on_camera_trigger_body_entered(body: Node2D) -> void:
 	# Replace "Player" with whatever your class_name is, or check collision layers
 	if body.name == "Player" or body is CharacterBody2D: 

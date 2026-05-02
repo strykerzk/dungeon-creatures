@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://clkjfyvvptyiu" path="res://scenes/dungeon_rooms/inner_room.tscn" id="3_cvwnr"]
 [ext_resource type="PackedScene" uid="uid://x7b1xg1v2c2h" path="res://scenes/dungeon_rooms/outer_room.tscn" id="4_3dlxy"]
 [ext_resource type="PackedScene" uid="uid://bngysj73nr5nf" path="res://player.tscn" id="5_1o2ik"]
+[ext_resource type="PackedScene" uid="uid://cq1qudu6yitb5" path="res://scenes/dungeon_rooms/altar_room.tscn" id="5_cvwnr"]
 
 [node name="Dungeon" type="Node2D" unique_id=234930827]
 
@@ -13,8 +14,7 @@ script = ExtResource("1_y2qtf")
 center_room_scene = ExtResource("2_fuvjp")
 inner_room_scenes = Array[PackedScene]([ExtResource("3_cvwnr")])
 outer_room_scenes = Array[PackedScene]([ExtResource("4_3dlxy")])
-room_width = 960.0
-room_height = 540.0
+major_altar_scenes = Array[PackedScene]([ExtResource("5_cvwnr")])
 
 [node name="LivingCamera" type="Camera2D" parent="." unique_id=1166032401]
 
