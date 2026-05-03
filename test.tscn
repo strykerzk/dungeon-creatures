@@ -1,7 +1,7 @@
 [gd_scene format=4 uid="uid://btap8s0pk3v85"]
 
 [ext_resource type="Texture2D" uid="uid://d2quf7ay52mjd" path="res://art/tiliesets/Sprite-0001-Sheet.png" id="1_8uh7m"]
-[ext_resource type="PackedScene" uid="uid://b7h2lf0hml4cd" path="res://cat.tscn" id="1_37kl0"]
+[ext_resource type="PackedScene" uid="uid://b7h2lf0hml4cd" path="res://scenes/creatures/cat.tscn" id="1_37kl0"]
 [ext_resource type="PackedScene" uid="uid://b0j644l7vr1qc" path="res://scenes/creatures/duck.tscn" id="3_6uqi0"]
 [ext_resource type="PackedScene" uid="uid://bngysj73nr5nf" path="res://player.tscn" id="4_ppyta"]
 

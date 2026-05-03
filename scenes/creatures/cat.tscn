@@ -271,6 +271,14 @@ advance_mode = 2
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_giwe8")]
 graph_offset = Vector2(-64, -8)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fkb2k"]
+properties/0/path = NodePath(".:look_direction")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:global_position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "skill_container") groups=["creature"]]
 collision_layer = 4
 motion_mode = 1
@@ -358,30 +366,5 @@ position = Vector2(-3.985, 0)
 [node name="BackMarker" type="Marker2D" parent="Markers" unique_id=1259181469]
 position = Vector2(5, 4)
 
-[node name="Button" type="Button" parent="." unique_id=1912629050]
-offset_left = -13.0
-offset_top = 27.0
-offset_right = 13.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 4
-text = "SWORD"
-
-[node name="Button2" type="Button" parent="." unique_id=1398277591]
-offset_left = -13.0
-offset_top = 44.0
-offset_right = 13.0
-offset_bottom = 59.0
-theme_override_font_sizes/font_size = 4
-text = "MUTATE"
-
-[node name="Button3" type="Button" parent="." unique_id=174729450]
-offset_left = 15.0
-offset_top = 27.0
-offset_right = 41.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 4
-text = "GUN"
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
-[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1227116962]
+replication_config = SubResource("SceneReplicationConfig_fkb2k")

@@ -118,6 +118,35 @@ func _initialize_base_stats() -> void:
 	if override_precision != 0: precision = override_precision
 	current_health = max_health
 
+func _physics_process(delta: float) -> void:
+	# ONLY for Host
+	if not multiplayer.is_server(): return
+	
+	if not is_instance_valid(target):
+		target = null
+		if not is_attacking: search_for_target()
+		return
+	
+	if not is_attacking:
+		look_direction = global_position.direction_to(target.global_position)
+	
+	if los_ray:
+		los_ray.target_position = los_ray.to_local(target.global_position)
+
+	if is_attacking:
+		if not is_dashing:
+			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+		move_and_slide()
+		return
+		
+	_update_behavior_timer(delta)
+	movement(delta)
+
+func _process(delta: float) -> void:
+	if not is_attacking:
+		if weapon_node and weapon_node.has_method("look_at_direction"):
+			weapon_node.look_at_direction(look_direction)
+
 func setup_physics_layers() -> void:
 	set_collision_layer_value(1, false)
 	set_collision_layer_value(3, true)
@@ -249,29 +278,6 @@ func _update_attack_range_by_style() -> void:
 		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 200.0 * size
 		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 500.0
 
-func _physics_process(delta: float) -> void:
-	if not is_instance_valid(target):
-		target = null
-		if not is_attacking: search_for_target()
-		return
-	
-	if not is_attacking:
-		look_direction = global_position.direction_to(target.global_position)
-		if weapon_node and weapon_node.has_method("look_at_direction"):
-			weapon_node.look_at_direction(look_direction)
-		
-	if los_ray:
-		los_ray.target_position = los_ray.to_local(target.global_position)
-
-	if is_attacking:
-		if not is_dashing:
-			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
-		move_and_slide()
-		return
-		
-	_update_behavior_timer(delta)
-	movement(delta)
-
 func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	if is_invulnerable or current_health <= 0: return
 	current_health -= amount
@@ -398,8 +404,10 @@ func movement(delta: float) -> void:
 	
 	# 1. Navigation: If too far for the INTENDED action or no LOS
 	if distance_to_target > target_range + 20.0 or not has_los:
-		var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
-		velocity = velocity.lerp(move_dir * (speed * speed_mult), acceleration * delta)
+		# Add a small safety check so we don't jitter when arriving
+		if not nav_agent.is_navigation_finished():
+			var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
+			velocity = velocity.lerp(move_dir * (speed * speed_mult), acceleration * delta)
 	else:
 		# 2. Execution: If in range for the intended action
 		if can_attack:
@@ -415,9 +423,17 @@ func movement(delta: float) -> void:
 				if current_attack_style == AttackStyle.RANGED: r_speed = 0.9 if not can_attack else 0.1
 				
 				if get_slide_collision_count() > 0:
-					velocity = velocity.lerp(-dir_to_target.slide(get_last_slide_collision().get_normal()) * (speed * r_speed), acceleration * delta)
+					# FIX: "Corner Panic". If we are sliding on a wall but barely moving physically, we are trapped!
+					if get_real_velocity().length() < 15.0:
+						# Convert retreat into a hard sideways squeeze to escape the corner
+						var escape_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
+						velocity = velocity.lerp(escape_dir * (speed * r_speed), acceleration * delta)
+					else:
+						# Normal wall sliding
+						velocity = velocity.lerp(-dir_to_target.slide(get_last_slide_collision().get_normal()) * (speed * r_speed), acceleration * delta)
 				else:
 					velocity = velocity.lerp(-dir_to_target * (speed * r_speed), acceleration * delta)
+					
 			elif is_circling:
 				var side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
 				var range_correction = (distance_to_target - target_range) * 0.05
@@ -425,11 +441,14 @@ func movement(delta: float) -> void:
 				
 				if get_slide_collision_count() > 0:
 					var normal = get_last_slide_collision().get_normal()
-					if velocity.normalized().dot(normal) < -0.6: circle_direction *= -1
+					# FIX: Be slightly more sensitive to wall bumps when circling so we bounce off smoothly
+					if velocity.normalized().dot(normal) < -0.2: 
+						circle_direction *= -1
 				
 				velocity = velocity.lerp(circle_vector * (speed * 0.6 * speed_mult), acceleration * delta)
 			else:
 				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+				
 	move_and_slide()
 
 ## Refactored to execute either a skill or a standard weapon attack
@@ -468,14 +487,21 @@ func _execute_weapon_attack(dir: Vector2) -> void:
 			var dash_dur = 0.25
 			velocity = dir * ((attack_range * 2.0) / dash_dur)
 			is_dashing = true
-			if weapon_node: weapon_node.activate(damage, self)
-			elif body_hitbox: _manual_hitbox_activate(body_hitbox, damage)
+			rpc("rpc_play_weapon_effects", damage, dir)
 			await get_tree().create_timer(dash_dur).timeout
 			is_dashing = false
 		AttackStyle.RANGED:
-			if weapon_node: weapon_node.activate(damage, self)
-			else: _fire_projectile(dir)
+			rpc("rpc_play_weapon_effects", damage, dir)
 			await get_tree().create_timer(0.2).timeout
+
+@rpc("authority", "call_local", "reliable")
+func rpc_play_weapon_effects(dmg: float, _dir: Vector2) -> void:
+	if weapon_node: 
+		weapon_node.activate(dmg, self)
+	elif current_attack_style == AttackStyle.RANGED:
+		_fire_projectile(_dir)
+	elif body_hitbox:
+		_manual_hitbox_activate(body_hitbox, dmg)
 
 func _manual_hitbox_activate(hb: Area2D, dmg: float) -> void:
 	if hb is Hitbox:

@@ -271,6 +271,14 @@ advance_mode = 2
 states/Start/position = Vector2(240, 100)
 transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_rhggd")]
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6a5ah"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:look_direction")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
 collision_layer = 4
 script = ExtResource("1_p7nrc")
@@ -316,7 +324,6 @@ anim_player = NodePath("../AnimationPlayer")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
 path_desired_distance = 5.0
 target_desired_distance = 100.0
-path_postprocessing = 1
 
 [node name="NavTimer" type="Timer" parent="." unique_id=421130563]
 wait_time = 0.1
@@ -341,33 +348,5 @@ position = Vector2(2, 9)
 [node name="BackMarker" type="Marker2D" parent="Marker" unique_id=616509319]
 position = Vector2(5, 0)
 
-[node name="Button" type="Button" parent="." unique_id=1611022800]
-offset_left = -13.0
-offset_top = 27.0
-offset_right = 13.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 4
-text = "SWORD"
-metadata/_edit_use_anchors_ = true
-
-[node name="Button2" type="Button" parent="." unique_id=24867526]
-offset_left = -13.0
-offset_top = 44.0
-offset_right = 13.0
-offset_bottom = 59.0
-theme_override_font_sizes/font_size = 4
-text = "MUTATE"
-metadata/_edit_use_anchors_ = true
-
-[node name="Button3" type="Button" parent="." unique_id=1607619499]
-offset_left = 15.0
-offset_top = 27.0
-offset_right = 41.0
-offset_bottom = 42.0
-theme_override_font_sizes/font_size = 4
-text = "GUN"
-metadata/_edit_use_anchors_ = true
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
-[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1315334455]
+replication_config = SubResource("SceneReplicationConfig_6a5ah")

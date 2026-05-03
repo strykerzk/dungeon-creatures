@@ -27,10 +27,10 @@ func activate(base_damage: float, p_attacker: Creature) -> void:
 	# Direction towards current target
 	var direction = Vector2.RIGHT
 	if attacker.target:
-		direction = attacker.global_position.direction_to(attacker.target.global_position)
+		direction = attacker.look_direction
 	
 	# Spawn in world space
-	get_tree().root.add_child(proj)
+	get_tree().current_scene.add_child(proj)
 	
 	if proj.has_method("launch"):
 		proj.launch(direction, base_damage, attacker, projectile_speed)

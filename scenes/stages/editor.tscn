@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://c7pw8aun7ugea"]
 
+[ext_resource type="Script" uid="uid://clpagxfdel4bk" path="res://scripts/core/editor.gd" id="1_f210w"]
+
 [node name="Editor" type="Control" unique_id=416042701]
 layout_mode = 3
 anchors_preset = 15
@@ -7,3 +9,58 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_f210w")
+
+[node name="StatusLabel" type="Label" parent="." unique_id=1023291322]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=327205899]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StashPanel" type="PanelContainer" parent="HBoxContainer" unique_id=1951070989]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/StashPanel" unique_id=1620208289]
+layout_mode = 2
+
+[node name="StashList" type="VBoxContainer" parent="HBoxContainer/StashPanel/ScrollContainer" unique_id=198379627]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="EquipPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1564014224]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="HeadSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=796143091]
+layout_mode = 2
+
+[node name="BodySlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=1956680574]
+layout_mode = 2
+
+[node name="WeaponSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=463153528]
+layout_mode = 2
+
+[node name="BootsSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=232582110]
+layout_mode = 2
+
+[node name="BackSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=809891215]
+layout_mode = 2
+
+[node name="ReadyButton" type="Button" parent="HBoxContainer/EquipPanel" unique_id=1332539762]
+layout_mode = 2
+text = "LOCK IN & READY"

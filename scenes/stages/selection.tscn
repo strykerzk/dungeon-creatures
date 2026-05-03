@@ -1,22 +1,36 @@
 [gd_scene format=3 uid="uid://qmfc1c3nw5po"]
 
-[node name="Selection" type="Node2D" unique_id=1770436859]
+[ext_resource type="Script" uid="uid://dr8vjx0h4f672" path="res://scripts/core/selection.gd" id="1_ylfnv"]
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=1930142628]
-offset_right = 960.0
-offset_bottom = 540.0
+[node name="Selection" type="Control" unique_id=454822603]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ylfnv")
 
-[node name="Button" type="Button" parent="." unique_id=1468418975]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=185542521]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 411.0
-offset_top = 235.5
-offset_right = 566.0
-offset_bottom = 288.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 32
-text = "CONFIRM"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=574288711]
+layout_mode = 2
+
+[node name="SpeciesDropdown" type="OptionButton" parent="VBoxContainer" unique_id=116300212]
+layout_mode = 2
+
+[node name="LockInButton" type="Button" parent="VBoxContainer" unique_id=2043255851]
+layout_mode = 2
+text = "LOCK IN"

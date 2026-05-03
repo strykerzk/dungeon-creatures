@@ -12,7 +12,7 @@ var current_round: int = 0
 var current_dungeon_event: DungeonEvent = DungeonEvent.NORMAL
 
 # --- TIMER & EXTRACTION LOGIC ---
-var dungeon_time_limit: int = 20
+var dungeon_time_limit: int = 30
 var current_time_left: float = 0.0
 var is_timer_active: bool = false
 var has_portal_opened: bool = false
