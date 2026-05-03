@@ -25,9 +25,7 @@ func activate(base_damage: float, p_attacker: Creature) -> void:
 	proj.global_position = muzzle.global_position if muzzle else global_position
 	
 	# Direction towards current target
-	var direction = Vector2.RIGHT
-	if attacker.target:
-		direction = attacker.look_direction
+	var direction = attacker.look_direction
 	
 	# Spawn in world space
 	get_tree().current_scene.add_child(proj)

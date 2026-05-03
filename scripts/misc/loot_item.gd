@@ -25,27 +25,15 @@ func _process(delta: float) -> void:
 	hover_time += delta * 3.0
 	sprite.position.y = base_y + sin(hover_time) * 4.0
 
-func _unhandled_input(event: InputEvent) -> void:
-	# Check if the player is standing over it and presses the 'interact' button
-	if player_in_range and event.is_action_pressed("interact"):
-		if not item_data:
-			push_error("[LootItem] No item_data assigned to this loot!")
-			return
-			
-		# The player's script handles the 0.5s delay and prevents spamming
-		# by checking their own state, so we don't need to lock input here!
-		if player_in_range.has_method("try_pickup_item"):
-			player_in_range.try_pickup_item(item_data, self)
-
 func _on_body_entered(body: Node2D) -> void:
 	# FIX: Only react visually and mechanically if the body is OUR local player
 	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
-		player_in_range = body
-		# Visual feedback: Pop scale up slightly when player is near
+		if body.has_method("register_interactable"):
+			body.register_interactable(self)
 		create_tween().tween_property(sprite, "scale", Vector2(1.2, 1.2), 0.1)
 
 func _on_body_exited(body: Node2D) -> void:
 	if body == player_in_range:
-		player_in_range = null
-		# Visual feedback: Return to normal scale
+		if body.has_method("unregister_interactable"):
+			body.unregister_interactable(self)
 		create_tween().tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.1)

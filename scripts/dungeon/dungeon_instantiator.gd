@@ -73,6 +73,7 @@ func build_dungeon() -> void:
 			
 			if scene_to_spawn:
 				var room_instance = scene_to_spawn.instantiate()
+				room_instance.name = "Room_" + str(x) + "_" + str(y)
 				add_child(room_instance)
 				spawned_rooms.append(room_instance)
 				
@@ -129,6 +130,7 @@ func _scatter_loot(rooms: Array[Node2D]) -> void:
 			
 			var loot_instance = loot_item_scene.instantiate() as LootItem
 			loot_instance.item_data = loot_pool.pick_random()
+			loot_instance.name = "LootItem"
 			chosen_marker.add_child(loot_instance)
 			loot_instance.position = Vector2.ZERO
 			

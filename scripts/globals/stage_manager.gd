@@ -120,9 +120,6 @@ func rpc_transition_to_editor() -> void:
 
 func change_stage(new_state: GameState) -> void:
 	current_state = new_state
-	if current_state == GameState.COMBAT:
-		current_round += 1
-		print("[StageManager] Starting Round ", current_round)
 	
 	# Coordinate with other Autoloads
 	_prepare_data_for_state(new_state)
@@ -138,6 +135,8 @@ func _prepare_data_for_state(state: GameState) -> void:
 	match state:
 		GameState.COMBAT:
 			print("Stage Manager: Loading data for Arena...")
+			if typeof(CreatureManager) != TYPE_NIL:
+				CreatureManager.update_round_limits(current_round)
 		GameState.DUNGEON:
 			# Advance the round counter when starting a new dungeon!
 			current_round += 1

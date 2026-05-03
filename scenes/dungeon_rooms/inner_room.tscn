@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://dgfpkcvncka73" path="res://scripts/dungeon/room.gd" id="1_yirtr"]
 [ext_resource type="Texture2D" uid="uid://dabijfcydblyl" path="res://art/dungeon_sprites/temp_kenney_wall.png" id="2_yirtr"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_avqlm"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4avbj"]
 texture = ExtResource("1_4avbj")
 0:0/0 = 0
 0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -109,9 +109,9 @@ texture = ExtResource("1_4avbj")
 [sub_resource type="TileSet" id="TileSet_yvldu"]
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 38
-sources/1 = SubResource("TileSetAtlasSource_avqlm")
+sources/1 = SubResource("TileSetAtlasSource_4avbj")
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_g174d"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yirtr"]
 texture = ExtResource("1_4avbj")
 0:5/0 = 0
 1:5/0 = 0
@@ -149,7 +149,7 @@ texture = ExtResource("1_4avbj")
 5:7/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_dx318"]
-sources/0 = SubResource("TileSetAtlasSource_g174d")
+sources/0 = SubResource("TileSetAtlasSource_yirtr")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yvldu"]
 size = Vector2(192, 32)

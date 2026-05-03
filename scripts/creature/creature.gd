@@ -122,7 +122,7 @@ func _physics_process(delta: float) -> void:
 	# ONLY for Host
 	if not multiplayer.is_server(): return
 	
-	if not is_instance_valid(target):
+	if not is_instance_valid(target) or target.is_queued_for_deletion() or target.current_health <= 0:
 		target = null
 		if not is_attacking: search_for_target()
 		return
@@ -279,6 +279,8 @@ func _update_attack_range_by_style() -> void:
 		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 500.0
 
 func take_damage(amount: float, attacker_ref: Creature = null) -> void:
+	if not multiplayer.is_server(): return
+	
 	if is_invulnerable or current_health <= 0: return
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
@@ -402,12 +404,20 @@ func movement(delta: float) -> void:
 	var dir_to_target = global_position.direction_to(target.global_position)
 	var has_los = has_line_of_sight()
 	
+	if nav_agent:
+		nav_agent.target_desired_distance = target_range if has_los else 10.0
+	
 	# 1. Navigation: If too far for the INTENDED action or no LOS
 	if distance_to_target > target_range + 20.0 or not has_los:
 		# Add a small safety check so we don't jitter when arriving
 		if not nav_agent.is_navigation_finished():
 			var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
 			velocity = velocity.lerp(move_dir * (speed * speed_mult), acceleration * delta)
+		else:
+			if not has_los:
+				velocity = velocity.lerp(dir_to_target * (speed * 0.5), acceleration * delta)
+			else:
+				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
 	else:
 		# 2. Execution: If in range for the intended action
 		if can_attack:
@@ -416,36 +426,43 @@ func movement(delta: float) -> void:
 		else:
 			# 3. Combat Spacing (Kiting/Circling)
 			var eff_retreat = retreat_threshold
-			if (current_health / max_health) < 0.3: eff_retreat = 0.0 if aggression > 0.5 else eff_retreat * 2.0
+			if (current_health / max_health) < 0.3: 
+				eff_retreat = 0.0 if aggression > 0.5 else eff_retreat * 2.0
 			
 			if distance_to_target < eff_retreat:
 				var r_speed = 0.3
 				if current_attack_style == AttackStyle.RANGED: r_speed = 0.9 if not can_attack else 0.1
 				
+				var target_vel = -dir_to_target * (speed * r_speed)
+				
 				if get_slide_collision_count() > 0:
-					# FIX: "Corner Panic". If we are sliding on a wall but barely moving physically, we are trapped!
+					var normal = get_last_slide_collision().get_normal()
+					# NEW: Explicitly repel from the wall! (Slide + Push Outward)
+					target_vel = target_vel.slide(normal) + (normal * speed * 0.5)
+					
 					if get_real_velocity().length() < 15.0:
-						# Convert retreat into a hard sideways squeeze to escape the corner
 						var escape_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
-						velocity = velocity.lerp(escape_dir * (speed * r_speed), acceleration * delta)
-					else:
-						# Normal wall sliding
-						velocity = velocity.lerp(-dir_to_target.slide(get_last_slide_collision().get_normal()) * (speed * r_speed), acceleration * delta)
-				else:
-					velocity = velocity.lerp(-dir_to_target * (speed * r_speed), acceleration * delta)
+						target_vel = escape_dir * (speed * r_speed)
+						
+				velocity = velocity.lerp(target_vel, acceleration * delta)
 					
 			elif is_circling:
 				var side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
 				var range_correction = (distance_to_target - target_range) * 0.05
 				var circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
 				
+				var target_vel = circle_vector * (speed * 0.6 * speed_mult)
+				
 				if get_slide_collision_count() > 0:
 					var normal = get_last_slide_collision().get_normal()
-					# FIX: Be slightly more sensitive to wall bumps when circling so we bounce off smoothly
+					# NEW: Explicitly repel from the wall! (Slide + Push Outward)
+					target_vel = target_vel.slide(normal) + (normal * speed * 0.5)
+					
+					# Reverse direction if we hit a wall relatively hard
 					if velocity.normalized().dot(normal) < -0.2: 
 						circle_direction *= -1
 				
-				velocity = velocity.lerp(circle_vector * (speed * 0.6 * speed_mult), acceleration * delta)
+				velocity = velocity.lerp(target_vel, acceleration * delta)
 			else:
 				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
 				

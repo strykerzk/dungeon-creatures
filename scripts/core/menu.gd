@@ -96,5 +96,4 @@ func _on_start_game_pressed() -> void:
 func rpc_start_game() -> void:
 	print("[Menu] Host started the game. Transitioning to Selection Phase...")
 	if typeof(StageManager) != TYPE_NIL:
-		# Temporarily bypassing SELECTION and COMBAT for testing the DUNGEON direct
-		StageManager.change_stage(StageManager.GameState.SELECTION)
+		StageManager.change_stage(StageManager.GameState.DUNGEON)

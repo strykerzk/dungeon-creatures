@@ -11,9 +11,17 @@ extends CharacterBody2D
 @export var roll_duration: float = 0.35
 @export var roll_iframe_percent: float = 0.7 
 
+@export_group("Interaction Settings")
+@export var required_channel_time: float = 1.5
+
 @export_category("Node References")
 @export var sprite: AnimatedSprite2D
 @export var animation_tree: AnimationTree
+
+@export_category("UI References")
+@onready var hotbar_container: HBoxContainer = $HUD/MarginContainer/HotbarContainer
+@onready var channel_bar: ProgressBar = $ChannelBar
+var selected_slot_index: int = 0
 
 enum State { NORMAL, ROLLING, LOOTING }
 var current_state: State = State.NORMAL
@@ -24,27 +32,33 @@ var last_facing_direction: Vector2 = Vector2.DOWN
 
 var inventory: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
 var pickup_history: Array[EquipmentData] = [] 
-
-# NEW: Temporarily stores what we are looking at while we ask the server for permission
 var pending_loot_data: EquipmentData = null 
+var active_interactable: Node2D = null
+var channel_time: float = 0.0
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(name.to_int())
+	
+	if not is_multiplayer_authority() and has_node("HUD"):
+		$HUD.hide()
+
+func _ready() -> void:
+	_update_hotbar_ui()
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
 		match current_state:
 			State.NORMAL:
-				_handle_move_state(delta)
+				_handle_normal_state(delta)
 			State.ROLLING:
 				_handle_roll_state(delta)
 			State.LOOTING:
-				velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-				move_and_slide()
+				_handle_looting_state(delta)
 	
 	handle_animations()
 
-func _handle_move_state(delta: float) -> void:
+func _handle_normal_state(delta: float) -> void:
+	# --- Movement ---
 	var input = Input.get_vector("left", "right", "up", "down")
 	
 	if input != Vector2.ZERO:
@@ -58,9 +72,24 @@ func _handle_move_state(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("dodge"):
 		_start_roll()
-		
+	
+	if Input.is_action_just_pressed("interact") and active_interactable:
+		_start_channeling()
+	
+	# --- HOTBAR ---
+	var total_limit = CreatureManager.inv_total_limit if typeof(CreatureManager) != TYPE_NIL else 3
+	
+	if Input.is_action_just_pressed("cycle_right"):
+		selected_slot_index = (selected_slot_index + 1) % total_limit
+		_update_hotbar_ui()
+	elif Input.is_action_just_pressed("cycle_left"):
+		selected_slot_index -= 1
+		if selected_slot_index < 0:
+			selected_slot_index = total_limit - 1
+		_update_hotbar_ui()
+	
 	if Input.is_action_just_pressed("discard"):
-		_discard_last_item()
+		_discard_selected_item()
 
 func handle_animations() -> void:
 	if velocity.x != 0:
@@ -97,9 +126,62 @@ func _end_roll() -> void:
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 
-func try_pickup_item(item_data: EquipmentData, loot_node: Node2D) -> void:
-	if current_state != State.NORMAL: return
+func register_interactable(node: Node2D) -> void:
+	active_interactable = node
+
+func unregister_interactable(node: Node2D) -> void:
+	if active_interactable == node:
+		active_interactable = null
+		if current_state == State.LOOTING:
+			_cancel_channeling()
+
+func _start_channeling() -> void:
+	# Pre-check for inventory limits so we don't waste time channeling
+	if active_interactable is LootItem:
+		if not _can_pickup(active_interactable.item_data):
+			return
+
+	current_state = State.LOOTING
+	channel_time = 0.0
 	
+	if channel_bar:
+		channel_bar.show()
+		channel_bar.value = 0.0
+
+func _handle_looting_state(delta: float) -> void:
+	# Add friction so we slide to a halt if moving when started
+	velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+	move_and_slide()
+	
+	# Cancel if button released or if the item was deleted by the server!
+	if not Input.is_action_pressed("interact") or not is_instance_valid(active_interactable):
+		_cancel_channeling()
+		return
+		
+	channel_time += delta
+	if channel_bar:
+		channel_bar.value = (channel_time / required_channel_time) * 100.0
+		
+	if channel_time >= required_channel_time:
+		_complete_channeling()
+
+func _cancel_channeling() -> void:
+	if current_state == State.LOOTING:
+		current_state = State.NORMAL
+		if channel_bar:
+			channel_bar.hide()
+
+func _complete_channeling() -> void:
+	if active_interactable is LootItem:
+		_request_loot_pickup(active_interactable)
+	elif active_interactable is EscapePortal:
+		extract_from_dungeon(false)
+		
+	current_state = State.NORMAL
+	if channel_bar:
+		channel_bar.hide()
+
+func _can_pickup(item_data: EquipmentData) -> bool:
 	var total_max = 5
 	var type_max = 1
 	if typeof(CreatureManager) != TYPE_NIL:
@@ -112,28 +194,22 @@ func try_pickup_item(item_data: EquipmentData, loot_node: Node2D) -> void:
 		
 	if current_total >= total_max:
 		_show_feedback("Bag Full!")
-		return
+		return false
 	if inventory[item_data.slot].size() >= type_max:
 		_show_feedback("Too many " + item_data.slot + " items!")
-		return
+		return false
+	return true
 
-	# Step 1: Start local inspection
-	current_state = State.LOOTING
-	pending_loot_data = item_data
-	_show_feedback("Inspecting...")
+func _request_loot_pickup(loot_node: Node2D) -> void:
+	pending_loot_data = loot_node.item_data
+	_show_feedback("Grabbing loot...")
+	rpc_id(1, "server_request_loot", loot_node.get_path())
 	
-	await get_tree().create_timer(0.5).timeout
-	
-	if current_state != State.LOOTING:
+	await get_tree().create_timer(1.0).timeout
+	if is_instance_valid(loot_node) and pending_loot_data == loot_node.item_data:
 		pending_loot_data = null
-		_show_feedback("Looting interrupted!")
-		return
-		
-	# Step 2: Ask the Host for permission!
-	# We send the exact node path of the loot so the server knows which one we want
-	var loot_path = loot_node.get_path()
-	rpc_id(1, "server_request_loot", loot_path)
-
+		_show_feedback("Loot request dropped. Target invalid.")
+	
 # Runs ONLY on the Host (Peer ID 1)
 @rpc("any_peer", "call_local", "reliable")
 func server_request_loot(loot_path: NodePath) -> void:
@@ -170,16 +246,73 @@ func client_grant_loot() -> void:
 	pickup_history.append(pending_loot_data)
 	_show_feedback("Picked up: " + pending_loot_data.item_name)
 	pending_loot_data = null
+	_update_hotbar_ui()
 
-func _discard_last_item() -> void:
+func _update_hotbar_ui() -> void:
+	if not is_multiplayer_authority() or not hotbar_container: return
+	
+	var total_limit = CreatureManager.inv_total_limit if typeof(CreatureManager) != TYPE_NIL else 3
+	
+	# Safety catch if the limit changes
+	if selected_slot_index >= total_limit: selected_slot_index = 0
+	
+	# Clear the old boxes
+	for child in hotbar_container.get_children():
+		child.queue_free()
+		
+	# Draw the boxes
+	for i in range(total_limit):
+		var panel = PanelContainer.new()
+		panel.custom_minimum_size = Vector2(80, 80)
+		
+		# Draw the background and highlight
+		var style = StyleBoxFlat.new()
+		if i == selected_slot_index:
+			style.bg_color = Color(0.8, 0.8, 0.2, 0.5) # Highlight Yellow
+			style.border_width_bottom = 5
+			style.border_color = Color.YELLOW
+		else:
+			style.bg_color = Color(0.2, 0.2, 0.2, 0.7) # Dark Grey
+			style.border_width_bottom = 5
+			style.border_color = Color(0.1, 0.1, 0.1, 0.9)
+			
+		panel.add_theme_stylebox_override("panel", style)
+		
+		# If we have an item in this slot (treating pickup_history as our bag)
+		if i < pickup_history.size():
+			var item = pickup_history[i]
+			var label = Label.new()
+			label.text = item.item_name
+			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			label.autowrap_mode = TextServer.AUTOWRAP_WORD
+			label.add_theme_font_size_override("font_size", 14)
+			panel.add_child(label)
+			
+		hotbar_container.add_child(panel)
+
+func _discard_selected_item() -> void:
 	if pickup_history.is_empty():
-		_show_feedback("Nothing to discard!")
+		_show_feedback("Bag is empty!")
 		return
 		
-	var item_to_drop = pickup_history.pop_back()
+	# Check if the selected slot actually has an item in it
+	if selected_slot_index >= pickup_history.size():
+		_show_feedback("That slot is empty!")
+		return
+		
+	# Remove the specific item we selected
+	var item_to_drop = pickup_history[selected_slot_index]
 	inventory[item_to_drop.slot].erase(item_to_drop)
+	pickup_history.remove_at(selected_slot_index)
+	
 	_show_feedback("Discarded: " + item_to_drop.item_name)
-	# Future Polish: We will RPC the host here to spawn a new physical LootItem back into the world!
+	
+	_update_hotbar_ui()
+	
+	# Future Polish: We will RPC the host here to spawn a new physical 
+	# LootItem back into the world right at our feet!
+
 
 func _show_feedback(msg: String) -> void:
 	print("[Player " + str(name) + "] ", msg)

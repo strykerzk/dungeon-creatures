@@ -17,6 +17,8 @@ func _init():
 	monitoring = false # Controlled by weapon/creature
 
 func _on_area_entered(area: Area2D) -> void:
+	if not multiplayer.is_server(): return
+	
 	if area.name == "Hurtbox":
 		var entity = area.get_parent()
 		if entity == attacker: return

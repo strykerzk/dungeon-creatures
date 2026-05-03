@@ -21,9 +21,10 @@ func _physics_process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body == attacker: return
 	
-	if body.has_method("take_damage"):
-		body.take_damage(damage_value, attacker)
-		print("Damage dealt from projectile!")
+	if multiplayer.is_server():
+		if body.has_method("take_damage"):
+			body.take_damage(damage_value, attacker)
+			print("Damage dealt from projectile!")
 	
 	queue_free()
 

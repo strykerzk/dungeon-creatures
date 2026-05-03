@@ -101,6 +101,12 @@ properties/2/path = NodePath(".:global_position")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onrkg"]
+bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i3pqv"]
+bg_color = Color(3.85046e-07, 0.736423, 0.823885, 1)
+
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("sprite", "animation_tree")]
 collision_layer = 2
 script = ExtResource("1_onrkg")
@@ -122,3 +128,32 @@ tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1414846589]
 replication_config = SubResource("SceneReplicationConfig_onrkg")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1735587253]
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=764354802]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_bottom = 20
+
+[node name="HotbarContainer" type="HBoxContainer" parent="HUD/MarginContainer" unique_id=483881221]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ChannelBar" type="ProgressBar" parent="." unique_id=1668071656]
+visible = false
+offset_left = -20.0
+offset_top = -21.0
+offset_right = 20.0
+offset_bottom = -13.0
+theme_override_styles/background = SubResource("StyleBoxFlat_onrkg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_i3pqv")
+show_percentage = false
