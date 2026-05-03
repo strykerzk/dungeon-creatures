@@ -17,8 +17,8 @@ func _ready() -> void:
 	body_exited.connect(_on_body_exited)
 	
 	# Optional: If your EquipmentData has a texture variable, assign it automatically
-	# if item_data and item_data.texture:
-	# 	sprite.texture = item_data.texture
+	if item_data and item_data.sprite_texture:
+		sprite.texture = item_data.sprite_texture
 
 func _process(delta: float) -> void:
 	# Simple hovering animation (Sine wave)

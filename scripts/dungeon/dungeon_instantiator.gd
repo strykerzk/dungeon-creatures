@@ -16,6 +16,7 @@ extends Node2D
 
 @export_group("Player Spawning")
 @export var player_scene: PackedScene
+@export var escape_portal_scene: PackedScene
 
 @export_group("Generation Settings")
 @export var grid_size: int = 5
@@ -27,6 +28,9 @@ var generator = DungeonGenerator.new()
 @onready var players_container = $"../Players" # A new Node2D we will create
 
 func _ready() -> void:
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.escape_portal_opened.connect(_on_escape_portal_opened)
+	
 	# Only the Host decides the seed and spawns the players
 	if multiplayer.is_server():
 		randomize() # Create a truly random seed based on system time
@@ -151,3 +155,13 @@ func _on_room_entered(target_pos: Vector2) -> void:
 	if not living_camera: return
 	var tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tween.tween_property(living_camera, "global_position", target_pos, 0.4)
+
+func _on_escape_portal_opened() -> void:
+	if not escape_portal_scene:
+		push_warning("[Dungeon] Escape Portal scene is missing!")
+		return
+		
+	var portal_instance = escape_portal_scene.instantiate()
+	add_child(portal_instance)
+	# Center Room is always built at Vector2.ZERO in our world space!
+	portal_instance.global_position = Vector2.ZERO

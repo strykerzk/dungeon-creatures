@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="dungeon-creatures"
-run/main_scene="uid://btap8s0pk3v85"
+run/main_scene="uid://b8hp5sprfrkea"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 

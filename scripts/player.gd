@@ -152,15 +152,17 @@ func server_request_loot(loot_path: NodePath) -> void:
 		rpc_id(sender_id, "client_grant_loot")
 
 # Runs on ALL clients to visually clean up the world
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func client_remove_loot(loot_path: NodePath) -> void:
 	var loot_node = get_node_or_null(loot_path)
 	if is_instance_valid(loot_node):
 		loot_node.queue_free()
 
 # Runs ONLY on the specific client who won the item
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func client_grant_loot() -> void:
+	if multiplayer.get_remote_sender_id() != 1: return
+	
 	if pending_loot_data == null: return
 	
 	current_state = State.NORMAL
@@ -181,3 +183,70 @@ func _discard_last_item() -> void:
 
 func _show_feedback(msg: String) -> void:
 	print("[Player " + str(name) + "] ", msg)
+
+## Called when the player safely reaches the exit, OR when time runs out.
+func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
+	if not is_multiplayer_authority(): return
+	
+	current_state = State.LOOTING # Freeze the player's inputs
+	
+	# Tell ALL clients to hide my avatar
+	rpc("client_hide_player")
+	
+	if forced_by_timeout:
+		_show_feedback("TIME'S UP! The dungeon collapses...")
+		_apply_timeout_penalty()
+	else:
+		_show_feedback("Extracted safely!")
+
+	var extracted_loot: Array[EquipmentData] = []
+	for slot in inventory.keys():
+		extracted_loot.append_array(inventory[slot])
+	
+	if typeof(CreatureManager) != TYPE_NIL:
+		CreatureManager.commit_dungeon_loot(name.to_int(), extracted_loot)
+		_show_feedback("Saved " + str(extracted_loot.size()) + " items to Stash.")
+	
+	for slot in inventory.keys():
+		inventory[slot].clear()
+	pickup_history.clear()
+
+@rpc("any_peer", "call_local", "reliable")
+func client_hide_player() -> void:
+	hide()
+	set_physics_process(false)
+	set_process_unhandled_input(false)
+
+
+func _apply_timeout_penalty() -> void:
+	# Penalty logic: Lose 50% of the items you picked up this run, chosen randomly.
+	var total_items = 0
+	for slot in inventory.keys():
+		total_items += inventory[slot].size()
+		
+	if total_items == 0: return # Nothing to lose!
+	
+	var items_to_lose = max(1, total_items / 2) # Lose half, at least 1
+	var lost_count = 0
+	
+	while lost_count < items_to_lose:
+		# Pick a random slot
+		var available_slots = []
+		for slot in inventory.keys():
+			if inventory[slot].size() > 0:
+				available_slots.append(slot)
+				
+		if available_slots.is_empty(): break
+		
+		var random_slot = available_slots.pick_random()
+		var slot_array: Array = inventory[random_slot]
+		
+		# Erase a random item from that slot
+		var item_to_drop = slot_array.pick_random()
+		slot_array.erase(item_to_drop)
+		
+		# Also remove it from history so discard doesn't break
+		pickup_history.erase(item_to_drop)
+		lost_count += 1
+		
+	_show_feedback("PENALTY: Lost " + str(lost_count) + " items!")
