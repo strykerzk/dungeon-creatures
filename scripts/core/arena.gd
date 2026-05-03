@@ -6,6 +6,8 @@ extends Node2D
 @onready var spawn_points: Node2D = $SpawnPoints
 @onready var creatures_container: Node2D = $Creatures
 
+var alive_creatures_count: int = 0
+
 func _ready() -> void:
 	# Only the Host handles the spawning of fighters
 	if multiplayer.is_server():
@@ -31,8 +33,10 @@ func _spawn_creatures() -> void:
 		var scene_to_spawn = creature_roster[species_key] as PackedScene
 		var creature_inst = scene_to_spawn.instantiate() as Creature
 		
-		# Name the node after the player's ID so we know whose duck is whose!
+		# Edit the creature
 		creature_inst.name = str(p_id) 
+		creature_inst.died.connect(_on_creature_died.bind(p_id))
+		alive_creatures_count += 1
 		
 		# Add to the container (The MultiplayerSpawner will automatically replicate this to clients)
 		creatures_container.add_child(creature_inst)
@@ -65,3 +69,26 @@ func rpc_sync_equipment(all_loadouts: Dictionary) -> void:
 				var item_data = load(loadout[slot])
 				if item_data:
 					creature.equip(item_data)
+
+func _on_creature_died(player_id: int) -> void:
+	if not multiplayer.is_server(): return
+	
+	alive_creatures_count -= 1
+	print("[Arena] Player ", player_id, "'s creature died! Remaining: ", alive_creatures_count)
+	
+	# If 1 or 0 creatures are left, the match is over!
+	if alive_creatures_count <= 1:
+		_end_arena_match()
+
+func _end_arena_match() -> void:
+	print("[Arena] Match Over! Transitioning to next round...")
+	# Optional: In the future, you can trigger a "Player X Wins!" UI pop-up here.
+	
+	# Give players 4 seconds to process the end of the fight
+	await get_tree().create_timer(4.0).timeout
+	rpc("rpc_transition_to_dungeon")
+
+@rpc("authority", "call_local", "reliable")
+func rpc_transition_to_dungeon() -> void:
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.change_stage(StageManager.GameState.DUNGEON)

@@ -30,6 +30,7 @@ var generator = DungeonGenerator.new()
 func _ready() -> void:
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.escape_portal_opened.connect(_on_escape_portal_opened)
+		grid_size = StageManager.get_round_settings()["size"]
 	
 	# Only the Host decides the seed and spawns the players
 	if multiplayer.is_server():

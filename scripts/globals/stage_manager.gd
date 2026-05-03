@@ -7,6 +7,15 @@ signal escape_portal_opened()
 enum GameState { MENU, SELECTION, COMBAT, DUNGEON, EDITOR }
 enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }
 
+@export_category("Round Progression")
+var round_config: Dictionary = {
+	1: {"size": 5, "event": DungeonEvent.NORMAL, "timer": 90},
+	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 80},
+	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 0}, # 0 = Disabled
+	4: {"size": 7, "event": DungeonEvent.NORMAL, "timer": 120},
+	5: {"size": 7, "event": DungeonEvent.MAJOR_COOP, "timer": 0}
+}
+
 var current_state: GameState = GameState.MENU
 var current_round: int = 0
 var current_dungeon_event: DungeonEvent = DungeonEvent.NORMAL
@@ -46,6 +55,17 @@ func _process(delta: float) -> void:
 			if current_time_left <= 0:
 				is_timer_active = false
 				_force_dungeon_timeout()
+
+func get_round_settings() -> Dictionary:
+	if round_config.has(current_round):
+		return round_config[current_round]
+	
+	# Infinite scaling fallback for rounds 6+
+	return {
+		"size": 7 + ((current_round - 5) * 2), 
+		"event": DungeonEvent.MINOR_MIX, 
+		"timer": max(60, 120 - (current_round * 5))
+	}
 
 @rpc("authority", "call_local", "unreliable")
 func sync_dungeon_time(time_left: int) -> void:
@@ -119,35 +139,33 @@ func _prepare_data_for_state(state: GameState) -> void:
 		GameState.COMBAT:
 			print("Stage Manager: Loading data for Arena...")
 		GameState.DUNGEON:
-			print("Stage Manager: Loading Dungeon...")
+			# Advance the round counter when starting a new dungeon!
+			current_round += 1
+			print("Stage Manager: Loading Dungeon... Round: ", current_round)
+			
 			if typeof(CreatureManager) != TYPE_NIL:
 				CreatureManager.update_round_limits(current_round)
 			
-			# Reset tracking variables for the new run
 			has_portal_opened = false
 			extracted_players.clear()
-			_roll_dungeon_event()
+			_apply_round_settings()
 		GameState.EDITOR:
 			print("Stage Manager: Preparing Creature Lab...")
 
-## Rolls the dice for the upcoming dungeon phase
-func _roll_dungeon_event() -> void:
-	# FIX: Use <= 1 so that testing at round 0 defaults to NORMAL and enables the timer
-	if current_round <= 1: current_dungeon_event = DungeonEvent.NORMAL
-	elif current_round == 2: current_dungeon_event = DungeonEvent.MINOR_MIX
-	else: current_dungeon_event = DungeonEvent.MAJOR_ALTARS 
+func _apply_round_settings() -> void:
+	var settings = get_round_settings()
+	current_dungeon_event = settings["event"]
 	
-	print("[StageManager] Rolled Dungeon Event: ", DungeonEvent.keys()[current_dungeon_event])
+	print("[StageManager] Round ", current_round, " Event: ", DungeonEvent.keys()[current_dungeon_event])
 	
-	# Toggle Timer based on the rolled event!
-	match current_dungeon_event:
-		DungeonEvent.MAJOR_ALTARS, DungeonEvent.MAJOR_COOP:
-			is_timer_active = false
-			print("[StageManager] Major Event: Timer DISABLED.")
-		_:
-			is_timer_active = true
-			current_time_left = dungeon_time_limit
-			print("[StageManager] Standard Event: Timer ENABLED (", dungeon_time_limit, "s)")
+	if settings["timer"] > 0:
+		is_timer_active = true
+		dungeon_time_limit = settings["timer"]
+		current_time_left = dungeon_time_limit
+		print("[StageManager] Timer ENABLED (", dungeon_time_limit, "s)")
+	else:
+		is_timer_active = false
+		print("[StageManager] Timer DISABLED.")
 
 # Helper to move to the next step in core loop
 func advance_loop() -> void:
