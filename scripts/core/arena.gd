@@ -82,13 +82,46 @@ func _on_creature_died(player_id: int) -> void:
 
 func _end_arena_match() -> void:
 	print("[Arena] Match Over! Transitioning to next round...")
-	# Optional: In the future, you can trigger a "Player X Wins!" UI pop-up here.
 	
-	# Give players 4 seconds to process the end of the fight
-	await get_tree().create_timer(4.0).timeout
-	rpc("rpc_transition_to_dungeon")
+	var is_game_over: bool = false
+	var overall_winner_id: int = -1
+	var max_wins_to_end: int = 3
+	
+	# 1. Find the survivor and grant them a win
+	for child in creatures_container.get_children():
+		if child is Creature and child.current_health > 0:
+			var winner_id = child.name.to_int()
+			
+			if typeof(CreatureManager) != TYPE_NIL:
+				var profile = CreatureManager.get_profile(winner_id)
+				profile.wins += 1
+				print("[Arena] Player ", winner_id, " wins the round! Total Wins: ", profile.wins)
+				
+				# Check the Endgame Condition!
+				if profile.wins >= max_wins_to_end:
+					is_game_over = true
+					overall_winner_id = winner_id
+			break 
+
+	# 2. Sync the profiles to all clients
+	if typeof(CreatureManager) != TYPE_NIL:
+		CreatureManager.sync_all_profiles()
+
+	# 3. Branch the game flow based on the endgame check
+	if is_game_over:
+		print("[Arena] 👑 PLAYER ", overall_winner_id, " HAS WON THE ENTIRE GAME! 👑")
+		await get_tree().create_timer(6.0).timeout
+		rpc("rpc_transition_to_menu")
+	else:
+		await get_tree().create_timer(4.0).timeout
+		rpc("rpc_transition_to_dungeon")
 
 @rpc("authority", "call_local", "reliable")
 func rpc_transition_to_dungeon() -> void:
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.change_stage(StageManager.GameState.DUNGEON)
+
+@rpc("authority", "call_local", "reliable")
+func rpc_transition_to_menu() -> void:
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.change_stage(StageManager.GameState.MENU)

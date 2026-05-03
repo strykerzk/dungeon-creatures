@@ -36,6 +36,9 @@ var pending_loot_data: EquipmentData = null
 var active_interactable: Node2D = null
 var channel_time: float = 0.0
 
+var spawn_lock_timer: float = 0.0
+var max_spawn_lock: float = 0.0
+
 func _enter_tree() -> void:
 	set_multiplayer_authority(name.to_int())
 	
@@ -44,6 +47,11 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	_update_hotbar_ui()
+	if channel_bar:
+		channel_bar.hide()
+	
+	# Check if we suffer from a victory handicap!
+	_apply_spawn_handicap()
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
@@ -57,8 +65,46 @@ func _physics_process(delta: float) -> void:
 	
 	handle_animations()
 
+func _apply_spawn_handicap() -> void:
+	if not is_multiplayer_authority() or typeof(CreatureManager) == TYPE_NIL: return
+	
+	var my_id = name.to_int()
+	var profile = CreatureManager.get_profile(my_id)
+	if not profile: return
+
+	var my_wins = profile.wins
+	var min_wins = my_wins
+	for p_id in CreatureManager.profiles:
+		if CreatureManager.profiles[p_id].wins < min_wins:
+			min_wins = CreatureManager.profiles[p_id].wins
+
+	var win_diff = my_wins - min_wins
+	
+	# The Lock: You are frozen for 2.0 seconds per win difference
+	if win_diff > 0:
+		max_spawn_lock = win_diff * 2.0 
+		spawn_lock_timer = max_spawn_lock
+		_show_feedback("Spawn Locked for " + str(max_spawn_lock) + "s! (Handicap)")
+		if channel_bar:
+			channel_bar.show()
+			channel_bar.value = 100.0
+
 func _handle_normal_state(delta: float) -> void:
-	# --- Movement ---
+	# NEW: The Spawn Lock logic (Reusing the channel bar to show time remaining!)
+	if spawn_lock_timer > 0:
+		spawn_lock_timer -= delta
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		move_and_slide()
+		
+		if channel_bar:
+			channel_bar.value = (spawn_lock_timer / max_spawn_lock) * 100.0
+			
+		if spawn_lock_timer <= 0:
+			if channel_bar: channel_bar.hide()
+			_show_feedback("Lock released! GO!")
+		return # Exit early so they can't do anything else!
+
+	# --- Normal Movement ---
 	var input = Input.get_vector("left", "right", "up", "down")
 	
 	if input != Vector2.ZERO:
@@ -72,12 +118,15 @@ func _handle_normal_state(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("dodge"):
 		_start_roll()
-	
+		
+	# Check for Interaction
 	if Input.is_action_just_pressed("interact") and active_interactable:
 		_start_channeling()
 	
-	# --- HOTBAR ---
-	var total_limit = CreatureManager.inv_total_limit if typeof(CreatureManager) != TYPE_NIL else 3
+	# --- DYNAMIC HOTBAR ---
+	var total_limit = 3
+	if typeof(CreatureManager) != TYPE_NIL:
+		total_limit = CreatureManager.get_player_inv_limit(name.to_int())
 	
 	if Input.is_action_just_pressed("cycle_right"):
 		selected_slot_index = (selected_slot_index + 1) % total_limit
@@ -153,7 +202,6 @@ func _handle_looting_state(delta: float) -> void:
 	velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 	move_and_slide()
 	
-	# Cancel if button released or if the item was deleted by the server!
 	if not Input.is_action_pressed("interact") or not is_instance_valid(active_interactable):
 		_cancel_channeling()
 		return
@@ -214,7 +262,6 @@ func _request_loot_pickup(loot_node: Node2D) -> void:
 @rpc("any_peer", "call_local", "reliable")
 func server_request_loot(loot_path: NodePath) -> void:
 	if not multiplayer.is_server(): return
-	
 	var loot_node = get_node_or_null(loot_path)
 	
 	# If the node exists and isn't already being deleted, you win!
@@ -343,6 +390,9 @@ func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
 	for slot in inventory.keys():
 		inventory[slot].clear()
 	pickup_history.clear()
+	
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.rpc_id(1, "server_player_extracted", multiplayer.get_unique_id())
 
 @rpc("any_peer", "call_local", "reliable")
 func client_hide_player() -> void:

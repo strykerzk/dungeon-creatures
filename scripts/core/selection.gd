@@ -62,9 +62,13 @@ func server_player_locked_in(peer_id: int, selected_species: String) -> void:
 		print("[Selection] All players ready! Teleporting to Arena...")
 		# Give a slight delay so the last player sees the UI update
 		await get_tree().create_timer(1.0).timeout
-		rpc("rpc_start_arena")
+		rpc("rpc_start")
 
 @rpc("authority", "call_local", "reliable")
-func rpc_start_arena() -> void:
+func rpc_start() -> void:
+	if multiplayer.is_server():
+		CreatureManager.sync_all_profiles()
+	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.change_stage(StageManager.GameState.COMBAT)
+	

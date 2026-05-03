@@ -26,6 +26,7 @@ var current_time_left: float = 0.0
 var is_timer_active: bool = false
 var has_portal_opened: bool = false
 var extracted_players: Array[int] = [] # Tracks who is safe
+var is_transitioning: bool = false
 
 var state_scenes: Dictionary = {
 	GameState.MENU: "res://scenes/menu.tscn",
@@ -81,6 +82,7 @@ func rpc_open_escape_portal() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func server_player_extracted(peer_id: int) -> void:
 	if not multiplayer.is_server(): return
+	if is_transitioning: return
 	
 	if not peer_id in extracted_players:
 		extracted_players.append(peer_id)
@@ -90,11 +92,13 @@ func server_player_extracted(peer_id: int) -> void:
 		if extracted_players.size() >= NetworkManager.players.size():
 			print("[StageManager] All players safely extracted! Ending phase early.")
 			is_timer_active = false
+			is_transitioning = true
 			# Give players 1.5 seconds to read the "Extracted" feedback
 			await get_tree().create_timer(1.5).timeout
 			rpc("rpc_transition_to_editor")
 
 func _force_dungeon_timeout() -> void:
+	if is_transitioning: return
 	print("[StageManager] Dungeon time expired! Forcing extraction...")
 	rpc("rpc_execute_timeout_extraction")
 
@@ -132,13 +136,18 @@ func change_stage(new_state: GameState) -> void:
 		push_error("[StageManager] Scene path not found for state: " + str(new_state))
 
 func _prepare_data_for_state(state: GameState) -> void:
+	is_transitioning = false
 	match state:
+		GameState.MENU:
+			current_round = 0
+			if typeof(CreatureManager) != TYPE_NIL:
+				CreatureManager.reset_session()
+			print("Stage Manager: Returned to Main Menu. Session reset.")
 		GameState.COMBAT:
 			print("Stage Manager: Loading data for Arena...")
 			if typeof(CreatureManager) != TYPE_NIL:
 				CreatureManager.update_round_limits(current_round)
 		GameState.DUNGEON:
-			# Advance the round counter when starting a new dungeon!
 			current_round += 1
 			print("Stage Manager: Loading Dungeon... Round: ", current_round)
 			

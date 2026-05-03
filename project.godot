@@ -20,7 +20,6 @@ config/icon="res://icon.svg"
 CreatureManager="*uid://c0bdb53vnj3gi"
 NetworkManager="*uid://bhknutagcttrd"
 StageManager="*uid://bckuj40t1oi5f"
-PlayerManager="*uid://dr56ss4r8tjj5"
 
 [display]
 
