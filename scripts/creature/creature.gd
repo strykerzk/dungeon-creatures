@@ -90,6 +90,12 @@ var is_invulnerable: bool = false
 @export var override_precision: float = 0.0
 @export var override_attack_range: float = 0.0
 
+func _enter_tree() -> void:
+	y_sort_enabled = true
+	set_collision_layer_value(1, false)
+	set_collision_layer_value(3, true)
+	set_collision_mask_value(1, true)
+
 func _ready() -> void:
 	_initialize_base_stats()
 	recalculate_stats()

@@ -30,6 +30,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
 		if body.has_method("register_interactable"):
 			body.register_interactable(self)
+		player_in_range = body
 		create_tween().tween_property(sprite, "scale", Vector2(1.2, 1.2), 0.1)
 
 func _on_body_exited(body: Node2D) -> void:

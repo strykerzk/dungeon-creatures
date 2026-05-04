@@ -283,6 +283,7 @@ properties/2/spawn = true
 properties/2/replication_mode = 1
 
 [node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
 animation_tree = NodePath("AnimationTree")

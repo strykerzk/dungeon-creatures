@@ -12,6 +12,9 @@ extends Node2D
 
 signal player_entered_room(room_center_pos: Vector2)
 
+func _enter_tree() -> void:
+	y_sort_enabled = true
+
 func _ready() -> void:
 	if camera_trigger:
 		camera_trigger.body_entered.connect(_on_camera_trigger_body_entered)

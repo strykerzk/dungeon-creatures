@@ -195,6 +195,7 @@ texture = ExtResource("1_rmekf")
 sources/0 = SubResource("TileSetAtlasSource_cio23")
 
 [node name="Arena" type="Node2D" unique_id=2031603603]
+y_sort_enabled = true
 script = ExtResource("1_68i0p")
 creature_roster = {
 "cat": ExtResource("3_yh1cl"),
@@ -225,6 +226,7 @@ position = Vector2(-391, 197)
 position = Vector2(382, -194)
 
 [node name="Creatures" type="Node2D" parent="." unique_id=1391319419]
+y_sort_enabled = true
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=53697418]
 _spawnable_scenes = PackedStringArray("uid://b0j644l7vr1qc", "uid://b7h2lf0hml4cd")

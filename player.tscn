@@ -1,75 +1,79 @@
 [gd_scene format=3 uid="uid://bngysj73nr5nf"]
 
 [ext_resource type="Script" uid="uid://bx67grxwjqcac" path="res://scripts/player.gd" id="1_onrkg"]
-[ext_resource type="Texture2D" uid="uid://b7mepycnaljgg" path="res://art/character_sprites/snoblin/prototype_character.png" id="2_onrkg"]
+[ext_resource type="Texture2D" uid="uid://cft4d4c4chkge" path="res://art/character_sprites/sprite_128x128_sheet.png" id="2_onrkg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(0, 320, 32, 32)
+region = Rect2(0, 256, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hqtel"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(32, 320, 32, 32)
+region = Rect2(0, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sweqy"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(64, 320, 32, 32)
+region = Rect2(128, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2hs0m"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(0, 32, 32, 32)
+region = Rect2(256, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1jxqw"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(32, 32, 32, 32)
+region = Rect2(384, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dw050"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(0, 128, 32, 32)
+region = Rect2(512, 0, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_b26j0"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(32, 128, 32, 32)
+region = Rect2(0, 128, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n7ghd"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(64, 128, 32, 32)
+region = Rect2(128, 128, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nvl01"]
 atlas = ExtResource("2_onrkg")
-region = Rect2(96, 128, 32, 32)
+region = Rect2(256, 128, 128, 128)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_ivps1"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ivps1"]
+atlas = ExtResource("2_onrkg")
+region = Rect2(384, 128, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_urp6f"]
 animations = [{
 "frames": [{
-"duration": 3.0,
-"texture": SubResource("AtlasTexture_i3pqv")
-}, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_hqtel")
-}, {
-"duration": 2.0,
-"texture": SubResource("AtlasTexture_sweqy")
+"texture": SubResource("AtlasTexture_i3pqv")
 }],
 "loop": false,
 "name": &"dodge",
-"speed": 10.0
+"speed": 1.0
 }, {
 "frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hqtel")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sweqy")
+}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_2hs0m")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_1jxqw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dw050")
 }],
 "loop": true,
 "name": &"idle",
-"speed": 2.0
+"speed": 6.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dw050")
-}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_b26j0")
 }, {
@@ -78,15 +82,18 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_nvl01")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ivps1")
 }],
 "loop": true,
 "name": &"run",
-"speed": 5.0
+"speed": 6.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
 radius = 1.0
-height = 8.0
+height = 48.0
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_i3pqv"]
 
@@ -108,18 +115,19 @@ bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
 bg_color = Color(3.85046e-07, 0.736423, 0.823885, 1)
 
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("sprite", "animation_tree")]
+y_sort_enabled = true
 collision_layer = 2
 script = ExtResource("1_onrkg")
 sprite = NodePath("AnimatedSprite2D")
 animation_tree = NodePath("AnimationTree")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=929179239]
-sprite_frames = SubResource("SpriteFrames_ivps1")
-animation = &"dodge"
-frame_progress = 1.0
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
+sprite_frames = SubResource("SpriteFrames_urp6f")
+animation = &"idle"
+offset = Vector2(0, -38)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=248887133]
-position = Vector2(0, 6)
+position = Vector2(-1, 0)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_onrkg")
 
@@ -150,10 +158,10 @@ theme_override_constants/separation = 10
 
 [node name="ChannelBar" type="ProgressBar" parent="." unique_id=1668071656]
 visible = false
-offset_left = -20.0
-offset_top = -21.0
-offset_right = 20.0
-offset_bottom = -13.0
+offset_left = -29.0
+offset_top = -88.0
+offset_right = 29.0
+offset_bottom = -80.0
 theme_override_styles/background = SubResource("StyleBoxFlat_onrkg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_i3pqv")
 show_percentage = false
