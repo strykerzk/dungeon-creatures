@@ -40,7 +40,10 @@ var spawn_lock_timer: float = 0.0
 var max_spawn_lock: float = 0.0
 
 func _enter_tree() -> void:
-	set_multiplayer_authority(name.to_int())
+	if name.to_int() != 0:
+		set_multiplayer_authority(name.to_int())
+	else:
+		set_multiplayer_authority(1)
 	
 	if not is_multiplayer_authority() and has_node("HUD"):
 		$HUD.hide()
