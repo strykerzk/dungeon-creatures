@@ -34,3 +34,6 @@ layout_mode = 2
 [node name="LockInButton" type="Button" parent="VBoxContainer" unique_id=2043255851]
 layout_mode = 2
 text = "LOCK IN"
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1558652043]
+autoplay = true

@@ -3,6 +3,7 @@ extends Node
 signal stage_changed(new_state: GameState)
 signal dungeon_time_updated(time_left: int)
 signal escape_portal_opened()
+signal screen_shake_requested(intensity: float)
 
 enum GameState { MENU, SELECTION, COMBAT, DUNGEON, EDITOR }
 enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }

@@ -2,6 +2,14 @@
 
 [ext_resource type="Script" uid="uid://dwnm7hr3br1xj" path="res://scripts/dungeon/escape_portal.gd" id="1_8wn1b"]
 [ext_resource type="Texture2D" uid="uid://ntlylm76pwp6" path="res://art/misc_sprites/portal.png" id="2_i40cb"]
+[ext_resource type="Shader" uid="uid://dlnmsf80mg52e" path="res://shaders/outline.gdshader" id="2_w4ghv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_uw1fk"]
+resource_local_to_scene = true
+shader = ExtResource("2_w4ghv")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/is_outlined = false
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w4ghv"]
 atlas = ExtResource("2_i40cb")
@@ -54,8 +62,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_v6rrq"]
-radius = 25.0
-height = 86.0
+radius = 89.0
+height = 314.0
 
 [node name="EscapePortal" type="Area2D" unique_id=1100977765]
 collision_layer = 0
@@ -63,11 +71,16 @@ collision_mask = 2
 script = ExtResource("1_8wn1b")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1051444253]
+material = SubResource("ShaderMaterial_uw1fk")
 position = Vector2(-1, 0)
-scale = Vector2(2, 2)
+scale = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_rlsj7")
-frame_progress = 0.8498018
+frame_progress = 0.35212952
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=246308590]
 shape = SubResource("CapsuleShape2D_v6rrq")
 debug_color = Color(0, 0.64125234, 0.3421867, 0.41960785)
+
+[node name="SFXAmbient" type="AudioStreamPlayer2D" parent="." unique_id=401089338]
+autoplay = true
+max_distance = 300.0

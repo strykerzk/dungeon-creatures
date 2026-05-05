@@ -11,25 +11,39 @@ var current_mode: CameraMode = CameraMode.DYNAMIC
 @export var follow_speed: float = 5.0
 @export var zoom_speed: float = 3.0
 
+var current_shake_strength: float = 0.0
+var shake_decay_rate: float = 15.0
+
 var spectate_index: int = 0
 var alive_creatures: Array = []
 
 func _ready() -> void:
 	make_current()
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.screen_shake_requested.connect(_apply_shake)
 
 func _process(delta: float) -> void:
 	_update_alive_creatures()
 	
-	if alive_creatures.is_empty():
-		return
-		
-	_handle_input()
+	if not alive_creatures.is_empty():
+		_handle_input()
+		match current_mode:
+			CameraMode.DYNAMIC: _process_dynamic_camera(delta)
+			CameraMode.SPECTATOR: _process_spectator_camera(delta)
 	
-	match current_mode:
-		CameraMode.DYNAMIC:
-			_process_dynamic_camera(delta)
-		CameraMode.SPECTATOR:
-			_process_spectator_camera(delta)
+	if current_shake_strength > 0:
+		current_shake_strength = lerpf(current_shake_strength, 0.0, shake_decay_rate * delta)
+		var random_offset = Vector2(
+			randf_range(-1.0, 1.0),
+			randf_range(-1.0, 1.0)
+		).normalized() * current_shake_strength
+		
+		offset = random_offset
+		
+		if current_shake_strength < 0.5:
+			current_shake_strength = 0.0
+			offset = Vector2.ZERO
+
 
 ## Refreshes the list of active targets every frame
 func _update_alive_creatures() -> void:
@@ -110,3 +124,6 @@ func _process_spectator_camera(delta: float) -> void:
 func _lerp_camera(target_pos: Vector2, target_zoom: Vector2, delta: float) -> void:
 	global_position = global_position.lerp(target_pos, follow_speed * delta)
 	zoom = zoom.lerp(target_zoom, zoom_speed * delta)
+
+func _apply_shake(intensity: float) -> void:
+	current_shake_strength = max(current_shake_strength, intensity)

@@ -1,16 +1,19 @@
 class_name Creature extends CharacterBody2D
 
 @export var stat_config: CreatureData
+var species: String = "duck" # Default species
 
 enum AttackStyle { TACKLE, MELEE, RANGED }
 
-# --- EQUIPMENT SLOTS & MARKERS ---
-@export_group("Equipment Markers")
-@export var head_marker: Marker2D
-@export var body_marker: Marker2D
-@export var weapon_marker: Marker2D 
-@export var boots_marker: Marker2D
-@export var back_marker: Marker2D
+# --- EQUIPMENT SLOTS & PAPER DOLL REFS ---
+@export_group("Paper Doll Sprites")
+@onready var paper_doll: CanvasGroup = $PaperDoll
+@export var doll_back: Sprite2D
+@export var doll_base: Sprite2D
+@export var doll_boots: Sprite2D
+@export var doll_armor: Sprite2D
+@export var doll_head: Sprite2D
+@export var weapon_marker: Marker2D
 
 @export_group("Equipment Settings")
 @export var current_attack_style: AttackStyle = AttackStyle.TACKLE
@@ -28,6 +31,12 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 signal attack_started(attacker: Creature, defender: Creature)
 signal health_changed(current: float, total: float)
 signal died()
+
+# --- SFX REFS ---
+@export_group("Sound Effects")
+@export var sfx_hit: AudioStreamPlayer2D
+@export var sfx_attack: AudioStreamPlayer2D
+@export var sfx_dodge: AudioStreamPlayer2D
 
 # --- CORE STATS ---
 var max_health: float = 100.0
@@ -106,6 +115,7 @@ func _ready() -> void:
 
 func _initialize_base_stats() -> void:
 	if stat_config:
+		species = stat_config.name
 		max_health = stat_config.get("base_health") if stat_config.get("base_health") != null else 100.0
 		damage = stat_config.get("damage") if stat_config.get("damage") != null else 10.0
 		speed = stat_config.get("speed") if stat_config.get("speed") != null else 150.0
@@ -152,6 +162,13 @@ func _process(delta: float) -> void:
 	if not is_attacking:
 		if weapon_node and weapon_node.has_method("look_at_direction"):
 			weapon_node.look_at_direction(look_direction)
+	
+	if paper_doll:
+		if look_direction.x < 0:
+			paper_doll.scale.x = -1
+		else:
+			paper_doll.scale.x = 1
+
 
 func setup_physics_layers() -> void:
 	set_collision_layer_value(1, false)
@@ -169,37 +186,40 @@ func equip(data: EquipmentData) -> void:
 	if not data: return
 	var slot = data.slot
 	if equipment.has(slot):
-		equipment[slot].queue_free()
 		equipment.erase(slot)
 	
-	var new_item = data.visual_scene.instantiate()
-	var marker = _get_marker_for_slot(slot)
-	if marker:
-		if marker == weapon_marker and new_item.has_method("reposition_visual"):
-			add_child(new_item)
-			new_item.reposition_visual(marker)
-		else:
-			marker.add_child(new_item)
-			new_item.position = Vector2.ZERO
-	else:
-		add_child(new_item)
-		
-	if new_item.has_method("setup"): new_item.setup(data)
-	
-	equipment[slot] = new_item
-	if slot == "weapon":
-		weapon_node = new_item
+	if slot == "weapon" and data.visual_scene:
+		if weapon_node: weapon_node.queue_free()
+		weapon_node = data.visual_scene.instantiate()
+		add_child(weapon_node)
+		weapon_node.global_position = weapon_marker.global_position
+		if weapon_node.has_method("reposition_visual"):
+			weapon_node.reposition_visual(weapon_marker)
+		if weapon_node.has_method("setup"): weapon_node.setup(data)
 		base_cooldown = weapon_node.attack_cd
 		current_attack_style = weapon_node.attack_style
+	
+	equipment[slot] = data
+	
+	if slot != "weapon":
+		var target_sprite = _get_sprite_for_slot(slot)
+		if target_sprite and data.get("visual_id") and data.visual_id != "":
+			var file_path = "res://art/equipment/"+slot+"/"+data.visual_id+"_"+species+".png"
+			
+			if ResourceLoader.exists(file_path):
+				target_sprite.texture = load(file_path)
+			else:
+				push_warning("[PaperDoll] Missing art " + file_path)
+	
 	recalculate_stats()
 
-func _get_marker_for_slot(slot: String) -> Node2D:
+func _get_sprite_for_slot(slot: String) -> Node2D:
 	match slot:
-		"head": return head_marker
-		"body": return body_marker
-		"weapon": return weapon_marker
-		"boots": return boots_marker
-		"back": return back_marker
+		"head": return doll_head
+		"body": return doll_armor
+		"weapon": return null
+		"boots": return doll_boots
+		"back": return doll_back
 	return null
 
 func recalculate_stats() -> void:
@@ -290,6 +310,13 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	if is_invulnerable or current_health <= 0: return
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
+	
+	sfx_hit.pitch_scale = randf_range(0.9, 1.1)
+	sfx_hit.play()
+	
+	var shake_intensity: float = clamp(amount * 0.8, 3.0, 25.0)
+	rpc("client_trigger_shake", shake_intensity)
+	
 	if current_health <= 0: die()
 	else:
 		_trigger_hit_iframe()
@@ -297,13 +324,26 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 
 func _trigger_hit_iframe() -> void:
 	is_invulnerable = true
-	await get_tree().create_timer(0.1).timeout
+	if paper_doll and paper_doll.material:
+		paper_doll.material.set_shader_parameter("flash_modifier", 1.0)
+		var tween = create_tween()
+		tween.tween_method(
+			func(val): paper_doll.material.set_shader_parameter("flash_modifier", val),
+			1.0, 0.0, 0.2
+		)
+	
+	await get_tree().create_timer(0.2).timeout
 	is_invulnerable = false
 
 func die() -> void:
 	died.emit()
 	set_physics_process(false)
 	queue_free()
+
+@rpc("authority", "call_local", "unreliable")
+func client_trigger_shake(intensity: float) -> void:
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.screen_shake_requested.emit(intensity)
 
 func search_for_target(attacker_ref: Creature = null) -> void:
 	var creatures = get_tree().get_nodes_in_group("creature")
@@ -347,6 +387,7 @@ func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> v
 func dodge(attacker_node: Creature) -> void:
 	is_attacking = true 
 	is_dashing = true
+	sfx_dodge.play()
 	var attack_dir = attacker_node.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
 	var dodge_distance = (150.0 + (speed * 0.2) + (20.0 * dexterity)) / max(0.5, size)
@@ -525,6 +566,9 @@ func rpc_play_weapon_effects(dmg: float, _dir: Vector2) -> void:
 		_fire_projectile(_dir)
 	elif body_hitbox:
 		_manual_hitbox_activate(body_hitbox, dmg)
+	
+	sfx_attack.pitch_scale = randf_range(0.9, 1.1)
+	sfx_attack.play()
 
 func _manual_hitbox_activate(hb: Area2D, dmg: float) -> void:
 	if hb is Hitbox:

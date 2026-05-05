@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dt8xsqa1ykewp"
-path="res://.godot/imported/pistol.png-8cced989a6d3abdfdf8c02b06fa1a02c.ctex"
+uid="uid://xi27mf88u8nu"
+path="res://.godot/imported/pistol_duck.png-d77d6f879c741265ad015b4e0cd29304.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/weapons/ranged/pistol.png"
-dest_files=["res://.godot/imported/pistol.png-8cced989a6d3abdfdf8c02b06fa1a02c.ctex"]
+source_file="res://art/equipment/weapon/pistol_duck.png"
+dest_files=["res://.godot/imported/pistol_duck.png-d77d6f879c741265ad015b4e0cd29304.ctex"]
 
 [params]
 

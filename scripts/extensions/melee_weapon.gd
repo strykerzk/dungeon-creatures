@@ -6,7 +6,11 @@ class_name MeleeWeapon extends Weapon
 @export var visual_sprite: Sprite2D
 @export var attack_sprite: Sprite2D
 @export var animation_player: AnimationPlayer
+
+@onready var sfx_swing: AudioStreamPlayer2D = $SFXSwing
+
 var is_swinging: bool = false
+
 
 func activate(base_damage: float, p_attacker: Creature) -> void:
 	super(base_damage,p_attacker)
@@ -25,9 +29,11 @@ func activate(base_damage: float, p_attacker: Creature) -> void:
 	
 	if animation_player:
 		animation_player.play("attack")
-		visual_sprite.visible = false
+		if visual_sprite: visual_sprite.visible = false
+		sfx_swing.play()
 		await animation_player.animation_finished
-		visual_sprite.visible = true
+		if visual_sprite: visual_sprite.visible = true
+		sfx_swing.stop()
 	else:
 		_toggle_hitbox(target_hb, true)
 		await get_tree().create_timer(0.2).timeout

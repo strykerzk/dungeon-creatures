@@ -17,6 +17,9 @@ extends CharacterBody2D
 @export_category("Node References")
 @export var sprite: AnimatedSprite2D
 @export var animation_tree: AnimationTree
+@onready var sfx_dodge: AudioStreamPlayer2D = $SFXDodge
+@onready var sfx_channel: AudioStreamPlayer2D = $SFXChannel
+@onready var sfx_success: AudioStreamPlayer2D = $SFXSuccess
 
 @export_category("UI References")
 @onready var hotbar_container: HBoxContainer = $HUD/MarginContainer/HotbarContainer
@@ -159,6 +162,7 @@ func handle_animations() -> void:
 func _start_roll() -> void:
 	current_state = State.ROLLING
 	is_invulnerable = true
+	sfx_dodge.play()
 	velocity = roll_direction * roll_speed
 	
 	await get_tree().create_timer(roll_duration * roll_iframe_percent).timeout
@@ -199,6 +203,12 @@ func _start_channeling() -> void:
 	if channel_bar:
 		channel_bar.show()
 		channel_bar.value = 0.0
+	
+	if active_interactable is LootItem:
+		sfx_channel.pitch_scale = 1.2
+	elif active_interactable is EscapePortal:
+		sfx_channel.pitch_scale = 0.8
+	sfx_channel.play()
 
 func _handle_looting_state(delta: float) -> void:
 	# Add friction so we slide to a halt if moving when started
@@ -221,6 +231,7 @@ func _cancel_channeling() -> void:
 		current_state = State.NORMAL
 		if channel_bar:
 			channel_bar.hide()
+	sfx_channel.stop()
 
 func _complete_channeling() -> void:
 	if active_interactable is LootItem:
@@ -231,6 +242,9 @@ func _complete_channeling() -> void:
 	current_state = State.NORMAL
 	if channel_bar:
 		channel_bar.hide()
+	
+	sfx_channel.stop()
+	sfx_success.play()
 
 func _can_pickup(item_data: EquipmentData) -> bool:
 	var total_max = 5

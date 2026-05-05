@@ -8,8 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://cq1qudu6yitb5" path="res://scenes/dungeon_rooms/altar_room.tscn" id="5_cvwnr"]
 [ext_resource type="PackedScene" uid="uid://cmptdiwndoq1c" path="res://scenes/equipment/loot_item.tscn" id="6_06edt"]
 [ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="7_6qlut"]
-[ext_resource type="Resource" uid="uid://b441uhmj6si00" path="res://resources/weapon_data/melee/sword.tres" id="8_g3byy"]
-[ext_resource type="Resource" uid="uid://bpgdogjqoy37x" path="res://resources/weapon_data/ranged/pistol.tres" id="9_2vmh0"]
+[ext_resource type="Resource" uid="uid://b441uhmj6si00" path="res://resources/equipment_data/weapons/melee/sword.tres" id="8_g3byy"]
+[ext_resource type="Resource" uid="uid://bpgdogjqoy37x" path="res://resources/equipment_data/weapons/ranged/pistol.tres" id="9_2vmh0"]
 [ext_resource type="PackedScene" uid="uid://b6c3fkkgojbcj" path="res://scenes/dungeon_rooms/misc/escape_portal.tscn" id="11_6qlut"]
 
 [node name="Dungeon" type="Node2D" unique_id=234930827]
@@ -45,3 +45,6 @@ y_sort_enabled = true
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Players" unique_id=808602944]
 _spawnable_scenes = PackedStringArray("uid://bngysj73nr5nf")
 spawn_path = NodePath("..")
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=2131380541]
+autoplay = true

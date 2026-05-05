@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3 uid="uid://bih5j1yep2t4j"]
+
+[ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_rv7t8"]
+[ext_resource type="Texture2D" uid="uid://c20btvtko5q8t" path="res://art/equipment/weapon/sprites/helmet.png" id="2_ygmu1"]
+
+[resource]
+script = ExtResource("1_rv7t8")
+item_name = "Helmet"
+slot = "head"
+visual_id = "helmet"
+sprite_texture = ExtResource("2_ygmu1")
+health_bonus = 40.0
+speed_mod = -5.0
+metadata/_custom_type_script = "uid://cne6whdroxgp7"

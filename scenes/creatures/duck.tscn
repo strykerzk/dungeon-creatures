@@ -4,25 +4,28 @@
 [ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
 [ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
+[ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_ygove"]
+[ext_resource type="AudioStream" uid="uid://c4gqwkjk4gcq5" path="res://sounds/sfx/hit2.wav" id="6_tddeu"]
+[ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="7_i1lxh"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
-radius = 6.0
-height = 22.0
+radius = 2.0
+height = 28.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_601gp"]
-radius = 6.0
-height = 22.0
+radius = 24.0
+height = 86.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6a5ah"]
-radius = 6.0
-height = 22.0
+radius = 24.0
+height = 86.0
 
 [sub_resource type="Animation" id="Animation_601gp"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -30,66 +33,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Marker/HeadMarker:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -8)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Marker/BodyMarker:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-2, 3)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Marker/WeaponMarker:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 2)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Marker/BootsMarker:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(2, 9)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Marker/BackMarker:position")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(5, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_6a5ah"]
@@ -97,7 +40,7 @@ resource_name = "sprite_left"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -106,73 +49,13 @@ tracks/0/keys = {
 "update": 1,
 "values": [false]
 }
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Marker/HeadMarker:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -8)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Marker/BodyMarker:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-2, 3)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Marker/WeaponMarker:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 2)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Marker/BootsMarker:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(2, 9)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Marker/BackMarker:position")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(5, 0)]
-}
 
 [sub_resource type="Animation" id="Animation_ygove"]
 resource_name = "sprite_right"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:flip_h")
+tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -180,66 +63,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Marker/HeadMarker:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -8)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Marker/BodyMarker:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(2, 3)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Marker/WeaponMarker:position")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-1, 2)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Marker/BootsMarker:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-2, 9)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Marker/BackMarker:position")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-5, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_rhggd"]
@@ -282,29 +105,52 @@ properties/2/path = NodePath(".:current_health")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
-[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "head_marker", "body_marker", "weapon_marker", "boots_marker", "back_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray") groups=["creature"]]
+[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
 animation_tree = NodePath("AnimationTree")
 stat_config = ExtResource("2_6a5ah")
-head_marker = NodePath("Marker/HeadMarker")
-body_marker = NodePath("Marker/BodyMarker")
-weapon_marker = NodePath("Marker/WeaponMarker")
-boots_marker = NodePath("Marker/BootsMarker")
-back_marker = NodePath("Marker/BackMarker")
+doll_back = NodePath("PaperDoll/BackSprite")
+doll_base = NodePath("PaperDoll/BaseSprite")
+doll_boots = NodePath("PaperDoll/BootsSprite")
+doll_armor = NodePath("PaperDoll/ArmorSprite")
+doll_head = NodePath("PaperDoll/HeadSprite")
+weapon_marker = NodePath("WeaponMarker")
 body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
 los_ray = NodePath("LOSRay")
+sfx_hit = NodePath("SFXHit")
+sfx_attack = NodePath("SFXAttack")
+sfx_dodge = NodePath("SFXDodge")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1402462917]
+[node name="PaperDoll" type="CanvasGroup" parent="." unique_id=200071240]
+material = ExtResource("3_ygove")
+
+[node name="BackSprite" type="Sprite2D" parent="PaperDoll" unique_id=1436436277]
+offset = Vector2(0, -43)
+
+[node name="BaseSprite" type="Sprite2D" parent="PaperDoll" unique_id=1402462917]
 texture = ExtResource("1_sqg2a")
+offset = Vector2(0, -43)
+
+[node name="BootsSprite" type="Sprite2D" parent="PaperDoll" unique_id=658788089]
+offset = Vector2(0, -43)
+
+[node name="ArmorSprite" type="Sprite2D" parent="PaperDoll" unique_id=741559932]
+offset = Vector2(0, -43)
+
+[node name="HeadSprite" type="Sprite2D" parent="PaperDoll" unique_id=623093540]
+offset = Vector2(0, -43)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1247753892]
+rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_p7nrc")
+debug_color = Color(0.24286017, 0.09666201, 0, 0.41960785)
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=78693573]
+position = Vector2(0, -43)
 collision_layer = 8
 collision_mask = 0
 
@@ -312,10 +158,12 @@ collision_mask = 0
 shape = SubResource("CapsuleShape2D_601gp")
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=2074689619]
+position = Vector2(0, -43)
 script = ExtResource("3_601gp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1655568817]
 shape = SubResource("CapsuleShape2D_6a5ah")
+debug_color = Color(1, 0.003921569, 0, 0.41960785)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1195328751]
 libraries/ = SubResource("AnimationLibrary_rhggd")
@@ -335,22 +183,42 @@ autostart = true
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=28601178]
 
-[node name="Marker" type="Node2D" parent="." unique_id=202572742]
-
-[node name="HeadMarker" type="Marker2D" parent="Marker" unique_id=1167370184]
-position = Vector2(0, -8)
-
-[node name="BodyMarker" type="Marker2D" parent="Marker" unique_id=1968812501]
-position = Vector2(-2, 3)
-
-[node name="WeaponMarker" type="Marker2D" parent="Marker" unique_id=1360154661]
-position = Vector2(1, 2)
-
-[node name="BootsMarker" type="Marker2D" parent="Marker" unique_id=262784826]
-position = Vector2(2, 9)
-
-[node name="BackMarker" type="Marker2D" parent="Marker" unique_id=616509319]
-position = Vector2(5, 0)
-
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1315334455]
 replication_config = SubResource("SceneReplicationConfig_6a5ah")
+
+[node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=12979756]
+stream = ExtResource("6_tddeu")
+
+[node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=269836624]
+stream = ExtResource("7_i1lxh")
+volume_db = -10.0
+
+[node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1328682961]
+
+[node name="Button" type="Button" parent="." unique_id=1264972290]
+offset_left = 62.0
+offset_top = -73.0
+offset_right = 70.0
+offset_bottom = -65.0
+
+[node name="Button2" type="Button" parent="." unique_id=682515943]
+offset_left = 62.0
+offset_top = -59.0
+offset_right = 70.0
+offset_bottom = -51.0
+
+[node name="Button3" type="Button" parent="." unique_id=538243954]
+offset_left = 62.0
+offset_top = -47.0
+offset_right = 70.0
+offset_bottom = -39.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=2054170583]
+
+[node name="WeaponMarker" type="Marker2D" parent="." unique_id=321023839]
+position = Vector2(-3, -35)
+rotation = 0.4223697
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]

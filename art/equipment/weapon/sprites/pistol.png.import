@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4gfjomtyoyty"
-path="res://.godot/imported/iron_bullet.png-ee5955e04f15878694d7199b1aa3f75d.ctex"
+uid="uid://bjd1erjvnikbo"
+path="res://.godot/imported/pistol.png-b490fef0d532bcc4dca70e4e884bda26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/weapons/projectiles/iron_bullet.png"
-dest_files=["res://.godot/imported/iron_bullet.png-ee5955e04f15878694d7199b1aa3f75d.ctex"]
+source_file="res://art/equipment/weapon/sprites/pistol.png"
+dest_files=["res://.godot/imported/pistol.png-b490fef0d532bcc4dca70e4e884bda26.ctex"]
 
 [params]
 

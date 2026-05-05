@@ -235,3 +235,6 @@ spawn_path = NodePath("../Creatures")
 [node name="ArenaCamera" type="Camera2D" parent="." unique_id=1225431198 node_paths=PackedStringArray("creatures_container")]
 script = ExtResource("4_cio23")
 creatures_container = NodePath("../Creatures")
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1830574538]
+autoplay = true

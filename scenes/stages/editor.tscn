@@ -64,3 +64,6 @@ layout_mode = 2
 [node name="ReadyButton" type="Button" parent="HBoxContainer/EquipPanel" unique_id=1332539762]
 layout_mode = 2
 text = "LOCK IN & READY"
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1710332229]
+autoplay = true

@@ -1,6 +1,8 @@
 extends Area2D
 class_name EscapePortal
 
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+
 var player_in_range: Node2D = null
 
 func _ready() -> void:
@@ -15,10 +17,12 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
+		sprite.material.set_shader_parameter("is_outlined", true)
 		if body.has_method("register_interactable"):
 			body.register_interactable(self)
 
 func _on_body_exited(body: Node2D) -> void:
 	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
+		sprite.material.set_shader_parameter("is_outlined", false)
 		if body.has_method("unregister_interactable"):
 			body.unregister_interactable(self)

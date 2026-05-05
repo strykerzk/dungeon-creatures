@@ -1,21 +1,16 @@
 [gd_scene format=3 uid="uid://cyot1hty3c6mv"]
 
 [ext_resource type="Script" uid="uid://desmh2hv50ohf" path="res://scripts/extensions/ranged_weapon.gd" id="1_cfldo"]
-[ext_resource type="Texture2D" uid="uid://dt8xsqa1ykewp" path="res://art/weapons/ranged/pistol.png" id="2_imchg"]
 [ext_resource type="PackedScene" uid="uid://c04wsubj34onr" path="res://scenes/equipment/projectiles/bullet.tscn" id="2_pehqh"]
+[ext_resource type="Texture2D" uid="uid://bjd1erjvnikbo" path="res://art/equipment/weapon/sprites/pistol.png" id="3_pehqh"]
 
-[node name="Pistol" type="Node2D" unique_id=211201983 node_paths=PackedStringArray("muzzle", "sprite")]
-rotation = 2.6319566
+[node name="Pistol" type="Node2D" unique_id=211201983 node_paths=PackedStringArray("sprite")]
+z_index = 2
 script = ExtResource("1_cfldo")
 projectile_scene = ExtResource("2_pehqh")
-muzzle = NodePath("Muzzle")
 sprite = NodePath("Sprite")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=1254709552]
-texture = ExtResource("2_imchg")
-flip_v = true
-
-[node name="Muzzle" type="Marker2D" parent="." unique_id=1235978866]
-position = Vector2(7, -3)
+texture = ExtResource("3_pehqh")
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="." unique_id=1370742347]

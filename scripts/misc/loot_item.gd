@@ -28,6 +28,7 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	# FIX: Only react visually and mechanically if the body is OUR local player
 	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
+		sprite.material.set_shader_parameter("is_outlined", true)
 		if body.has_method("register_interactable"):
 			body.register_interactable(self)
 		player_in_range = body
@@ -35,6 +36,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _on_body_exited(body: Node2D) -> void:
 	if body == player_in_range:
+		sprite.material.set_shader_parameter("is_outlined", false)
 		if body.has_method("unregister_interactable"):
 			body.unregister_interactable(self)
 		create_tween().tween_property(sprite, "scale", Vector2(1.0, 1.0), 0.1)

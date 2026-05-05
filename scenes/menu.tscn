@@ -52,3 +52,6 @@ fit_content = true
 [node name="StartGameButton" type="Button" parent="VBoxContainer" unique_id=752052072]
 layout_mode = 2
 text = "START GAME"
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=292153825]
+autoplay = true

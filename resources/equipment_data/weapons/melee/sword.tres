@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="EquipmentData" format=3 uid="uid://b441uhmj6si00"]
 
 [ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_bej7j"]
-[ext_resource type="Texture2D" uid="uid://e2l1avqlqga2" path="res://art/tiles/sword.png" id="2_hhfd0"]
+[ext_resource type="Texture2D" uid="uid://bykqmgo0jqt33" path="res://art/equipment/weapon/sprites/sword.png" id="2_hhfd0"]
 [ext_resource type="PackedScene" uid="uid://cjolbybxr0tjf" path="res://scenes/equipment/weapons/melee/sword.tscn" id="2_v3gxg"]
 
 [resource]
@@ -9,6 +9,7 @@ script = ExtResource("1_bej7j")
 item_name = "Sword"
 slot = "weapon"
 visual_scene = ExtResource("2_v3gxg")
+visual_id = "sword"
 sprite_texture = ExtResource("2_hhfd0")
 attack_style = 1
 damage_bonus = 15.0

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqav7tvv6cisp"
-path="res://.godot/imported/sword-swing.png-2b72eafc4431a37ce074840662405bcc.ctex"
+uid="uid://iyayjpmaic4e"
+path="res://.godot/imported/helmet_duck.png-aca4c3dd9fcad29422af442e18a6aa26.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/weapons/effects/sword-swing.png"
-dest_files=["res://.godot/imported/sword-swing.png-2b72eafc4431a37ce074840662405bcc.ctex"]
+source_file="res://art/equipment/head/helmet_duck.png"
+dest_files=["res://.godot/imported/helmet_duck.png-aca4c3dd9fcad29422af442e18a6aa26.ctex"]
 
 [params]
 
