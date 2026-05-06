@@ -114,16 +114,41 @@ bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i3pqv"]
 bg_color = Color(3.85046e-07, 0.736423, 0.823885, 1)
 
-[node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("sprite", "animation_tree")]
+[sub_resource type="Gradient" id="Gradient_onrkg"]
+colors = PackedColorArray(0.9297146, 0.9297147, 0.9297146, 1, 0.25490198, 0.25490198, 0.25490198, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_i3pqv"]
+gradient = SubResource("Gradient_onrkg")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hqtel"]
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 30.0
+initial_velocity_max = 60.0
+gravity = Vector3(0, 0, 0)
+damping_min = 50.000004
+damping_max = 50.000004
+scale_max = 4.0
+color_ramp = SubResource("GradientTexture1D_i3pqv")
+
+[node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer", "sprite", "animation_tree", "sfx_dodge", "sfx_channel", "sfx_success", "dodge_particles", "hotbar_container", "channel_bar")]
 y_sort_enabled = true
 collision_layer = 2
 script = ExtResource("1_onrkg")
+dodge_timer = NodePath("DodgeTimer")
 sprite = NodePath("AnimatedSprite2D")
 animation_tree = NodePath("AnimationTree")
+sfx_dodge = NodePath("SFXDodge")
+sfx_channel = NodePath("SFXChannel")
+sfx_success = NodePath("SFXSuccess")
+dodge_particles = NodePath("DodgeParticles")
+hotbar_container = NodePath("HUD/MarginContainer/HotbarContainer")
+channel_bar = NodePath("ChannelBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
 sprite_frames = SubResource("SpriteFrames_urp6f")
 animation = &"idle"
+frame_progress = 0.49071103
 offset = Vector2(0, -38)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=248887133]
@@ -171,3 +196,15 @@ show_percentage = false
 [node name="SFXChannel" type="AudioStreamPlayer2D" parent="." unique_id=1626897788]
 
 [node name="SFXSuccess" type="AudioStreamPlayer2D" parent="." unique_id=1355865740]
+
+[node name="DodgeParticles" type="GPUParticles2D" parent="." unique_id=1097265844]
+emitting = false
+amount = 30
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_hqtel")
+
+[node name="DodgeTimer" type="Timer" parent="." unique_id=541518265]
+one_shot = true
+
+[connection signal="timeout" from="DodgeTimer" to="." method="_on_dodge_timer_timeout"]

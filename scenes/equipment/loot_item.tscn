@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cmptdiwndoq1c"]
 
 [ext_resource type="Script" uid="uid://cm8patar5co3n" path="res://scripts/misc/loot_item.gd" id="1_wuk4u"]
-[ext_resource type="Texture2D" uid="uid://e2l1avqlqga2" path="res://art/tiles/sword.png" id="2_6m5kr"]
 [ext_resource type="Shader" uid="uid://dlnmsf80mg52e" path="res://shaders/outline.gdshader" id="2_a4lhv"]
+[ext_resource type="Texture2D" uid="uid://bykqmgo0jqt33" path="res://art/equipment/weapon/sprites/sword.png" id="3_6m5kr"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mt5ti"]
 resource_local_to_scene = true
@@ -12,7 +12,7 @@ shader_parameter/outline_width = 1.0
 shader_parameter/is_outlined = false
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_a4lhv"]
-radius = 16.0
+radius = 30.0
 
 [node name="LootItem" type="Area2D" unique_id=1865406233]
 collision_layer = 64
@@ -21,7 +21,7 @@ script = ExtResource("1_wuk4u")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=149729940]
 material = SubResource("ShaderMaterial_mt5ti")
-texture = ExtResource("2_6m5kr")
+texture = ExtResource("3_6m5kr")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=585133002]
 shape = SubResource("CircleShape2D_a4lhv")

@@ -1,22 +1,22 @@
 [gd_scene format=3 uid="uid://b7h2lf0hml4cd"]
 
 [ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/creature/cat.gd" id="1_52fj1"]
-[ext_resource type="Texture2D" uid="uid://3myklrdq3t8r" path="res://art/creature_sprites/cat-orange.png" id="1_hcucf"]
 [ext_resource type="Resource" uid="uid://cc6ecguht7jk2" path="res://resources/creature_data/cat_data.tres" id="2_6fl1u"]
 [ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_rt1jr"]
+[ext_resource type="Texture2D" uid="uid://di74o1n4sstgs" path="res://art/creature_sprites/cat/cat_base.png" id="4_rt1jr"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="4_w46py"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
-radius = 12.0
-height = 34.0
+radius = 6.0
+height = 106.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6fl1u"]
-radius = 12.0
-height = 34.0
+radius = 47.0
+height = 114.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w46py"]
-radius = 12.0
-height = 34.0
+radius = 47.0
+height = 114.0
 
 [sub_resource type="Animation" id="Animation_6fl1u"]
 length = 0.001
@@ -103,7 +103,7 @@ properties/2/path = NodePath(".:current_health")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "doll_weapon", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
@@ -116,7 +116,6 @@ doll_base = NodePath("PaperDoll/BaseSprite")
 doll_boots = NodePath("PaperDoll/BootsSprite")
 doll_armor = NodePath("PaperDoll/ArmorSprite")
 doll_head = NodePath("PaperDoll/HeadSprite")
-doll_weapon = NodePath("PaperDoll/WeaponSprite")
 body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
@@ -130,24 +129,28 @@ skill_container = NodePath("SkillContainer")
 material = ExtResource("3_rt1jr")
 
 [node name="BackSprite" type="Sprite2D" parent="PaperDoll" unique_id=888726358]
+position = Vector2(0, -64)
 
 [node name="BaseSprite" type="Sprite2D" parent="PaperDoll" unique_id=1760680003]
-scale = Vector2(2, 2)
-texture = ExtResource("1_hcucf")
+position = Vector2(0, -64)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("4_rt1jr")
 
 [node name="BootsSprite" type="Sprite2D" parent="PaperDoll" unique_id=17690099]
+position = Vector2(0, -64)
 
 [node name="ArmorSprite" type="Sprite2D" parent="PaperDoll" unique_id=144327291]
+position = Vector2(0, -64)
 
 [node name="HeadSprite" type="Sprite2D" parent="PaperDoll" unique_id=998181589]
-
-[node name="WeaponSprite" type="Sprite2D" parent="PaperDoll" unique_id=1231559352]
+position = Vector2(0, -64)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1607564269]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_52fj1")
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=595703484]
+position = Vector2(0, -52)
 collision_layer = 8
 collision_mask = 0
 
@@ -157,6 +160,7 @@ shape = SubResource("CapsuleShape2D_6fl1u")
 debug_color = Color(0, 0.64612925, 0.2515669, 0.41960785)
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=267291814]
+position = Vector2(0, -52)
 collision_layer = 16
 collision_mask = 8
 script = ExtResource("4_w46py")

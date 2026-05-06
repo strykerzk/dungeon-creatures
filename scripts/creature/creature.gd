@@ -119,6 +119,7 @@ func _initialize_base_stats() -> void:
 		max_health = stat_config.get("base_health") if stat_config.get("base_health") != null else 100.0
 		damage = stat_config.get("damage") if stat_config.get("damage") != null else 10.0
 		speed = stat_config.get("speed") if stat_config.get("speed") != null else 150.0
+		speed *= randf_range(0.9, 1.1) # Randomize for variance
 		IQ = stat_config.get("IQ") if stat_config.get("IQ") != null else 0.6
 		aggression = stat_config.get("aggression") if stat_config.get("aggression") != null else 0.5
 		dexterity = stat_config.get("dexterity") if stat_config.get("dexterity") != null else 1.0
@@ -524,7 +525,7 @@ func attack() -> void:
 	velocity = Vector2.ZERO
 	
 	# Dexterity influences wind-up time
-	await get_tree().create_timer(max(0.05, 0.3 / dexterity)).timeout 
+	await get_tree().create_timer(randf_range(0.05, 0.3 / dexterity)).timeout 
 	is_telegraphing = false
 	
 	var base_dir = look_direction
@@ -588,6 +589,7 @@ func _fire_projectile(direction: Vector2) -> void:
 func _on_attack_cooldown_finished() -> void:
 	if not is_inside_tree(): return
 	var cooldown = base_cooldown / max(0.1, (1.0 + (dexterity * 0.5)))
+	cooldown *= randf_range(0.85, 1.15) # Randomize for variance
 	await get_tree().create_timer(cooldown).timeout
 	can_attack = true
 

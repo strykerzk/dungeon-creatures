@@ -2,14 +2,16 @@ extends CharacterBody2D
 
 @export_category("Player Settings")
 @export_group("Movement Settings")
-@export var max_speed: float = 180.0
-@export var acceleration: float = 1200.0
-@export var friction: float = 1600.0
+@export var max_speed: float = 300.0
+@export var acceleration: float = 2000.0
+@export var friction: float = 2000.0
 
 @export_group("Dodge Roll Settings")
-@export var roll_speed: float = 450.0
+@export var roll_speed: float = 700.0
 @export var roll_duration: float = 0.35
-@export var roll_iframe_percent: float = 0.7 
+@export var roll_iframe_percent: float = 0.7
+@export var dodge_timer: Timer
+var can_roll: bool = true 
 
 @export_group("Interaction Settings")
 @export var required_channel_time: float = 1.5
@@ -17,13 +19,14 @@ extends CharacterBody2D
 @export_category("Node References")
 @export var sprite: AnimatedSprite2D
 @export var animation_tree: AnimationTree
-@onready var sfx_dodge: AudioStreamPlayer2D = $SFXDodge
-@onready var sfx_channel: AudioStreamPlayer2D = $SFXChannel
-@onready var sfx_success: AudioStreamPlayer2D = $SFXSuccess
+@export var sfx_dodge: AudioStreamPlayer2D
+@export var sfx_channel: AudioStreamPlayer2D
+@export var sfx_success: AudioStreamPlayer2D
+@export var dodge_particles: GPUParticles2D
 
 @export_category("UI References")
-@onready var hotbar_container: HBoxContainer = $HUD/MarginContainer/HotbarContainer
-@onready var channel_bar: ProgressBar = $ChannelBar
+@export var hotbar_container: HBoxContainer
+@export var channel_bar: ProgressBar
 var selected_slot_index: int = 0
 
 enum State { NORMAL, ROLLING, LOOTING }
@@ -122,7 +125,7 @@ func _handle_normal_state(delta: float) -> void:
 	
 	move_and_slide()
 	
-	if Input.is_action_just_pressed("dodge"):
+	if Input.is_action_just_pressed("dodge") and can_roll:
 		_start_roll()
 		
 	# Check for Interaction
@@ -161,7 +164,9 @@ func handle_animations() -> void:
 
 func _start_roll() -> void:
 	current_state = State.ROLLING
+	can_roll = false
 	is_invulnerable = true
+	dodge_particles.restart()
 	sfx_dodge.play()
 	velocity = roll_direction * roll_speed
 	
@@ -179,6 +184,10 @@ func _end_roll() -> void:
 	if current_state == State.ROLLING:
 		current_state = State.NORMAL
 		velocity *= 0.5
+	dodge_timer.start(0.8)
+
+func _on_dodge_timer_timeout() -> void:
+	can_roll = true
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 

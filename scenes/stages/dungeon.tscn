@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="7_6qlut"]
 [ext_resource type="Resource" uid="uid://b441uhmj6si00" path="res://resources/equipment_data/weapons/melee/sword.tres" id="8_g3byy"]
 [ext_resource type="Resource" uid="uid://bpgdogjqoy37x" path="res://resources/equipment_data/weapons/ranged/pistol.tres" id="9_2vmh0"]
+[ext_resource type="Resource" uid="uid://bih5j1yep2t4j" path="res://resources/equipment_data/head/helmet.tres" id="10_g3byy"]
 [ext_resource type="PackedScene" uid="uid://b6c3fkkgojbcj" path="res://scenes/dungeon_rooms/misc/escape_portal.tscn" id="11_6qlut"]
 
 [node name="Dungeon" type="Node2D" unique_id=234930827]
@@ -23,10 +24,9 @@ inner_room_scenes = Array[PackedScene]([ExtResource("3_cvwnr")])
 outer_room_scenes = Array[PackedScene]([ExtResource("4_3dlxy")])
 major_altar_scenes = Array[PackedScene]([ExtResource("5_cvwnr")])
 loot_item_scene = ExtResource("6_06edt")
-loot_pool = Array[ExtResource("7_6qlut")]([ExtResource("8_g3byy"), ExtResource("9_2vmh0")])
+loot_pool = Array[ExtResource("7_6qlut")]([ExtResource("8_g3byy"), ExtResource("9_2vmh0"), ExtResource("10_g3byy")])
 player_scene = ExtResource("5_1o2ik")
 escape_portal_scene = ExtResource("11_6qlut")
-grid_size = 3
 
 [node name="LivingCamera" type="Camera2D" parent="." unique_id=1166032401]
 

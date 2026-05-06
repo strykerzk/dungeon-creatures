@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
 [ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_ygove"]
 [ext_resource type="AudioStream" uid="uid://c4gqwkjk4gcq5" path="res://sounds/sfx/hit2.wav" id="6_tddeu"]
-[ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="7_i1lxh"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
 radius = 2.0
@@ -144,6 +143,8 @@ offset = Vector2(0, -43)
 [node name="HeadSprite" type="Sprite2D" parent="PaperDoll" unique_id=623093540]
 offset = Vector2(0, -43)
 
+[node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1247753892]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_p7nrc")
@@ -164,6 +165,10 @@ script = ExtResource("3_601gp")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1655568817]
 shape = SubResource("CapsuleShape2D_6a5ah")
 debug_color = Color(1, 0.003921569, 0, 0.41960785)
+
+[node name="WeaponMarker" type="Marker2D" parent="." unique_id=321023839]
+position = Vector2(-3, -35)
+rotation = 0.4223697
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1195328751]
 libraries/ = SubResource("AnimationLibrary_rhggd")
@@ -190,35 +195,6 @@ replication_config = SubResource("SceneReplicationConfig_6a5ah")
 stream = ExtResource("6_tddeu")
 
 [node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=269836624]
-stream = ExtResource("7_i1lxh")
 volume_db = -10.0
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1328682961]
-
-[node name="Button" type="Button" parent="." unique_id=1264972290]
-offset_left = 62.0
-offset_top = -73.0
-offset_right = 70.0
-offset_bottom = -65.0
-
-[node name="Button2" type="Button" parent="." unique_id=682515943]
-offset_left = 62.0
-offset_top = -59.0
-offset_right = 70.0
-offset_bottom = -51.0
-
-[node name="Button3" type="Button" parent="." unique_id=538243954]
-offset_left = 62.0
-offset_top = -47.0
-offset_right = 70.0
-offset_bottom = -39.0
-
-[node name="Camera2D" type="Camera2D" parent="." unique_id=2054170583]
-
-[node name="WeaponMarker" type="Marker2D" parent="." unique_id=321023839]
-position = Vector2(-3, -35)
-rotation = 0.4223697
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]
-[connection signal="pressed" from="Button3" to="." method="_on_button_3_pressed"]
