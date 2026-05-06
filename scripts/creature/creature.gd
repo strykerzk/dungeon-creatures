@@ -26,6 +26,9 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @export var nav_agent: NavigationAgent2D
 @export var nav_timer: Timer
 @export var los_ray: RayCast2D
+@export var whisker_front: RayCast2D
+@export var whisker_left: RayCast2D
+@export var whisker_right: RayCast2D
 
 # --- SIGNALS ---
 signal attack_started(attacker: Creature, defender: Creature)
@@ -313,7 +316,7 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	health_changed.emit(current_health, max_health)
 	
 	sfx_hit.pitch_scale = randf_range(0.9, 1.1)
-	sfx_hit.play()
+	sfx_hit.play(0.0)
 	
 	var shake_intensity: float = clamp(amount * 0.8, 3.0, 25.0)
 	rpc("client_trigger_shake", shake_intensity)
@@ -457,17 +460,20 @@ func movement(delta: float) -> void:
 	
 	# 1. Navigation: If too far for the INTENDED action or no LOS
 	if distance_to_target > target_range + 20.0 or not has_los:
-		# Add a small safety check so we don't jitter when arriving
 		if not nav_agent.is_navigation_finished():
 			var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
-			velocity = velocity.lerp(move_dir * (speed * speed_mult), acceleration * delta)
+			var target_vel = move_dir * (speed * speed_mult)
+			target_vel = _apply_whisker_avoidance(target_vel) # NEW: Steer away from corners!
+			velocity = velocity.lerp(target_vel, acceleration * delta)
 		else:
 			if not has_los:
-				velocity = velocity.lerp(dir_to_target * (speed * 0.5), acceleration * delta)
+				var target_vel = dir_to_target * (speed * 0.5)
+				target_vel = _apply_whisker_avoidance(target_vel)
+				velocity = velocity.lerp(target_vel, acceleration * delta)
 			else:
 				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
 	else:
-		# 2. Execution: If in range for the intended action
+		# 2. Execution
 		if can_attack:
 			attack()
 			return 
@@ -477,44 +483,61 @@ func movement(delta: float) -> void:
 			if (current_health / max_health) < 0.3: 
 				eff_retreat = 0.0 if aggression > 0.5 else eff_retreat * 2.0
 			
+			var target_vel = Vector2.ZERO
+			
 			if distance_to_target < eff_retreat:
 				var r_speed = 0.3
 				if current_attack_style == AttackStyle.RANGED: r_speed = 0.9 if not can_attack else 0.1
 				
-				var target_vel = -dir_to_target * (speed * r_speed)
-				
-				if get_slide_collision_count() > 0:
-					var normal = get_last_slide_collision().get_normal()
-					# NEW: Explicitly repel from the wall! (Slide + Push Outward)
-					target_vel = target_vel.slide(normal) + (normal * speed * 0.5)
-					
-					if get_real_velocity().length() < 15.0:
-						var escape_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
-						target_vel = escape_dir * (speed * r_speed)
-						
-				velocity = velocity.lerp(target_vel, acceleration * delta)
+				target_vel = -dir_to_target * (speed * r_speed)
 					
 			elif is_circling:
 				var side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
 				var range_correction = (distance_to_target - target_range) * 0.05
 				var circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
 				
-				var target_vel = circle_vector * (speed * 0.6 * speed_mult)
-				
-				if get_slide_collision_count() > 0:
-					var normal = get_last_slide_collision().get_normal()
-					# NEW: Explicitly repel from the wall! (Slide + Push Outward)
-					target_vel = target_vel.slide(normal) + (normal * speed * 0.5)
-					
-					# Reverse direction if we hit a wall relatively hard
-					if velocity.normalized().dot(normal) < -0.2: 
-						circle_direction *= -1
-				
-				velocity = velocity.lerp(target_vel, acceleration * delta)
-			else:
-				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+				target_vel = circle_vector * (speed * 0.6 * speed_mult)
+			
+			# Apply steering to spacing/circling so they smoothly slide along walls instead of jittering!
+			target_vel = _apply_whisker_avoidance(target_vel)
+			velocity = velocity.lerp(target_vel, acceleration * delta)
 				
 	move_and_slide()
+
+func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
+	if desired_velocity.length() < 1.0 or not whisker_front: 
+		return desired_velocity
+		
+	var avoidance = Vector2.ZERO
+	var hit_count = 0
+	var angle = desired_velocity.angle()
+	
+	# Point whiskers in the direction of movement, spread out slightly
+	whisker_front.global_rotation = angle
+	whisker_left.global_rotation = angle - 0.8
+	whisker_right.global_rotation = angle + 0.8
+	
+	whisker_front.force_raycast_update()
+	whisker_left.force_raycast_update()
+	whisker_right.force_raycast_update()
+	
+	# If a whisker hits a wall, add its push-back normal to our avoidance vector
+	if whisker_front.is_colliding():
+		avoidance += whisker_front.get_collision_normal() * 1.5 # Front hits push harder
+		hit_count += 1
+	if whisker_left.is_colliding():
+		avoidance += whisker_left.get_collision_normal()
+		hit_count += 1
+	if whisker_right.is_colliding():
+		avoidance += whisker_right.get_collision_normal()
+		hit_count += 1
+		
+	if hit_count > 0:
+		# Blend the desired direction with the wall's push-back
+		var steered_dir = (desired_velocity.normalized() + avoidance.normalized()).normalized()
+		return steered_dir * desired_velocity.length()
+		
+	return desired_velocity
 
 ## Refactored to execute either a skill or a standard weapon attack
 func attack() -> void:

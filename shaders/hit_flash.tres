@@ -3,6 +3,7 @@
 [ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="1_4opve"]
 
 [resource]
+resource_local_to_scene = true
 shader = ExtResource("1_4opve")
 shader_parameter/flash_modifier = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)

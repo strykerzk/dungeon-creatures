@@ -5,18 +5,17 @@
 [ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_rt1jr"]
 [ext_resource type="Texture2D" uid="uid://di74o1n4sstgs" path="res://art/creature_sprites/cat/cat_base.png" id="4_rt1jr"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="4_w46py"]
+[ext_resource type="AudioStream" uid="uid://c4gqwkjk4gcq5" path="res://sounds/sfx/hit2.wav" id="6_3j7ha"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
 radius = 6.0
 height = 106.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6fl1u"]
-radius = 47.0
-height = 114.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rt1jr"]
+size = Vector2(101, 103)
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w46py"]
-radius = 47.0
-height = 114.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3j7ha"]
+size = Vector2(101, 103)
 
 [sub_resource type="Animation" id="Animation_6fl1u"]
 length = 0.001
@@ -103,7 +102,7 @@ properties/2/path = NodePath(".:current_health")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
@@ -120,57 +119,62 @@ body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")
 los_ray = NodePath("LOSRay")
+whisker_front = NodePath("Whiskers/Front")
+whisker_left = NodePath("Whiskers/Left")
+whisker_right = NodePath("Whiskers/Right")
 sfx_hit = NodePath("SFXHit")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
 skill_container = NodePath("SkillContainer")
 
+[node name="SkillContainer" type="Node2D" parent="." unique_id=265705832]
+
 [node name="PaperDoll" type="CanvasGroup" parent="." unique_id=1379841005]
 material = ExtResource("3_rt1jr")
 
 [node name="BackSprite" type="Sprite2D" parent="PaperDoll" unique_id=888726358]
-position = Vector2(0, -64)
+position = Vector2(0, -58)
 
 [node name="BaseSprite" type="Sprite2D" parent="PaperDoll" unique_id=1760680003]
-position = Vector2(0, -64)
+position = Vector2(0, -58)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("4_rt1jr")
 
 [node name="BootsSprite" type="Sprite2D" parent="PaperDoll" unique_id=17690099]
-position = Vector2(0, -64)
+position = Vector2(0, -58)
 
 [node name="ArmorSprite" type="Sprite2D" parent="PaperDoll" unique_id=144327291]
-position = Vector2(0, -64)
+position = Vector2(0, -58)
 
 [node name="HeadSprite" type="Sprite2D" parent="PaperDoll" unique_id=998181589]
-position = Vector2(0, -64)
+position = Vector2(0, -58)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1607564269]
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_52fj1")
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=595703484]
-position = Vector2(0, -52)
+position = Vector2(0, -48)
 collision_layer = 8
 collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=439714809]
+position = Vector2(3.5, 1.5)
 rotation = 1.5707964
-shape = SubResource("CapsuleShape2D_6fl1u")
+shape = SubResource("RectangleShape2D_rt1jr")
 debug_color = Color(0, 0.64612925, 0.2515669, 0.41960785)
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=267291814]
-position = Vector2(0, -52)
+position = Vector2(0, -48)
 collision_layer = 16
 collision_mask = 8
 script = ExtResource("4_w46py")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=686162303]
+position = Vector2(3.5, 1.5)
 rotation = 1.5707964
-shape = SubResource("CapsuleShape2D_w46py")
+shape = SubResource("RectangleShape2D_3j7ha")
 debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
-
-[node name="SkillContainer" type="Node2D" parent="." unique_id=265705832]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=336441858]
 libraries/ = SubResource("AnimationLibrary_2hdoq")
@@ -181,14 +185,25 @@ advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 "parameters/Sprite Flip/blend_position" = -1.0
 
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=327231989]
-path_desired_distance = 5.0
-target_desired_distance = 100.0
-path_postprocessing = 1
-
 [node name="NavTimer" type="Timer" parent="." unique_id=1058623270]
 wait_time = 0.1
 autostart = true
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=669523980]
+path_desired_distance = 5.0
+target_desired_distance = 60.0
+debug_enabled = true
+
+[node name="Whiskers" type="Node2D" parent="." unique_id=1399885524]
+
+[node name="Front" type="RayCast2D" parent="Whiskers" unique_id=342387014]
+target_position = Vector2(100, 0)
+
+[node name="Left" type="RayCast2D" parent="Whiskers" unique_id=1418464618]
+target_position = Vector2(100, 0)
+
+[node name="Right" type="RayCast2D" parent="Whiskers" unique_id=181162159]
+target_position = Vector2(100, 0)
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=503088827]
 
@@ -196,6 +211,7 @@ autostart = true
 replication_config = SubResource("SceneReplicationConfig_fkb2k")
 
 [node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=117175611]
+stream = ExtResource("6_3j7ha")
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=2090440747]
 

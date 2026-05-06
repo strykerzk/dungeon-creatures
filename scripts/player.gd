@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export_category("Player Settings")
 @export_group("Movement Settings")
 @export var max_speed: float = 300.0
-@export var acceleration: float = 2000.0
+@export var acceleration: float = 4000.0
 @export var friction: float = 2000.0
 
 @export_group("Dodge Roll Settings")
