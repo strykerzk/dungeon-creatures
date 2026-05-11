@@ -4,7 +4,7 @@ class_name CreatureData extends Resource
 @export var name: String = "Creature"
 @export var base_health: float = 100.0
 @export var damage: float = 10.0
-@export var speed: float = 200.0
+@export var speed: float = 250.0
 @export var IQ: int = 5
 @export var aggression: float = 0.5   # 0 to 1: Likelihood to circle vs idle
 @export var dexterity: float = 1.0    # Affects telegraph speed and dash power
@@ -15,7 +15,7 @@ class_name CreatureData extends Resource
 @export_group("Stat Mininum and Maximums")
 @export var min_health: float = 1.0
 @export var min_speed: float = 50.0
-@export var max_speed: float = 600.0
+@export var max_speed: float = 800.0
 @export var min_damage: float = 1.0
 @export var max_damage: float = 100.0
 @export var min_IQ: int = 1

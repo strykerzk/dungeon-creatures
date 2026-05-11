@@ -200,13 +200,13 @@ autostart = true
 [node name="Whiskers" type="Node2D" parent="." unique_id=1123665604]
 
 [node name="Front" type="RayCast2D" parent="Whiskers" unique_id=1102665283]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="Left" type="RayCast2D" parent="Whiskers" unique_id=1588111548]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="Right" type="RayCast2D" parent="Whiskers" unique_id=500808500]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=28601178]
 

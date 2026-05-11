@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dabijfcydblyl"
-path="res://.godot/imported/temp_kenney_wall.png-8ca0a824f490c282be7db3982fd5494e.ctex"
+uid="uid://brae8chyy8vch"
+path="res://.godot/imported/kenny_dungeon_tilemap_64x64_doors.png-dd5438fd1a80be13d65170e5dbeedebc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/dungeon_sprites/temp_kenney_wall.png"
-dest_files=["res://.godot/imported/temp_kenney_wall.png-8ca0a824f490c282be7db3982fd5494e.ctex"]
+source_file="res://aseprite_saves/kenny_dungeon_tilemap_64x64_doors.png"
+dest_files=["res://.godot/imported/kenny_dungeon_tilemap_64x64_doors.png-dd5438fd1a80be13d65170e5dbeedebc.ctex"]
 
 [params]
 

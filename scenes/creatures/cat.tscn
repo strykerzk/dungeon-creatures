@@ -197,13 +197,13 @@ debug_enabled = true
 [node name="Whiskers" type="Node2D" parent="." unique_id=1399885524]
 
 [node name="Front" type="RayCast2D" parent="Whiskers" unique_id=342387014]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="Left" type="RayCast2D" parent="Whiskers" unique_id=1418464618]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="Right" type="RayCast2D" parent="Whiskers" unique_id=181162159]
-target_position = Vector2(100, 0)
+target_position = Vector2(130, 0)
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=503088827]
 

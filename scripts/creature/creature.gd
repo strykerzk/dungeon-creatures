@@ -90,6 +90,7 @@ var is_dashing: bool = false
 var is_telegraphing: bool = false 
 var is_recovering: bool = false 
 var is_invulnerable: bool = false
+var is_dodging: bool = false
 
 # --- TEST OVERRIDES ---
 @export_group("Test Overrides")
@@ -121,7 +122,7 @@ func _initialize_base_stats() -> void:
 		species = stat_config.name
 		max_health = stat_config.get("base_health") if stat_config.get("base_health") != null else 100.0
 		damage = stat_config.get("damage") if stat_config.get("damage") != null else 10.0
-		speed = stat_config.get("speed") if stat_config.get("speed") != null else 150.0
+		speed = stat_config.get("speed") if stat_config.get("speed") != null else 250.0
 		speed *= randf_range(0.9, 1.1) # Randomize for variance
 		IQ = stat_config.get("IQ") if stat_config.get("IQ") != null else 0.6
 		aggression = stat_config.get("aggression") if stat_config.get("aggression") != null else 0.5
@@ -153,7 +154,7 @@ func _physics_process(delta: float) -> void:
 	if los_ray:
 		los_ray.target_position = los_ray.to_local(target.global_position)
 
-	if is_attacking:
+	if is_attacking or is_dodging:
 		if not is_dashing:
 			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
 		move_and_slide()
@@ -304,9 +305,9 @@ func recalculate_stats() -> void:
 
 func _update_attack_range_by_style() -> void:
 	match current_attack_style:
-		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 150.0 * size
-		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 200.0 * size
-		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 500.0
+		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 250.0 * size
+		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 350.0 * size
+		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 800.0
 
 func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	if not multiplayer.is_server(): return
@@ -383,23 +384,23 @@ func has_line_of_sight() -> bool:
 	return !los_ray.is_colliding() or los_ray.get_collider() == target
 
 func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> void:
-	if defender != self or is_attacking: return
+	if defender != self or is_attacking or is_dodging: return
 	var dodge_chance = 0.15 + (IQ * 0.07)
 	if (current_health / max_health) < 0.3 and aggression > 0.5: dodge_chance *= 0.2 
 	if randf() < dodge_chance: dodge(attacker_node)
 
 func dodge(attacker_node: Creature) -> void:
-	is_attacking = true 
+	is_dodging = true 
 	is_dashing = true
 	sfx_dodge.play()
 	var attack_dir = attacker_node.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
-	var dodge_distance = (150.0 + (speed * 0.2) + (20.0 * dexterity)) / max(0.5, size)
+	var dodge_distance = (250.0 + (speed * 0.2) + (40.0 * dexterity)) / max(0.5, size)
 	velocity = dodge_dir * (dodge_distance / 0.2)
 	await get_tree().create_timer(0.2).timeout
 	is_dashing = false
 	await get_tree().create_timer(0.1).timeout
-	is_attacking = false
+	is_dodging = false
 
 func _update_behavior_timer(delta: float) -> void:
 	behavior_timer += delta
@@ -497,11 +498,13 @@ func movement(delta: float) -> void:
 				var circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
 				
 				target_vel = circle_vector * (speed * 0.6 * speed_mult)
+			else:
+				target_vel = dir_to_target * (speed * 0.2)
 			
 			# Apply steering to spacing/circling so they smoothly slide along walls instead of jittering!
 			target_vel = _apply_whisker_avoidance(target_vel)
 			velocity = velocity.lerp(target_vel, acceleration * delta)
-				
+			
 	move_and_slide()
 
 func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
@@ -514,8 +517,8 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 	
 	# Point whiskers in the direction of movement, spread out slightly
 	whisker_front.global_rotation = angle
-	whisker_left.global_rotation = angle - 0.8
-	whisker_right.global_rotation = angle + 0.8
+	whisker_left.global_rotation = angle - 1.0
+	whisker_right.global_rotation = angle + 1.0
 	
 	whisker_front.force_raycast_update()
 	whisker_left.force_raycast_update()
@@ -541,7 +544,7 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 
 ## Refactored to execute either a skill or a standard weapon attack
 func attack() -> void:
-	if is_attacking or not current_intended_action: return
+	if is_attacking or is_dodging or not current_intended_action: return
 	is_attacking = true
 	can_attack = false
 	is_telegraphing = true

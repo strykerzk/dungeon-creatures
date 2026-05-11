@@ -2,9 +2,9 @@ extends CharacterBody2D
 
 @export_category("Player Settings")
 @export_group("Movement Settings")
-@export var max_speed: float = 300.0
-@export var acceleration: float = 4000.0
-@export var friction: float = 2000.0
+@export var max_speed: float = 400.0
+@export var acceleration: float = 8000.0
+@export var friction: float = 8000.0
 
 @export_group("Dodge Roll Settings")
 @export var roll_speed: float = 700.0
@@ -63,7 +63,27 @@ func _ready() -> void:
 	_apply_spawn_handicap()
 
 func _physics_process(delta: float) -> void:
+	# 1. VISUAL TIMER: Runs on ALL machines so everyone sees the bar drop!
+	if spawn_lock_timer > 0:
+		spawn_lock_timer -= delta
+		if channel_bar:
+			channel_bar.value = (spawn_lock_timer / max_spawn_lock) * 100.0
+			
+		if spawn_lock_timer <= 0:
+			if channel_bar: channel_bar.hide()
+			if is_multiplayer_authority():
+				_show_feedback("Lock released! GO!")
+
+	# 2. PHYSICAL MOVEMENT: Only runs on the local player's machine
 	if is_multiplayer_authority():
+		# The Lock
+		if spawn_lock_timer > 0:
+			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			move_and_slide()
+			handle_animations()
+			return # Skip all other state logic while locked!
+
+		# Normal State Machine
 		match current_state:
 			State.NORMAL:
 				_handle_normal_state(delta)
@@ -71,11 +91,11 @@ func _physics_process(delta: float) -> void:
 				_handle_roll_state(delta)
 			State.LOOTING:
 				_handle_looting_state(delta)
-	
-	handle_animations()
+				
+		handle_animations()
 
 func _apply_spawn_handicap() -> void:
-	if not is_multiplayer_authority() or typeof(CreatureManager) == TYPE_NIL: return
+	if typeof(CreatureManager) == TYPE_NIL: return
 	
 	var my_id = name.to_int()
 	var profile = CreatureManager.get_profile(my_id)
@@ -99,20 +119,6 @@ func _apply_spawn_handicap() -> void:
 			channel_bar.value = 100.0
 
 func _handle_normal_state(delta: float) -> void:
-	# NEW: The Spawn Lock logic (Reusing the channel bar to show time remaining!)
-	if spawn_lock_timer > 0:
-		spawn_lock_timer -= delta
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-		move_and_slide()
-		
-		if channel_bar:
-			channel_bar.value = (spawn_lock_timer / max_spawn_lock) * 100.0
-			
-		if spawn_lock_timer <= 0:
-			if channel_bar: channel_bar.hide()
-			_show_feedback("Lock released! GO!")
-		return # Exit early so they can't do anything else!
-
 	# --- Normal Movement ---
 	var input = Input.get_vector("left", "right", "up", "down")
 	
@@ -177,7 +183,7 @@ func _start_roll() -> void:
 	_end_roll()
 
 func _handle_roll_state(delta: float) -> void:
-	velocity = velocity.move_toward(Vector2.ZERO, (friction * 0.4) * delta)
+	#velocity = velocity.move_toward(Vector2.ZERO, (friction * 0.4) * delta)
 	move_and_slide()
 
 func _end_roll() -> void:
