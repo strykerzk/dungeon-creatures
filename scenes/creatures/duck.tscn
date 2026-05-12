@@ -4,12 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
 [ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
+[ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="3_tddeu"]
 [ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_ygove"]
 [ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="6_rhggd"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
 radius = 6.0
-height = 110.0
+height = 12.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_601gp"]
 radius = 57.0
@@ -24,7 +25,7 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:scale")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -36,7 +37,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("PaperDoll:rotation")
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -48,7 +49,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("PaperDoll:position")
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -64,14 +65,14 @@ length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:rotation")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.35),
-"transitions": PackedFloat32Array(0.5, 2),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [0.0, -6.283185307179586]
+"values": [0.0, -6.2831855]
 }
 
 [sub_resource type="Animation" id="Animation_i1lxh"]
@@ -80,12 +81,12 @@ length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:rotation")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.35),
-"transitions": PackedFloat32Array(0.5, 2),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [0.0, 6.2831855]
 }
@@ -97,7 +98,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:scale")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -105,6 +106,18 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(-2, -2, -2),
 "update": 0,
 "values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
 }
 
 [sub_resource type="Animation" id="Animation_1bhmw"]
@@ -114,11 +127,11 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:rotation")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
 "values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
@@ -126,11 +139,23 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("PaperDoll:position")
+tracks/1/path = NodePath("FlipContainer/PaperDoll:scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
 "values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
@@ -142,24 +167,24 @@ length = 0.2
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll:scale")
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.10000001),
-"transitions": PackedFloat32Array(1, 1),
+"transitions": PackedFloat32Array(0.5, 2),
 "update": 0,
 "values": [Vector2(1, 1), Vector2(1.15, 0.8)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("PaperDoll:rotation")
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.10000001),
-"transitions": PackedFloat32Array(1, 1),
+"transitions": PackedFloat32Array(0.5, 2),
 "update": 0,
 "values": [0.0, -0.08726646]
 }
@@ -199,11 +224,11 @@ y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
 stat_config = ExtResource("2_6a5ah")
-doll_back = NodePath("PaperDoll/BackSprite")
-doll_base = NodePath("PaperDoll/BaseSprite")
-doll_boots = NodePath("PaperDoll/BootsSprite")
-doll_armor = NodePath("PaperDoll/ArmorSprite")
-doll_head = NodePath("PaperDoll/HeadSprite")
+doll_back = NodePath("FlipContainer/PaperDoll/BackSprite")
+doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
+doll_boots = NodePath("FlipContainer/PaperDoll/BootsSprite")
+doll_armor = NodePath("FlipContainer/PaperDoll/ArmorSprite")
+doll_head = NodePath("FlipContainer/PaperDoll/HeadSprite")
 weapon_marker = NodePath("WeaponMarker")
 body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
@@ -215,32 +240,35 @@ whisker_right = NodePath("Whiskers/Right")
 sfx_hit = NodePath("SFXHit")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
+dmg_number_scene = ExtResource("3_tddeu")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
 
-[node name="PaperDoll" type="CanvasGroup" parent="." unique_id=200071240]
+[node name="FlipContainer" type="Node2D" parent="." unique_id=520853665]
+
+[node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=200071240]
 unique_name_in_owner = true
 material = ExtResource("3_ygove")
 
-[node name="BackSprite" type="Sprite2D" parent="PaperDoll" unique_id=1436436277]
+[node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1436436277]
 position = Vector2(0, -41.25)
 offset = Vector2(0, -43)
 
-[node name="BaseSprite" type="Sprite2D" parent="PaperDoll" unique_id=1402462917]
+[node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1402462917]
 position = Vector2(0, -41.25)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_sqg2a")
 offset = Vector2(0, -43)
 
-[node name="BootsSprite" type="Sprite2D" parent="PaperDoll" unique_id=658788089]
+[node name="BootsSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=658788089]
 position = Vector2(0, -41.25)
 offset = Vector2(0, -43)
 
-[node name="ArmorSprite" type="Sprite2D" parent="PaperDoll" unique_id=741559932]
+[node name="ArmorSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=741559932]
 position = Vector2(0, -41.25)
 offset = Vector2(0, -43)
 
-[node name="HeadSprite" type="Sprite2D" parent="PaperDoll" unique_id=623093540]
+[node name="HeadSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=623093540]
 position = Vector2(0, -41.25)
 offset = Vector2(0, -43)
 
@@ -275,7 +303,6 @@ libraries/ = SubResource("AnimationLibrary_i1lxh")
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
 path_desired_distance = 40.0
 target_desired_distance = 60.0
-debug_enabled = true
 debug_path_custom_color = Color(4.5724214e-06, 0.63863575, 0.23768821, 1)
 
 [node name="NavTimer" type="Timer" parent="." unique_id=421130563]

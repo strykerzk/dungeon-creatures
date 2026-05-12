@@ -8,6 +8,7 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 # --- EQUIPMENT SLOTS & PAPER DOLL REFS ---
 @export_group("Paper Doll Sprites")
 @onready var paper_doll: CanvasGroup = %PaperDoll
+@onready var flip_container: Node2D = $FlipContainer
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @export var doll_back: Sprite2D
 @export var doll_base: Sprite2D
@@ -41,6 +42,10 @@ signal died()
 @export var sfx_hit: AudioStreamPlayer2D
 @export var sfx_attack: AudioStreamPlayer2D
 @export var sfx_dodge: AudioStreamPlayer2D
+
+# --- VFX REFS ---
+@export_group("Visual Effects")
+@export var dmg_number_scene: PackedScene
 
 # --- CORE STATS ---
 var max_health: float = 100.0
@@ -169,11 +174,11 @@ func _process(delta: float) -> void:
 		if weapon_node and weapon_node.has_method("look_at_direction"):
 			weapon_node.look_at_direction(look_direction)
 	
-	if paper_doll:
+	if flip_container:
 		if look_direction.x < 0:
-			paper_doll.scale.x = -1
+			flip_container.scale.x = -1
 		else:
-			paper_doll.scale.x = 1
+			flip_container.scale.x = 1
 
 	# --- NEW: Procedural Animation Handling ---
 	if animation_player:
@@ -336,6 +341,8 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
 	
+	rpc("client_spawn_damage_number", amount)
+	
 	sfx_hit.pitch_scale = randf_range(0.9, 1.1)
 	sfx_hit.play()
 	
@@ -346,6 +353,22 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	else:
 		_trigger_hit_iframe()
 		search_for_target(attacker_ref)
+
+@rpc("authority", "call_local", "unreliable")
+func client_spawn_damage_number(amount: float) -> void:
+	if not dmg_number_scene: return
+	
+	var dmg_num = dmg_number_scene.instantiate()
+	dmg_num.amount = amount
+	
+	# Add it to the Arena/Dungeon, NOT the Creature. 
+	# If we add it to the creature, it will move with them while they run!
+	get_tree().current_scene.add_child(dmg_num)
+	
+	# Spawn it slightly above their head, with a tiny bit of random jitter 
+	# so multiple hits don't stack perfectly on top of each other
+	var jitter = Vector2(randf_range(-15, 15), randf_range(-15, 15))
+	dmg_num.global_position = global_position + jitter - Vector2(0, 40)
 
 func _trigger_hit_iframe() -> void:
 	is_invulnerable = true
