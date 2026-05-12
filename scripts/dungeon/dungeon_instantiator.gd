@@ -21,7 +21,7 @@ extends Node2D
 @export_group("Generation Settings")
 @export var grid_size: int = 5
 @export var room_width: float = 1920.0 
-@export var room_height: float = 1080.0 
+@export var room_height: float = 1152.0 
 
 var generator = DungeonGenerator.new()
 @onready var living_camera = $"../LivingCamera" 

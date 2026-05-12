@@ -19,79 +19,130 @@ height = 114.0
 radius = 57.0
 height = 114.0
 
-[sub_resource type="Animation" id="Animation_601gp"]
+[sub_resource type="Animation" id="Animation_rhggd"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
+tracks/0/path = NodePath("PaperDoll:scale")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_6a5ah"]
-resource_name = "sprite_left"
+[sub_resource type="Animation" id="Animation_tg834"]
+resource_name = "dodge_back"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
+tracks/0/path = NodePath("PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [0.0, -6.283185307179586]
 }
 
-[sub_resource type="Animation" id="Animation_ygove"]
-resource_name = "sprite_right"
+[sub_resource type="Animation" id="Animation_i1lxh"]
+resource_name = "dodge_forward"
+length = 0.35
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("PaperDoll/BaseSprite:flip_h")
+tracks/0/path = NodePath("PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [0.0, 6.2831855]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_rhggd"]
+[sub_resource type="Animation" id="Animation_tddeu"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_1bhmw"]
+resource_name = "run"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PaperDoll:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_i1lxh"]
 _data = {
-&"RESET": SubResource("Animation_601gp"),
-&"sprite_left": SubResource("Animation_6a5ah"),
-&"sprite_right": SubResource("Animation_ygove")
+&"RESET": SubResource("Animation_rhggd"),
+&"dodge_back": SubResource("Animation_tg834"),
+&"dodge_forward": SubResource("Animation_i1lxh"),
+&"idle": SubResource("Animation_tddeu"),
+&"run": SubResource("Animation_1bhmw")
 }
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_601gp"]
-animation = &"sprite_left"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6a5ah"]
-animation = &"sprite_right"
-
-[sub_resource type="AnimationNodeBlendSpace1D" id="AnimationNodeBlendSpace1D_ygove"]
-blend_point_0/node = SubResource("AnimationNodeAnimation_601gp")
-blend_point_0/pos = -1.0
-blend_point_1/node = SubResource("AnimationNodeAnimation_6a5ah")
-blend_point_1/pos = 1.0
-blend_mode = 1
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_rhggd"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_601gp"]
-"states/Sprite Flip/node" = SubResource("AnimationNodeBlendSpace1D_ygove")
-"states/Sprite Flip/position" = Vector2(445.5, 100)
-states/Start/position = Vector2(240, 100)
-transitions = ["Start", "Sprite Flip", SubResource("AnimationNodeStateMachineTransition_rhggd")]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6a5ah"]
 properties/0/path = NodePath(".:global_position")
@@ -103,12 +154,18 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath(".:current_health")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath(".:velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:is_dodging")
+properties/4/spawn = true
+properties/4/replication_mode = 1
 
 [node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
-animation_tree = NodePath("AnimationTree")
+animation_tree = NodePath("")
 stat_config = ExtResource("2_6a5ah")
 doll_back = NodePath("PaperDoll/BackSprite")
 doll_base = NodePath("PaperDoll/BaseSprite")
@@ -130,6 +187,7 @@ sfx_dodge = NodePath("SFXDodge")
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
 
 [node name="PaperDoll" type="CanvasGroup" parent="." unique_id=200071240]
+unique_name_in_owner = true
 material = ExtResource("3_ygove")
 
 [node name="BackSprite" type="Sprite2D" parent="PaperDoll" unique_id=1436436277]
@@ -179,13 +237,8 @@ debug_color = Color(1, 0.003921569, 0, 0.41960785)
 position = Vector2(-3, -35)
 rotation = 0.4223697
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1195328751]
-libraries/ = SubResource("AnimationLibrary_rhggd")
-
-[node name="AnimationTree" type="AnimationTree" parent="." unique_id=134393038]
-tree_root = SubResource("AnimationNodeStateMachine_601gp")
-anim_player = NodePath("../AnimationPlayer")
-"parameters/Sprite Flip/blend_position" = -0.5633383
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=688169428]
+libraries/ = SubResource("AnimationLibrary_i1lxh")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
 path_desired_distance = 40.0

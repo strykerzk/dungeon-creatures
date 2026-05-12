@@ -16,6 +16,12 @@ var can_roll: bool = true
 @export_group("Interaction Settings")
 @export var required_channel_time: float = 1.5
 
+@export_group("Hazard Settings")
+@onready var hazard_detector: Area2D = %HazardDetector
+var last_safe_position: Vector2 = Vector2.ZERO
+var safe_timer: float = 0.0
+var is_falling: bool = false
+
 @export_category("Node References")
 @export var sprite: AnimatedSprite2D
 @export var animation_tree: AnimationTree
@@ -34,6 +40,7 @@ var current_state: State = State.NORMAL
 
 var roll_direction: Vector2 = Vector2.DOWN
 var is_invulnerable: bool = false
+var is_stunned: bool = false
 var last_facing_direction: Vector2 = Vector2.DOWN
 
 var inventory: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
@@ -55,6 +62,8 @@ func _enter_tree() -> void:
 		$HUD.hide()
 
 func _ready() -> void:
+	last_safe_position = global_position
+	
 	_update_hotbar_ui()
 	if channel_bar:
 		channel_bar.hide()
@@ -76,6 +85,12 @@ func _physics_process(delta: float) -> void:
 
 	# 2. PHYSICAL MOVEMENT: Only runs on the local player's machine
 	if is_multiplayer_authority():
+		if is_falling or is_stunned:
+			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			move_and_slide()
+			handle_animations()
+			return
+		
 		# The Lock
 		if spawn_lock_timer > 0:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
@@ -93,6 +108,23 @@ func _physics_process(delta: float) -> void:
 				_handle_looting_state(delta)
 				
 		handle_animations()
+	
+	# 3. HAZARD DETECTION
+	if is_multiplayer_authority() and not is_falling and not is_stunned:
+		var touching_void = hazard_detector.has_overlapping_bodies()
+		
+		if touching_void:
+			safe_timer = 0.0 
+			if current_state != State.ROLLING:
+				_trigger_fall()
+		else:
+			if current_state == State.NORMAL:
+				safe_timer += delta
+				if safe_timer >= 0.5:
+					last_safe_position = global_position
+					safe_timer = 0.0
+			else:
+				safe_timer = 0.0
 
 func _apply_spawn_handicap() -> void:
 	if typeof(CreatureManager) == TYPE_NIL: return
@@ -194,6 +226,54 @@ func _end_roll() -> void:
 
 func _on_dodge_timer_timeout() -> void:
 	can_roll = true
+
+func _trigger_fall() -> void:
+	is_falling = true
+	current_state = State.NORMAL # Cancel any looting/interactions
+	velocity = Vector2.ZERO
+	
+	# Optional: Play a falling sound here!
+	
+	# Visual Feedback: Shrink and fade the sprite to simulate falling into the pit
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(sprite, "scale", Vector2.ZERO, 0.5)
+	tween.tween_property(sprite, "modulate:a", 0.0, 0.5)
+	
+	await get_tree().create_timer(0.6).timeout
+	
+	_respawn_from_fall()
+
+func _respawn_from_fall() -> void:
+	# Teleport to the last known safe ground
+	global_position = last_safe_position
+	
+	# Reset visuals
+	sprite.scale = Vector2.ONE
+	sprite.modulate.a = 1.0
+	
+	# Apply Penalty (Using the screen shake RPC from the creature system!)
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.screen_shake_requested.emit(8.0)
+		
+	_show_feedback("Fell into the void!")
+	
+	await get_tree().create_timer(0.1).timeout
+	is_falling = false
+	is_stunned = true
+	is_invulnerable = true
+	
+	# Blinking effect (loops 4 times: 0.2s * 4 = 0.8s total)
+	var blink_tween = create_tween().set_loops(4)
+	blink_tween.tween_property(sprite, "modulate:a", 0.2, 0.1)
+	blink_tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
+	
+	# Stun lock duration (Player cannot move for 0.4 seconds)
+	await get_tree().create_timer(0.4).timeout
+	is_stunned = false
+	
+	# Remaining invulnerability while blinking finishes
+	await get_tree().create_timer(0.4).timeout
+	is_invulnerable = false
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 

@@ -131,6 +131,9 @@ damping_max = 50.000004
 scale_max = 4.0
 color_ramp = SubResource("GradientTexture1D_i3pqv")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_onrkg"]
+radius = 1.4142135
+
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer", "sprite", "animation_tree", "sfx_dodge", "sfx_channel", "sfx_success", "dodge_particles", "hotbar_container", "channel_bar")]
 y_sort_enabled = true
 collision_layer = 2
@@ -146,6 +149,7 @@ hotbar_container = NodePath("HUD/MarginContainer/HotbarContainer")
 channel_bar = NodePath("ChannelBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
+y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_urp6f")
 animation = &"idle"
 frame_progress = 0.49071103
@@ -206,5 +210,13 @@ process_material = SubResource("ParticleProcessMaterial_hqtel")
 
 [node name="DodgeTimer" type="Timer" parent="." unique_id=541518265]
 one_shot = true
+
+[node name="HazardDetector" type="Area2D" parent="." unique_id=1087353062]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 256
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardDetector" unique_id=539559882]
+shape = SubResource("CircleShape2D_onrkg")
 
 [connection signal="timeout" from="DodgeTimer" to="." method="_on_dodge_timer_timeout"]

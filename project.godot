@@ -113,6 +113,7 @@ cycle_right={
 2d_physics/layer_6="Projectile"
 2d_physics/layer_7="Items"
 2d_physics/layer_8="Interactable"
+2d_physics/layer_9="Hazards"
 
 [physics]
 

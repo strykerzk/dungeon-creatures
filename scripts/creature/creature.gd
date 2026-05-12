@@ -7,7 +7,8 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 
 # --- EQUIPMENT SLOTS & PAPER DOLL REFS ---
 @export_group("Paper Doll Sprites")
-@onready var paper_doll: CanvasGroup = $PaperDoll
+@onready var paper_doll: CanvasGroup = %PaperDoll
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 @export var doll_back: Sprite2D
 @export var doll_base: Sprite2D
 @export var doll_boots: Sprite2D
@@ -174,6 +175,20 @@ func _process(delta: float) -> void:
 		else:
 			paper_doll.scale.x = 1
 
+	# --- NEW: Procedural Animation Handling ---
+	if animation_player:
+		if is_dodging:
+			# Dot Product: Returns > 0 if facing the same way we are moving, < 0 if opposite
+			var dot_prod = velocity.normalized().dot(look_direction.normalized())
+			if dot_prod >= 0:
+				animation_player.play("dodge_forward")
+			else:
+				animation_player.play("dodge_back")
+		elif velocity != Vector2.ZERO:
+			animation_player.play("run")
+		else:
+			animation_player.play("idle")
+
 
 func setup_physics_layers() -> void:
 	set_collision_layer_value(1, false)
@@ -317,7 +332,7 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	health_changed.emit(current_health, max_health)
 	
 	sfx_hit.pitch_scale = randf_range(0.9, 1.1)
-	sfx_hit.play(0.0)
+	sfx_hit.play()
 	
 	var shake_intensity: float = clamp(amount * 0.8, 3.0, 25.0)
 	rpc("client_trigger_shake", shake_intensity)
