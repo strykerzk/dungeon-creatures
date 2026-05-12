@@ -19,6 +19,7 @@ var can_roll: bool = true
 @export_group("Hazard Settings")
 @onready var hazard_detector: Area2D = %HazardDetector
 var last_safe_position: Vector2 = Vector2.ZERO
+var delayed_safe_position: Vector2 = Vector2.ZERO
 var safe_timer: float = 0.0
 var is_falling: bool = false
 
@@ -63,6 +64,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	last_safe_position = global_position
+	delayed_safe_position = global_position
 	
 	_update_hotbar_ui()
 	if channel_bar:
@@ -121,7 +123,8 @@ func _physics_process(delta: float) -> void:
 			if current_state == State.NORMAL:
 				safe_timer += delta
 				if safe_timer >= 0.5:
-					last_safe_position = global_position
+					last_safe_position = delayed_safe_position
+					delayed_safe_position = global_position
 					safe_timer = 0.0
 			else:
 				safe_timer = 0.0
@@ -246,6 +249,7 @@ func _trigger_fall() -> void:
 func _respawn_from_fall() -> void:
 	# Teleport to the last known safe ground
 	global_position = last_safe_position
+	delayed_safe_position = last_safe_position
 	
 	# Reset visuals
 	sprite.scale = Vector2.ONE
@@ -267,6 +271,12 @@ func _respawn_from_fall() -> void:
 	blink_tween.tween_property(sprite, "modulate:a", 0.2, 0.1)
 	blink_tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
 	
+	# NEW: Wobble effect (tilting left and right like they are dizzy)
+	var wobble_tween = create_tween().set_loops(4)
+	wobble_tween.tween_property(sprite, "rotation_degrees", 5.0, 0.05)
+	wobble_tween.tween_property(sprite, "rotation_degrees", -5.0, 0.1)
+	wobble_tween.tween_property(sprite, "rotation_degrees", 0.0, 0.05)
+	
 	# Stun lock duration (Player cannot move for 0.4 seconds)
 	await get_tree().create_timer(0.4).timeout
 	is_stunned = false
@@ -274,6 +284,9 @@ func _respawn_from_fall() -> void:
 	# Remaining invulnerability while blinking finishes
 	await get_tree().create_timer(0.4).timeout
 	is_invulnerable = false
+	
+	# Extra safety reset in case the tween gets interrupted
+	sprite.rotation_degrees = 0.0
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 

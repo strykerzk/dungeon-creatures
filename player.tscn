@@ -219,4 +219,11 @@ collision_mask = 256
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HazardDetector" unique_id=539559882]
 shape = SubResource("CircleShape2D_onrkg")
 
+[node name="Label" type="Label" parent="." unique_id=1817187429]
+offset_top = -4.0
+offset_right = 40.0
+offset_bottom = 19.0
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="timeout" from="DodgeTimer" to="." method="_on_dodge_timer_timeout"]

@@ -109,6 +109,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_1bhmw"]
 resource_name = "run"
+length = 0.8
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -117,7 +118,7 @@ tracks/0/path = NodePath("PaperDoll:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
 "values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
@@ -129,10 +130,38 @@ tracks/1/path = NodePath("PaperDoll:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.25, 0.5, 0.75, 1),
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
 "values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_gpwts"]
+resource_name = "telegraph"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 0.8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -0.08726646]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_i1lxh"]
@@ -141,7 +170,8 @@ _data = {
 &"dodge_back": SubResource("Animation_tg834"),
 &"dodge_forward": SubResource("Animation_i1lxh"),
 &"idle": SubResource("Animation_tddeu"),
-&"run": SubResource("Animation_1bhmw")
+&"run": SubResource("Animation_1bhmw"),
+&"telegraph": SubResource("Animation_gpwts")
 }
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6a5ah"]
@@ -160,12 +190,14 @@ properties/3/replication_mode = 1
 properties/4/path = NodePath(".:is_dodging")
 properties/4/spawn = true
 properties/4/replication_mode = 1
+properties/5/path = NodePath(".:is_telegraphing")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
-[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
+[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
-animation_tree = NodePath("")
 stat_config = ExtResource("2_6a5ah")
 doll_back = NodePath("PaperDoll/BackSprite")
 doll_base = NodePath("PaperDoll/BaseSprite")

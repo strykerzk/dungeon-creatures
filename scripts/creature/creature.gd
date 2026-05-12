@@ -177,14 +177,19 @@ func _process(delta: float) -> void:
 
 	# --- NEW: Procedural Animation Handling ---
 	if animation_player:
-		if is_dodging:
-			# Dot Product: Returns > 0 if facing the same way we are moving, < 0 if opposite
-			var dot_prod = velocity.normalized().dot(look_direction.normalized())
-			if dot_prod >= 0:
-				animation_player.play("dodge_forward")
-			else:
-				animation_player.play("dodge_back")
-		elif velocity != Vector2.ZERO:
+		if is_telegraphing:
+			animation_player.play("telegraph")
+			
+		elif is_dodging:
+			if animation_player.current_animation != "dodge_forward" and animation_player.current_animation != "dodge_back":
+				var dot_prod = velocity.normalized().dot(look_direction.normalized())
+				if dot_prod >= -0.2: 
+					animation_player.play("dodge_forward")
+				else:
+					animation_player.play("dodge_back")
+					
+		# Velocity Deadzone
+		elif velocity.length() > 15.0:
 			animation_player.play("run")
 		else:
 			animation_player.play("idle")
