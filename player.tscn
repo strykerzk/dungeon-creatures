@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bx67grxwjqcac" path="res://scripts/player.gd" id="1_onrkg"]
 [ext_resource type="Texture2D" uid="uid://cft4d4c4chkge" path="res://art/character_sprites/sprite_128x128_sheet.png" id="2_onrkg"]
+[ext_resource type="LabelSettings" uid="uid://ciys2ubebfy1j" path="res://resources/ui/basic_label_settings.tres" id="3_i3pqv"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
 atlas = ExtResource("2_onrkg")
@@ -134,7 +135,7 @@ color_ramp = SubResource("GradientTexture1D_i3pqv")
 [sub_resource type="CircleShape2D" id="CircleShape2D_onrkg"]
 radius = 1.4142135
 
-[node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer", "sprite", "animation_tree", "sfx_dodge", "sfx_channel", "sfx_success", "dodge_particles", "hotbar_container", "channel_bar")]
+[node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer", "sprite", "animation_tree", "sfx_dodge", "sfx_channel", "sfx_success", "dodge_particles")]
 y_sort_enabled = true
 collision_layer = 2
 script = ExtResource("1_onrkg")
@@ -145,8 +146,6 @@ sfx_dodge = NodePath("SFXDodge")
 sfx_channel = NodePath("SFXChannel")
 sfx_success = NodePath("SFXSuccess")
 dodge_particles = NodePath("DodgeParticles")
-hotbar_container = NodePath("HUD/MarginContainer/HotbarContainer")
-channel_bar = NodePath("ChannelBar")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
 y_sort_enabled = true
@@ -182,10 +181,12 @@ grow_vertical = 0
 theme_override_constants/margin_bottom = 20
 
 [node name="HotbarContainer" type="HBoxContainer" parent="HUD/MarginContainer" unique_id=483881221]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="ChannelBar" type="ProgressBar" parent="." unique_id=1668071656]
+unique_name_in_owner = true
 visible = false
 offset_left = -29.0
 offset_top = -88.0
@@ -219,10 +220,13 @@ collision_mask = 256
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HazardDetector" unique_id=539559882]
 shape = SubResource("CircleShape2D_onrkg")
 
-[node name="Label" type="Label" parent="." unique_id=1817187429]
-offset_top = -4.0
-offset_right = 40.0
-offset_bottom = 19.0
+[node name="InteractPrompt" type="Label" parent="." unique_id=2107380072]
+unique_name_in_owner = true
+visible = false
+offset_right = 121.0
+offset_bottom = 34.0
+text = "[F] Pick Up"
+label_settings = ExtResource("3_i3pqv")
 horizontal_alignment = 1
 vertical_alignment = 1
 

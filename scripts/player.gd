@@ -32,8 +32,9 @@ var is_falling: bool = false
 @export var dodge_particles: GPUParticles2D
 
 @export_category("UI References")
-@export var hotbar_container: HBoxContainer
-@export var channel_bar: ProgressBar
+@onready var hotbar_container: HBoxContainer = %HotbarContainer
+@onready var channel_bar: ProgressBar = %ChannelBar
+@onready var interact_prompt: Label = %InteractPrompt
 var selected_slot_index: int = 0
 
 enum State { NORMAL, ROLLING, LOOTING }
@@ -70,7 +71,9 @@ func _ready() -> void:
 	if channel_bar:
 		channel_bar.hide()
 	
-	# Check if we suffer from a victory handicap!
+	if interact_prompt:
+		interact_prompt.top_level = true
+	
 	_apply_spawn_handicap()
 
 func _physics_process(delta: float) -> void:
@@ -108,7 +111,7 @@ func _physics_process(delta: float) -> void:
 				_handle_roll_state(delta)
 			State.LOOTING:
 				_handle_looting_state(delta)
-				
+		
 		handle_animations()
 	
 	# 3. HAZARD DETECTION
@@ -292,10 +295,22 @@ func _respawn_from_fall() -> void:
 
 func register_interactable(node: Node2D) -> void:
 	active_interactable = node
+	if interact_prompt and current_state != State.LOOTING:
+		var target_pos = node.global_position + Vector2(0, -50)
+		interact_prompt.reset_size()
+		interact_prompt.global_position = target_pos - (interact_prompt.size / 2.0)
+		interact_prompt.show()
+		if node is LootItem:
+			interact_prompt.text = "[F] Pick Up"
+		elif node is EscapePortal:
+			interact_prompt.text = "[F] Escape"
 
 func unregister_interactable(node: Node2D) -> void:
 	if active_interactable == node:
 		active_interactable = null
+		if interact_prompt: 
+			interact_prompt.hide()
+			
 		if current_state == State.LOOTING:
 			_cancel_channeling()
 
@@ -311,6 +326,9 @@ func _start_channeling() -> void:
 	if channel_bar:
 		channel_bar.show()
 		channel_bar.value = 0.0
+	
+	if interact_prompt:
+		interact_prompt.hide()
 	
 	if active_interactable is LootItem:
 		sfx_channel.pitch_scale = 1.2
@@ -339,6 +357,8 @@ func _cancel_channeling() -> void:
 		current_state = State.NORMAL
 		if channel_bar:
 			channel_bar.hide()
+		if interact_prompt and active_interactable:
+			interact_prompt.show()
 	sfx_channel.stop()
 
 func _complete_channeling() -> void:
