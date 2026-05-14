@@ -205,6 +205,13 @@ func handle_animations() -> void:
 		sprite.play("run")
 	else: 
 		sprite.play("idle")
+	
+	if has_node("RunDust"):
+		var run_dust = $RunDust
+		if current_state == State.NORMAL and velocity.length() > 20.0 and not is_falling:
+			run_dust.emitting = true
+		else:
+			run_dust.emitting = false
 
 func _start_roll() -> void:
 	current_state = State.ROLLING
@@ -244,6 +251,7 @@ func _trigger_fall() -> void:
 	var tween = create_tween().set_parallel(true)
 	tween.tween_property(sprite, "scale", Vector2.ZERO, 0.5)
 	tween.tween_property(sprite, "modulate:a", 0.0, 0.5)
+	tween.tween_property(sprite, "rotation_degrees", 360.0, 0.5)
 	
 	await get_tree().create_timer(0.6).timeout
 	
@@ -257,6 +265,7 @@ func _respawn_from_fall() -> void:
 	# Reset visuals
 	sprite.scale = Vector2.ONE
 	sprite.modulate.a = 1.0
+	sprite.rotation_degrees = 0.0
 	
 	# Apply Penalty (Using the screen shake RPC from the creature system!)
 	if typeof(StageManager) != TYPE_NIL:

@@ -17,7 +17,7 @@ size = Vector2(768, 128)
 size = Vector2(768, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4avbj"]
-size = Vector2(1664, 895.5)
+size = Vector2(1792, 1023.5)
 
 [node name="InnerRoom" type="Node2D" unique_id=1225059460]
 y_sort_enabled = true

@@ -30,15 +30,6 @@ escape_portal_scene = ExtResource("11_6qlut")
 
 [node name="LivingCamera" type="Camera2D" parent="." unique_id=1166032401]
 
-[node name="Button" type="Button" parent="." unique_id=759349143]
-visible = false
-offset_left = 96.0
-offset_top = 45.0
-offset_right = 224.0
-offset_bottom = 76.0
-theme_override_font_sizes/font_size = 16
-text = "END DUNGEON"
-
 [node name="Players" type="Node2D" parent="." unique_id=518991168]
 y_sort_enabled = true
 

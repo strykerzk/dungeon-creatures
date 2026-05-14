@@ -1,0 +1,15 @@
+[gd_resource type="ParticleProcessMaterial" format=3 uid="uid://d0byr0c54dp0j"]
+
+[sub_resource type="Curve" id="Curve_3wdsa"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_symnj"]
+curve = SubResource("Curve_3wdsa")
+
+[resource]
+gravity = Vector3(0, -10, 0)
+damping_min = 50.000004
+damping_max = 50.000004
+scale_curve = SubResource("CurveTexture_symnj")
+color = Color(0.95281494, 0.95281494, 0.95281494, 0.8)

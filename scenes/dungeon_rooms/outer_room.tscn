@@ -154,7 +154,7 @@ size = Vector2(767.99994, 128)
 size = Vector2(768, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_28ak8"]
-size = Vector2(1664, 960)
+size = Vector2(1792, 1023.5)
 
 [node name="OuterRoom" type="Node2D" unique_id=1225059460]
 y_sort_enabled = true
@@ -220,7 +220,6 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CameraTrigger" unique_id=12567410]
-position = Vector2(0, 32)
 shape = SubResource("RectangleShape2D_28ak8")
 
 [node name="LootSpawns" type="Node2D" parent="." unique_id=1373717190]

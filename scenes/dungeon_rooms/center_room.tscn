@@ -141,7 +141,7 @@ navigation_layer_0/layers = 1
 sources/1 = SubResource("TileSetAtlasSource_4u84r")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_28xvr"]
-size = Vector2(1665, 896)
+size = Vector2(1792, 1023.5)
 
 [node name="CenterRoom" type="Node2D" unique_id=1225059460]
 y_sort_enabled = true
