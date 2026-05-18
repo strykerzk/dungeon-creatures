@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://b37yu433jmmgq"]
+
+[ext_resource type="PackedScene" uid="uid://cg1r4e7tienke" path="res://scenes/skills/fireball_skill.tscn" id="1_bkd8c"]
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_o2kxb"]
+
+[resource]
+script = ExtResource("1_o2kxb")
+mutation_name = "Ignited"
+type = "minor"
+provided_skill = ExtResource("1_bkd8c")
+aggression_bonus = 0.2
+metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

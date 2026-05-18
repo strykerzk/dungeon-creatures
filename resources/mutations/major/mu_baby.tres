@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://dya1jw28sdpxu"]
+
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_rbjkp"]
+
+[resource]
+script = ExtResource("1_rbjkp")
+mutation_name = "Baby"
+health_mult = 0.8
+speed_mult = 1.2
+size_mult = 0.6
+dexterity_bonus = 0.3
+precision_bonus = 0.3
+metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

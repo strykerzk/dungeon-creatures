@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cg1r4e7tienke"]
+
+[ext_resource type="Script" uid="uid://8hx088n112pm" path="res://scripts/skills/fireball_skill.gd" id="1_w38wa"]
+
+[node name="FireballSkill" type="Node2D" unique_id=567147622]
+script = ExtResource("1_w38wa")

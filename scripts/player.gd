@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 @export_category("Player Settings")
 @export_group("Movement Settings")
-@export var max_speed: float = 400.0
+@export var max_speed: float = 500.0
 @export var acceleration: float = 8000.0
 @export var friction: float = 8000.0
 
@@ -14,10 +14,11 @@ extends CharacterBody2D
 var can_roll: bool = true 
 
 @export_group("Interaction Settings")
-@export var required_channel_time: float = 1.5
+@export var required_channel_time: float = 1.0
 
 @export_group("Hazard Settings")
-@onready var hazard_detector: Area2D = %HazardDetector
+@onready var void_detector: Area2D = %VoidDetector
+@onready var water_detector: Area2D = %WaterDetector
 var last_safe_position: Vector2 = Vector2.ZERO
 var delayed_safe_position: Vector2 = Vector2.ZERO
 var safe_timer: float = 0.0
@@ -36,6 +37,9 @@ var is_falling: bool = false
 @onready var channel_bar: ProgressBar = %ChannelBar
 @onready var interact_prompt: Label = %InteractPrompt
 var selected_slot_index: int = 0
+
+@export_category("Loot & Drops")
+@export var loot_item_scene: PackedScene
 
 enum State { NORMAL, ROLLING, LOOTING }
 var current_state: State = State.NORMAL
@@ -75,6 +79,14 @@ func _ready() -> void:
 		interact_prompt.top_level = true
 	
 	_apply_spawn_handicap()
+	
+	if has_node("HUD/ScreenFade"):
+		var fade = $HUD/ScreenFade
+		fade.modulate.a = 1.0 # Start fully black
+		var tween = create_tween()
+		# Fade to transparent over 0.6 seconds
+		tween.tween_property(fade, "modulate:a", 0.0, 0.6).set_ease(Tween.EASE_OUT)
+		tween.tween_callback(fade.hide) # Hide it completely when done to save performance
 
 func _physics_process(delta: float) -> void:
 	# 1. VISUAL TIMER: Runs on ALL machines so everyone sees the bar drop!
@@ -116,7 +128,7 @@ func _physics_process(delta: float) -> void:
 	
 	# 3. HAZARD DETECTION
 	if is_multiplayer_authority() and not is_falling and not is_stunned:
-		var touching_void = hazard_detector.has_overlapping_bodies()
+		var touching_void = void_detector.has_overlapping_bodies()
 		
 		if touching_void:
 			safe_timer = 0.0 
@@ -158,10 +170,16 @@ func _apply_spawn_handicap() -> void:
 
 func _handle_normal_state(delta: float) -> void:
 	# --- Normal Movement ---
+	var in_water = false
+	if water_detector:
+		in_water = water_detector.has_overlapping_bodies()
+		
+	var speed_mod = 0.5 if in_water else 1.0 # 50% speed in water
+	
 	var input = Input.get_vector("left", "right", "up", "down")
 	
 	if input != Vector2.ZERO:
-		velocity = velocity.move_toward(input * max_speed, acceleration * delta)
+		velocity = velocity.move_toward(input * max_speed * speed_mod, acceleration * delta)
 		roll_direction = input.normalized()
 		last_facing_direction = input.normalized() 
 	else:
@@ -169,7 +187,7 @@ func _handle_normal_state(delta: float) -> void:
 	
 	move_and_slide()
 	
-	if Input.is_action_just_pressed("dodge") and can_roll:
+	if Input.is_action_just_pressed("dodge") and can_roll and not in_water:
 		_start_roll()
 		
 	# Check for Interaction
@@ -206,12 +224,27 @@ func handle_animations() -> void:
 	else: 
 		sprite.play("idle")
 	
-	if has_node("RunDust"):
+	# --- VFX Toggles ---
+	var in_water = false
+	if has_node("WaterDetector"):
+		in_water = $WaterDetector.has_overlapping_bodies()
+
+	var is_running = (current_state == State.NORMAL and velocity.length() > 20.0 and not is_falling)
+
+	if has_node("RunDust") and has_node("WaterSplash"):
 		var run_dust = $RunDust
-		if current_state == State.NORMAL and velocity.length() > 20.0 and not is_falling:
-			run_dust.emitting = true
+		var water_splash = $WaterSplash
+		
+		if is_running:
+			if in_water:
+				run_dust.emitting = false
+				water_splash.emitting = true
+			else:
+				run_dust.emitting = true
+				water_splash.emitting = false
 		else:
 			run_dust.emitting = false
+			water_splash.emitting = false
 
 func _start_roll() -> void:
 	current_state = State.ROLLING
@@ -266,6 +299,7 @@ func _respawn_from_fall() -> void:
 	sprite.scale = Vector2.ONE
 	sprite.modulate.a = 1.0
 	sprite.rotation_degrees = 0.0
+	is_falling = false
 	
 	# Apply Penalty (Using the screen shake RPC from the creature system!)
 	if typeof(StageManager) != TYPE_NIL:
@@ -273,32 +307,39 @@ func _respawn_from_fall() -> void:
 		
 	_show_feedback("Fell into the void!")
 	
-	await get_tree().create_timer(0.1).timeout
-	is_falling = false
+	apply_stun(0.4)
+
+func apply_stun(duration: float) -> void:
+	if not is_multiplayer_authority() or is_invulnerable: return
+	
+	current_state = State.NORMAL
+	velocity = Vector2.ZERO
 	is_stunned = true
 	is_invulnerable = true
 	
-	# Blinking effect (loops 4 times: 0.2s * 4 = 0.8s total)
-	var blink_tween = create_tween().set_loops(4)
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.screen_shake_requested.emit(8.0)
+	
+	# Calculate how many times to loop the animation based on duration
+	var loops = max(1, int(duration / 0.2))
+	
+	var blink_tween = create_tween().set_loops(loops)
 	blink_tween.tween_property(sprite, "modulate:a", 0.2, 0.1)
 	blink_tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
 	
-	# NEW: Wobble effect (tilting left and right like they are dizzy)
-	var wobble_tween = create_tween().set_loops(4)
-	wobble_tween.tween_property(sprite, "rotation_degrees", 5.0, 0.05)
-	wobble_tween.tween_property(sprite, "rotation_degrees", -5.0, 0.1)
+	var wobble_tween = create_tween().set_loops(loops)
+	wobble_tween.tween_property(sprite, "rotation_degrees", 15.0, 0.05)
+	wobble_tween.tween_property(sprite, "rotation_degrees", -15.0, 0.1)
 	wobble_tween.tween_property(sprite, "rotation_degrees", 0.0, 0.05)
 	
-	# Stun lock duration (Player cannot move for 0.4 seconds)
-	await get_tree().create_timer(0.4).timeout
+	await get_tree().create_timer(duration).timeout
 	is_stunned = false
-	
-	# Remaining invulnerability while blinking finishes
-	await get_tree().create_timer(0.4).timeout
-	is_invulnerable = false
-	
-	# Extra safety reset in case the tween gets interrupted
 	sprite.rotation_degrees = 0.0
+	
+	# Tiny grace period of i-frames after waking up
+	await get_tree().create_timer(0.2).timeout
+	is_invulnerable = false
+
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 
@@ -341,8 +382,10 @@ func _start_channeling() -> void:
 	
 	if active_interactable is LootItem:
 		sfx_channel.pitch_scale = 1.2
+		required_channel_time = 0.8
 	elif active_interactable is EscapePortal:
 		sfx_channel.pitch_scale = 0.8
+		required_channel_time = 1.5
 	sfx_channel.play()
 
 func _handle_looting_state(delta: float) -> void:
@@ -511,9 +554,33 @@ func _discard_selected_item() -> void:
 	
 	_update_hotbar_ui()
 	
-	# Future Polish: We will RPC the host here to spawn a new physical 
-	# LootItem back into the world right at our feet!
+	rpc_id(1, "server_request_drop_item", item_to_drop.resource_path, global_position)
 
+@rpc("any_peer", "call_local", "reliable")
+func server_request_drop_item(resource_path: String, drop_pos: Vector2) -> void:
+	if not multiplayer.is_server(): return
+	
+	var unique_name = "DroppedLoot_" + str(Time.get_ticks_msec()) + "_" + str(randi() % 1000)
+	var random_offset = Vector2(randf_range(-30, 30), randf_range(-30, 30))
+	var final_pos = drop_pos + random_offset
+	
+	rpc("client_spawn_dropped_item", resource_path, final_pos, unique_name)
+
+@rpc("any_peer", "call_local", "reliable")
+func client_spawn_dropped_item(resource_path: String, final_pos: Vector2, loot_name: String) -> void:
+	if multiplayer.get_remote_sender_id() != 1 and multiplayer.get_remote_sender_id() != 0:
+		return
+		
+	if not loot_item_scene:
+		push_error("[Player] Loot Item Scene is not assigned!")
+		return
+		
+	var loot_inst = loot_item_scene.instantiate() as LootItem
+	loot_inst.item_data = load(resource_path)
+	loot_inst.name = loot_name
+	
+	get_tree().current_scene.add_child(loot_inst)
+	loot_inst.global_position = final_pos
 
 func _show_feedback(msg: String) -> void:
 	print("[Player " + str(name) + "] ", msg)

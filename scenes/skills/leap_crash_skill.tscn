@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cqjjqkyqpbsif"]
+
+[ext_resource type="Script" uid="uid://bbypstomflwuv" path="res://scripts/skills/leap_crash_skill.gd" id="1_i4lmc"]
+
+[node name="LeapCrashSkill" type="Node2D" unique_id=314699818]
+script = ExtResource("1_i4lmc")
+skill_range = 400.0

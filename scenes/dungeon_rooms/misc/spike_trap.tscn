@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://ddr32fdaruefs"]
+
+[ext_resource type="Script" uid="uid://dy4m7aficw5mj" path="res://scripts/dungeon/spike_trap.gd" id="1_kf3ly"]
+[ext_resource type="Texture2D" uid="uid://yvucmuqyma0i" path="res://art/dungeon_sprites/spike_trap.png" id="2_gsuou"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l3w0j"]
+size = Vector2(56, 56)
+
+[node name="SpikeTrap" type="Area2D" unique_id=1886411889]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_kf3ly")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1400290718]
+texture = ExtResource("2_gsuou")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=397735039]
+shape = SubResource("RectangleShape2D_l3w0j")
+
+[node name="Timer" type="Timer" parent="." unique_id=1205092692]

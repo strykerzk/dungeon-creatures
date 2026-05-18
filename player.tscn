@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://bngysj73nr5nf"]
 
 [ext_resource type="Script" uid="uid://bx67grxwjqcac" path="res://scripts/player.gd" id="1_onrkg"]
+[ext_resource type="PackedScene" uid="uid://cmptdiwndoq1c" path="res://scenes/equipment/loot_item.tscn" id="2_2hs0m"]
 [ext_resource type="Texture2D" uid="uid://cft4d4c4chkge" path="res://art/character_sprites/sprite_128x128_sheet.png" id="2_onrkg"]
 [ext_resource type="LabelSettings" uid="uid://ciys2ubebfy1j" path="res://resources/ui/basic_label_settings.tres" id="3_i3pqv"]
+[ext_resource type="Texture2D" uid="uid://pa5yxmlc1at5" path="res://art/misc_sprites/dust_particle.png" id="3_sweqy"]
 [ext_resource type="Material" uid="uid://d0byr0c54dp0j" path="res://resources/materials/smoke_puff_material.tres" id="5_2hs0m"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
@@ -90,7 +92,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"run",
-"speed": 6.0
+"speed": 9.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
@@ -109,6 +111,9 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath(".:global_position")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("AnimatedSprite2D:flip_h")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onrkg"]
 bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
@@ -116,16 +121,25 @@ bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i3pqv"]
 bg_color = Color(3.85046e-07, 0.736423, 0.823885, 1)
 
-[sub_resource type="Gradient" id="Gradient_hqtel"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+[sub_resource type="Curve" id="Curve_3wdsa"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_sweqy"]
-gradient = SubResource("Gradient_hqtel")
-width = 10
-height = 10
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-fill_to = Vector2(1, 1)
+[sub_resource type="CurveTexture" id="CurveTexture_symnj"]
+curve = SubResource("Curve_3wdsa")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sweqy"]
+emission_shape_offset = Vector3(3, 0, 0)
+emission_shape = 3
+emission_box_extents = Vector3(10, 1, 1)
+direction = Vector3(0, -1, 0)
+spread = 30.0
+initial_velocity_min = 100.0
+initial_velocity_max = 150.0
+gravity = Vector3(0, 400, 0)
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_symnj")
+color = Color(0, 0.7715549, 0.6453742, 0.8)
 
 [sub_resource type="Gradient" id="Gradient_onrkg"]
 colors = PackedColorArray(0.9297146, 0.9297147, 0.9297146, 1, 0.25490198, 0.25490198, 0.25490198, 0)
@@ -136,8 +150,8 @@ gradient = SubResource("Gradient_onrkg")
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hqtel"]
 particle_flag_disable_z = true
 spread = 180.0
-initial_velocity_min = 30.0
-initial_velocity_max = 60.0
+initial_velocity_min = 40.0
+initial_velocity_max = 90.0
 gravity = Vector3(0, 0, 0)
 damping_min = 50.000004
 damping_max = 50.000004
@@ -145,7 +159,10 @@ scale_max = 4.0
 color_ramp = SubResource("GradientTexture1D_i3pqv")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_onrkg"]
-radius = 1.4142135
+radius = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hqtel"]
+radius = 1.0
 
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer", "sprite", "animation_tree", "sfx_dodge", "sfx_channel", "sfx_success", "dodge_particles")]
 y_sort_enabled = true
@@ -158,13 +175,13 @@ sfx_dodge = NodePath("SFXDodge")
 sfx_channel = NodePath("SFXChannel")
 sfx_success = NodePath("SFXSuccess")
 dodge_particles = NodePath("DodgeParticles")
+loot_item_scene = ExtResource("2_2hs0m")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
 z_index = 2
 y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_urp6f")
 animation = &"idle"
-frame_progress = 0.49071103
 offset = Vector2(0, -38)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=248887133]
@@ -179,6 +196,7 @@ tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
 replication_config = SubResource("SceneReplicationConfig_onrkg")
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1735587253]
+unique_name_in_owner = true
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD" unique_id=764354802]
 anchors_preset = 7
@@ -197,6 +215,16 @@ theme_override_constants/margin_bottom = 20
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[node name="ScreenFade" type="ColorRect" parent="HUD" unique_id=784635891]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [node name="ChannelBar" type="ProgressBar" parent="." unique_id=1668071656]
 unique_name_in_owner = true
@@ -219,13 +247,22 @@ show_percentage = false
 position = Vector2(0, -2)
 emitting = false
 amount = 15
-texture = SubResource("GradientTexture2D_sweqy")
+texture = ExtResource("3_sweqy")
 lifetime = 0.4
 process_material = ExtResource("5_2hs0m")
+
+[node name="WaterSplash" type="GPUParticles2D" parent="." unique_id=1294218270]
+z_index = 4
+position = Vector2(0, -2)
+emitting = false
+amount = 20
+lifetime = 0.7
+process_material = SubResource("ParticleProcessMaterial_sweqy")
 
 [node name="DodgeParticles" type="GPUParticles2D" parent="." unique_id=1097265844]
 emitting = false
 amount = 50
+lifetime = 0.7
 one_shot = true
 explosiveness = 0.9
 process_material = SubResource("ParticleProcessMaterial_hqtel")
@@ -233,13 +270,21 @@ process_material = SubResource("ParticleProcessMaterial_hqtel")
 [node name="DodgeTimer" type="Timer" parent="." unique_id=541518265]
 one_shot = true
 
-[node name="HazardDetector" type="Area2D" parent="." unique_id=1087353062]
+[node name="VoidDetector" type="Area2D" parent="." unique_id=1087353062]
 unique_name_in_owner = true
 collision_layer = 0
 collision_mask = 256
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HazardDetector" unique_id=539559882]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VoidDetector" unique_id=539559882]
 shape = SubResource("CircleShape2D_onrkg")
+
+[node name="WaterDetector" type="Area2D" parent="." unique_id=844938683]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 512
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WaterDetector" unique_id=1810717736]
+shape = SubResource("CircleShape2D_hqtel")
 
 [node name="InteractPrompt" type="Label" parent="." unique_id=2107380072]
 unique_name_in_owner = true
