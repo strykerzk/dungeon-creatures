@@ -225,7 +225,7 @@ process_material = ExtResource("5_2hs0m")
 
 [node name="DodgeParticles" type="GPUParticles2D" parent="." unique_id=1097265844]
 emitting = false
-amount = 30
+amount = 50
 one_shot = true
 explosiveness = 0.9
 process_material = SubResource("ParticleProcessMaterial_hqtel")
