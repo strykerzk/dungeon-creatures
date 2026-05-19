@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://b7h2lf0hml4cd" path="res://scenes/creatures/cat.tscn" id="3_yh1cl"]
 [ext_resource type="Script" uid="uid://bs50iyoqb0nm0" path="res://scripts/misc/arena_camera.gd" id="4_cio23"]
 [ext_resource type="TileSet" uid="uid://ccay3ghkw52da" path="res://resources/tilesets/kenney_tiny_dungeon_64x64.tres" id="4_yh1cl"]
+[ext_resource type="AudioStream" uid="uid://b4ehwilrcs44j" path="res://sounds/music/pkm_bnw_battle_wild.wav" id="6_pf2by"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_yh1cl"]
 font_size = 120
@@ -69,4 +70,6 @@ script = ExtResource("4_cio23")
 creatures_container = NodePath("../Creatures")
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1830574538]
+stream = ExtResource("6_pf2by")
+volume_db = -15.0
 autoplay = true

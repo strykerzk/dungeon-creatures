@@ -327,7 +327,7 @@ replication_config = SubResource("SceneReplicationConfig_6a5ah")
 
 [node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=12979756]
 stream = ExtResource("6_rhggd")
-volume_db = -10.0
+volume_db = -8.0
 
 [node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=269836624]
 volume_db = -10.0

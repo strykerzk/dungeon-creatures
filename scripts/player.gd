@@ -37,7 +37,10 @@ var is_falling: bool = false
 @onready var hotbar_container: HBoxContainer = %HotbarContainer
 @onready var channel_bar: ProgressBar = %ChannelBar
 @onready var interact_prompt: Label = %InteractPrompt
+@export var speech_bubble_scene: PackedScene
+@export var emote_wheel_scene: PackedScene
 var selected_slot_index: int = 0
+var active_wheel = null
 
 @export_category("Loot & Drops")
 @export var loot_item_scene: PackedScene
@@ -238,6 +241,24 @@ func _handle_normal_state(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("discard"):
 		_discard_selected_item()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_multiplayer_authority(): return
+	
+	# --- EMOTE WHEEL LOGIC ---
+	if event.is_action_pressed("emote_wheel"):
+		if emote_wheel_scene and not active_wheel:
+			active_wheel = emote_wheel_scene.instantiate()
+			add_child(active_wheel)
+			
+	elif event.is_action_released("emote_wheel"):
+		if active_wheel:
+			var picked_emote = active_wheel.current_selection
+			active_wheel.queue_free()
+			active_wheel = null
+			
+			if picked_emote != "":
+				rpc("client_show_emote", picked_emote)
 
 func handle_animations() -> void:
 	if velocity.x != 0:
@@ -649,6 +670,18 @@ func client_hide_player() -> void:
 	set_physics_process(false)
 	set_process_unhandled_input(false)
 
+@rpc("any_peer", "call_local", "reliable")
+func client_show_emote(emoji_text: String) -> void:
+	if not speech_bubble_scene: return
+	
+	var bubble = speech_bubble_scene.instantiate()
+	add_child(bubble)
+	
+	# Spawn it slightly higher than interaction prompts
+	bubble.position = Vector2(0, -90) 
+	
+	if bubble.has_method("setup"):
+		bubble.setup(emoji_text)
 
 func _apply_timeout_penalty() -> void:
 	# Penalty logic: Lose 50% of the items you picked up this run, chosen randomly.

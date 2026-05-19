@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://fhgn4fgcwa2u"]
+
+[ext_resource type="Script" uid="uid://c3g0j1lo6fl1a" path="res://scripts/ui/emote_wheel_ui.gd" id="1_dj1tv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_dj1tv"]
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="EmoteWheelUI" type="CanvasLayer" unique_id=626067562]
+script = ExtResource("1_dj1tv")
+
+[node name="CenterAnchor" type="Control" parent="." unique_id=2086501898]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterText" type="Label" parent="CenterAnchor" unique_id=1664155200]
+layout_mode = 0
+offset_left = -20.0
+offset_top = -14.0
+offset_right = 20.0
+offset_bottom = 14.0
+label_settings = SubResource("LabelSettings_dj1tv")
+horizontal_alignment = 1
+vertical_alignment = 1

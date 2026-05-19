@@ -561,18 +561,17 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 	var hit_count = 0
 	var angle = desired_velocity.angle()
 	
-	# Point whiskers in the direction of movement, spread out slightly
+	# FIX 1: Narrowed the whisker spread (0.5 rad is ~28 degrees)
 	whisker_front.global_rotation = angle
-	whisker_left.global_rotation = angle - 1.0
-	whisker_right.global_rotation = angle + 1.0
+	whisker_left.global_rotation = angle - 0.5
+	whisker_right.global_rotation = angle + 0.5
 	
 	whisker_front.force_raycast_update()
 	whisker_left.force_raycast_update()
 	whisker_right.force_raycast_update()
 	
-	# If a whisker hits a wall, add its push-back normal to our avoidance vector
 	if whisker_front.is_colliding():
-		avoidance += whisker_front.get_collision_normal() * 1.5 # Front hits push harder
+		avoidance += whisker_front.get_collision_normal() * 2.0
 		hit_count += 1
 	if whisker_left.is_colliding():
 		avoidance += whisker_left.get_collision_normal()
@@ -582,9 +581,29 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 		hit_count += 1
 		
 	if hit_count > 0:
-		# Blend the desired direction with the wall's push-back
-		var steered_dir = (desired_velocity.normalized() + avoidance.normalized()).normalized()
-		return steered_dir * desired_velocity.length()
+		var avg_normal = avoidance.normalized()
+		
+		# FIX 2: Use Godot's built-in slide math to deflect momentum ALONG the wall
+		var steered_vel = desired_velocity.slide(avg_normal)
+		
+		# FIX 3: The Stalemate Breaker. 
+		# If we hit the wall dead-on, slide() returns (0,0).
+		# We calculate a sideways (tangent) vector to force the creature to "pick a side" and slide!
+		if steered_vel.length() < (desired_velocity.length() * 0.1):
+			var tangent = Vector2(-avg_normal.y, avg_normal.x)
+			
+			# Pick the tangent side closest to where they want to go
+			if tangent.dot(desired_velocity) < 0:
+				tangent = -tangent
+				
+			# If perfectly perpendicular, force a consistent side based on their internal circling logic
+			if tangent.dot(desired_velocity) == 0:
+				tangent = tangent * circle_direction 
+				
+			steered_vel = tangent * desired_velocity.length()
+			
+		# Smoothly blend the current velocity into the new sliding velocity
+		return desired_velocity.lerp(steered_vel.normalized() * desired_velocity.length(), 0.8)
 		
 	return desired_velocity
 

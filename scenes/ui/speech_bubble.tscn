@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dsj1kdtlyccje"]
+
+[ext_resource type="Script" uid="uid://sjwut032da35" path="res://scripts/ui/speech_bubble.gd" id="1_ad2a6"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rtw6t"]
+font_size = 40
+outline_size = 12
+outline_color = Color(0, 0, 0, 1)
+
+[node name="SpeechBubble" type="Node2D" unique_id=1294366159]
+script = ExtResource("1_ad2a6")
+
+[node name="Label" type="Label" parent="." unique_id=1552405210]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -45.5
+offset_top = -60.0
+offset_right = 45.5
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_rtw6t")
+horizontal_alignment = 1
+vertical_alignment = 1

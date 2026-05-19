@@ -6,7 +6,7 @@
 [ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_rt1jr"]
 [ext_resource type="Texture2D" uid="uid://di74o1n4sstgs" path="res://art/creature_sprites/cat/cat_base.png" id="4_rt1jr"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="4_w46py"]
-[ext_resource type="AudioStream" uid="uid://c4gqwkjk4gcq5" path="res://sounds/sfx/hit2.wav" id="6_3j7ha"]
+[ext_resource type="AudioStream" uid="uid://cjp1c7yly2j3o" path="res://sounds/sfx/cat_meow.wav" id="7_34ith"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
 radius = 6.0
@@ -217,13 +217,12 @@ properties/5/path = NodePath(".:look_direction")
 properties/5/spawn = true
 properties/5/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("animation_tree", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_52fj1")
-animation_tree = NodePath("")
 stat_config = ExtResource("2_6fl1u")
 doll_back = NodePath("FlipContainer/PaperDoll/BackSprite")
 doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
@@ -323,7 +322,8 @@ target_position = Vector2(130, 0)
 replication_config = SubResource("SceneReplicationConfig_fkb2k")
 
 [node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=117175611]
-stream = ExtResource("6_3j7ha")
+stream = ExtResource("7_34ith")
+volume_db = -5.0
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=2090440747]
 

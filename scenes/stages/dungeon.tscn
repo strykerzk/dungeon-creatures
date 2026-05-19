@@ -17,6 +17,7 @@
 [ext_resource type="Resource" uid="uid://bih5j1yep2t4j" path="res://resources/equipment_data/head/helmet.tres" id="10_g3byy"]
 [ext_resource type="PackedScene" uid="uid://b6c3fkkgojbcj" path="res://scenes/dungeon_rooms/misc/escape_portal.tscn" id="11_6qlut"]
 [ext_resource type="Script" uid="uid://dul3p1sllf3q8" path="res://scripts/misc/dungeon_camera.gd" id="15_sq7w3"]
+[ext_resource type="AudioStream" uid="uid://b2sfbg3uqcs1v" path="res://sounds/music/pmk_bnw_ancient_castle.wav" id="18_nwgp8"]
 
 [node name="Dungeon" type="Node2D" unique_id=234930827]
 y_sort_enabled = true
@@ -46,4 +47,6 @@ _spawnable_scenes = PackedStringArray("uid://bngysj73nr5nf")
 spawn_path = NodePath("..")
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=2131380541]
+stream = ExtResource("18_nwgp8")
+volume_db = -15.0
 autoplay = true

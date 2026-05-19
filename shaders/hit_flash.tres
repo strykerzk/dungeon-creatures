@@ -7,6 +7,6 @@ resource_local_to_scene = true
 shader = ExtResource("1_4opve")
 shader_parameter/flash_modifier = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)
-shader_parameter/is_outlined = false
+shader_parameter/is_outlined = true
 shader_parameter/outline_width = 4.00000019
 shader_parameter/outline_color = Color(1, 1, 1, 1)

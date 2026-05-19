@@ -26,7 +26,7 @@ func discover_room(grid_pos: Vector2i) -> void:
 		map_control.queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_just_pressed("toggle_map"):
+	if event.is_action_pressed("toggle_map"):
 		if map_control.visible:
 			hide_map()
 		else:
