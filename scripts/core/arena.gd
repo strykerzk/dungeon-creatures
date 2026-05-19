@@ -5,6 +5,8 @@ extends Node2D
 
 @onready var spawn_points: Node2D = $SpawnPoints
 @onready var creatures_container: Node2D = $Creatures
+@onready var countdown_label: Label = %CountdownLabel
+@onready var camera: Camera2D = $ArenaCamera
 
 var alive_creatures_count: int = 0
 
@@ -12,6 +14,7 @@ func _ready() -> void:
 	# Only the Host handles the spawning of fighters
 	if multiplayer.is_server():
 		call_deferred("_spawn_creatures")
+		call_deferred("_start_countdown_sequence")
 
 func _spawn_creatures() -> void:
 	var peer_ids = CreatureManager.profiles.keys()
@@ -30,11 +33,12 @@ func _spawn_creatures() -> void:
 			species_key = "duck"
 		
 		# Instantiate the creature
-		var scene_to_spawn = creature_roster[species_key] as PackedScene
-		var creature_inst = scene_to_spawn.instantiate() as Creature
+		var scene_to_spawn: PackedScene = creature_roster[species_key]
+		var creature_inst: Creature = scene_to_spawn.instantiate()
 		
 		# Edit the creature
 		creature_inst.name = str(p_id) 
+		creature_inst.is_combat_locked = true
 		creature_inst.died.connect(_on_creature_died.bind(p_id))
 		alive_creatures_count += 1
 		
@@ -125,3 +129,43 @@ func rpc_transition_to_dungeon() -> void:
 func rpc_transition_to_menu() -> void:
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.change_stage(StageManager.GameState.MENU)
+
+func _start_countdown_sequence() -> void:
+	# Give the Host and Clients 1.5 seconds to load the scene and connect
+	await get_tree().create_timer(1.5).timeout
+	
+	rpc("client_update_countdown", "3")
+	await get_tree().create_timer(1.0).timeout
+	
+	rpc("client_update_countdown", "2")
+	# Start zooming the camera in on 2!
+	rpc("client_unlock_camera")
+	await get_tree().create_timer(1.0).timeout
+	
+	rpc("client_update_countdown", "1")
+	await get_tree().create_timer(1.0).timeout
+	
+	rpc("client_update_countdown", "FIGHT!")
+	
+	# UNLOCK THE AI!
+	for child in creatures_container.get_children():
+		if child is Creature:
+			child.is_combat_locked = false
+			
+	await get_tree().create_timer(1.0).timeout
+	rpc("client_update_countdown", "") # Hide the text
+
+@rpc("authority", "call_local", "reliable")
+func client_update_countdown(text: String) -> void:
+	if countdown_label:
+		countdown_label.text = text
+		
+		# Optional Juice: Bounce the text scale when it changes!
+		countdown_label.scale = Vector2.ZERO
+		var tween = create_tween()
+		tween.tween_property(countdown_label, "scale", Vector2.ONE, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+@rpc("authority", "call_local", "reliable")
+func client_unlock_camera() -> void:
+	if camera:
+		camera.current_mode = camera.CameraMode.DYNAMIC

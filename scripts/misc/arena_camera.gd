@@ -1,7 +1,7 @@
 extends Camera2D
 
-enum CameraMode { DYNAMIC, SPECTATOR }
-var current_mode: CameraMode = CameraMode.DYNAMIC
+enum CameraMode { STARTUP, DYNAMIC, SPECTATOR }
+var current_mode: CameraMode = CameraMode.STARTUP
 
 @export_category("Camera Settings")
 @export var creatures_container: Node2D
@@ -28,6 +28,7 @@ func _process(delta: float) -> void:
 	if not alive_creatures.is_empty():
 		_handle_input()
 		match current_mode:
+			CameraMode.STARTUP: _lerp_camera(Vector2.ZERO, Vector2(min_zoom, min_zoom), delta)
 			CameraMode.DYNAMIC: _process_dynamic_camera(delta)
 			CameraMode.SPECTATOR: _process_spectator_camera(delta)
 	

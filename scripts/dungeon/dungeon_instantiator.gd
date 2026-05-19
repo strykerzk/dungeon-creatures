@@ -1,5 +1,7 @@
 extends Node2D
 
+@export var event_ui_scene: PackedScene
+
 @export_group("Standard Room Decks")
 @export var center_room_scene: PackedScene
 @export var inner_room_scenes: Array[PackedScene]
@@ -24,7 +26,7 @@ extends Node2D
 @export var room_height: float = 1152.0 
 
 var generator = DungeonGenerator.new()
-@onready var living_camera = $"../LivingCamera" 
+@onready var dungeon_camera = $"../DungeonCamera" 
 @onready var players_container = $"../Players" # A new Node2D we will create
 
 func _ready() -> void:
@@ -42,7 +44,11 @@ func _ready() -> void:
 		
 		# Give the dungeon a frame to physically build, then spawn players
 		call_deferred("_spawn_players")
-
+	
+	if event_ui_scene:
+		var ui_inst = event_ui_scene.instantiate()
+		get_parent().add_child(ui_inst)
+	
 @rpc("authority", "call_local", "reliable")
 func rpc_build_synced_dungeon(dungeon_seed: int) -> void:
 	print("[Dungeon] Generating map with synced seed: ", dungeon_seed)
@@ -155,9 +161,9 @@ func _spawn_players() -> void:
 		print("[Dungeon] Spawned player: ", peer_id)
 
 func _on_room_entered(target_pos: Vector2) -> void:
-	if not living_camera: return
+	if not dungeon_camera: return
 	var tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tween.tween_property(living_camera, "global_position", target_pos, 0.4)
+	tween.tween_property(dungeon_camera, "global_position", target_pos, 0.4)
 
 func _on_escape_portal_opened() -> void:
 	if not escape_portal_scene:

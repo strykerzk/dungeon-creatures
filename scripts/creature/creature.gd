@@ -31,6 +31,7 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @export var whisker_front: RayCast2D
 @export var whisker_left: RayCast2D
 @export var whisker_right: RayCast2D
+var is_combat_locked: bool = false
 
 # --- SIGNALS ---
 signal attack_started(attacker: Creature, defender: Creature)
@@ -148,6 +149,8 @@ func _initialize_base_stats() -> void:
 func _physics_process(delta: float) -> void:
 	# ONLY for Host
 	if not multiplayer.is_server(): return
+	
+	if is_combat_locked: return
 	
 	if not is_instance_valid(target) or target.is_queued_for_deletion() or target.current_health <= 0:
 		target = null

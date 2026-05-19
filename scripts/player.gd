@@ -25,12 +25,13 @@ var safe_timer: float = 0.0
 var is_falling: bool = false
 
 @export_category("Node References")
-@export var sprite: AnimatedSprite2D
-@export var animation_tree: AnimationTree
-@export var sfx_dodge: AudioStreamPlayer2D
-@export var sfx_channel: AudioStreamPlayer2D
-@export var sfx_success: AudioStreamPlayer2D
-@export var dodge_particles: GPUParticles2D
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var animation_tree: AnimationTree = $AnimationTree
+@onready var sfx_dodge: AudioStreamPlayer2D = $SFXDodge
+@onready var sfx_channel: AudioStreamPlayer2D = $SFXChannel
+@onready var sfx_success: AudioStreamPlayer2D = $SFXSuccess
+@onready var dodge_particles: GPUParticles2D = $DodgeParticles
+@onready var handicap_chains: Sprite2D = $HandicapLock
 
 @export_category("UI References")
 @onready var hotbar_container: HBoxContainer = %HotbarContainer
@@ -99,7 +100,16 @@ func _physics_process(delta: float) -> void:
 			if channel_bar: channel_bar.hide()
 			if is_multiplayer_authority():
 				_show_feedback("Lock released! GO!")
-
+				
+			if handicap_chains and handicap_chains.visible:
+				var tween = create_tween().set_parallel(true)
+				tween.tween_property(handicap_chains, "scale", Vector2(2.0, 2.0), 0.2)
+				tween.tween_property(handicap_chains, "modulate:a", 0.0, 0.2)
+				tween.chain().tween_callback(handicap_chains.hide)
+				
+			if sprite:
+				create_tween().tween_property(sprite, "modulate", Color.WHITE, 0.2)
+	
 	# 2. PHYSICAL MOVEMENT: Only runs on the local player's machine
 	if is_multiplayer_authority():
 		if is_falling or is_stunned:
@@ -159,14 +169,32 @@ func _apply_spawn_handicap() -> void:
 
 	var win_diff = my_wins - min_wins
 	
-	# The Lock: You are frozen for 2.0 seconds per win difference
+	# The Lock: Everyone gets 3 seconds. Handicaps add +2 seconds per win difference.
+	var base_lock: float = 3.0
+	var handicap_penalty: float = 0.0
 	if win_diff > 0:
-		max_spawn_lock = win_diff * 2.0 
-		spawn_lock_timer = max_spawn_lock
-		_show_feedback("Spawn Locked for " + str(max_spawn_lock) + "s! (Handicap)")
-		if channel_bar:
-			channel_bar.show()
-			channel_bar.value = 100.0
+		handicap_penalty = win_diff * 2.0 
+		
+	max_spawn_lock = base_lock + handicap_penalty
+	spawn_lock_timer = max_spawn_lock
+	
+	if channel_bar:
+		channel_bar.show()
+		channel_bar.value = 100.0
+		
+	if handicap_penalty > 0:
+		_show_feedback("Spawn Locked for " + str(max_spawn_lock) + "s! (Handicap Applied)")
+		# NEW: Apply the visual lock!
+		if handicap_chains:
+			handicap_chains.show()
+			# Add a subtle pulse to the chains
+			var tween = create_tween().set_loops()
+			tween.tween_property(handicap_chains, "scale", Vector2(1.1, 1.1), 0.5)
+			tween.tween_property(handicap_chains, "scale", Vector2(1.0, 1.0), 0.5)
+		if sprite:
+			sprite.modulate = Color(0.4, 0.4, 0.4, 1.0) # Turn the player gray/dark
+	else:
+		_show_feedback("Ready... Set...")
 
 func _handle_normal_state(delta: float) -> void:
 	# --- Normal Movement ---
