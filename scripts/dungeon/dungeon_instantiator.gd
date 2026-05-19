@@ -1,6 +1,9 @@
 extends Node2D
 
+@export_group("UI")
+@export var minimap_scene: PackedScene
 @export var event_ui_scene: PackedScene
+var minimap_instance = null
 
 @export_group("Standard Room Decks")
 @export var center_room_scene: PackedScene
@@ -61,6 +64,11 @@ func build_dungeon() -> void:
 	var grid_blueprint = generator.generate_dungeon(grid_size)
 	var spawned_rooms: Array[Node2D] = []
 	
+	if minimap_scene:
+		minimap_instance = minimap_scene.instantiate()
+		add_child(minimap_instance)
+		minimap_instance.setup(grid_blueprint, generator.center_pos)
+	
 	for x in range(grid_blueprint.size()):
 		for y in range(grid_blueprint[x].size()):
 			var blueprint = grid_blueprint[x][y]
@@ -89,6 +97,9 @@ func build_dungeon() -> void:
 				
 				room_instance.setup(blueprint)
 				room_instance.player_entered_room.connect(_on_room_entered)
+				
+				if minimap_instance:
+					room_instance.room_discovered.connect(minimap_instance.discover_room)
 
 	_scatter_loot(spawned_rooms)
 

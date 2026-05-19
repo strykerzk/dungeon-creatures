@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://cir4wx7ddbguj"]
+
+[ext_resource type="Script" uid="uid://d0ggms070k7x6" path="res://scripts/ui/mini_map.gd" id="1_oxm6q"]
+
+[node name="MiniMap" type="CanvasLayer" unique_id=908165727]
+script = ExtResource("1_oxm6q")
+
+[node name="BackgroundDim" type="ColorRect" parent="." unique_id=554694174]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="MapControl" type="Control" parent="." unique_id=213834322]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

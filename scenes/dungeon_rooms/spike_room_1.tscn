@@ -180,3 +180,8 @@ type = 1
 [node name="SpikeTrap24" parent="Traps" unique_id=1043031455 instance=ExtResource("3_lie1g")]
 position = Vector2(-224, -96)
 type = 1
+
+[node name="FogOfWar" type="ColorRect" parent="." unique_id=658981258]
+z_index = 5
+offset_right = 40.0
+offset_bottom = 40.0

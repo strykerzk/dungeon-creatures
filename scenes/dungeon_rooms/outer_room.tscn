@@ -98,3 +98,8 @@ position = Vector2(-466, -134)
 
 [node name="Marker2D4" type="Marker2D" parent="LootSpawns" unique_id=1511631899]
 position = Vector2(550, -219)
+
+[node name="FogOfWar" type="ColorRect" parent="." unique_id=315936673]
+z_index = 5
+offset_right = 40.0
+offset_bottom = 40.0

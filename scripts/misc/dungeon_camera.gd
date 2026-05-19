@@ -1,7 +1,7 @@
 extends Camera2D
 
 var default_zoom: Vector2 = Vector2(1.0, 1.0)
-var starting_wide_zoom: Vector2 = Vector2(0.5, 0.5)
+var starting_wide_zoom: Vector2 = Vector2(0.3, 0.3)
 
 func _ready() -> void:
 	zoom = starting_wide_zoom

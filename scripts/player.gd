@@ -147,7 +147,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			if current_state == State.NORMAL:
 				safe_timer += delta
-				if safe_timer >= 0.5:
+				if safe_timer >= 0.3:
 					last_safe_position = delayed_safe_position
 					delayed_safe_position = global_position
 					safe_timer = 0.0
