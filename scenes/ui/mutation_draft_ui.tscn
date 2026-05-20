@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://dnb5gu44dijs7"]
+
+[ext_resource type="Script" uid="uid://cx0o10u5q34cl" path="res://scripts/ui/mutation_draft_ui.gd" id="1_8reto"]
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="2_n2xw7"]
+[ext_resource type="Resource" uid="uid://m6rog86jgg5g" path="res://resources/mutations/major/mu_juggernaut.tres" id="3_gkje8"]
+[ext_resource type="Resource" uid="uid://dya1jw28sdpxu" path="res://resources/mutations/major/mu_baby.tres" id="4_hcohg"]
+[ext_resource type="Resource" uid="uid://cjkv2ys0pwk1r" path="res://resources/mutations/major/mu_vampire.tres" id="5_4juda"]
+[ext_resource type="Resource" uid="uid://b37yu433jmmgq" path="res://resources/mutations/minor/mu_ignited.tres" id="6_4juda"]
+[ext_resource type="Resource" uid="uid://b0ahyhl58yydp" path="res://resources/mutations/minor/mu_springy.tres" id="7_q0xf8"]
+[ext_resource type="Resource" uid="uid://dtjl1wso6in5" path="res://resources/mutations/minor/mu_aggressive.tres" id="8_afnpp"]
+
+[node name="MutationDraftUI" type="CanvasLayer" unique_id=1759692675]
+script = ExtResource("1_8reto")
+mutation_pool = Array[ExtResource("2_n2xw7")]([ExtResource("3_gkje8"), ExtResource("4_hcohg"), ExtResource("5_4juda"), ExtResource("6_4juda"), ExtResource("7_q0xf8"), ExtResource("8_afnpp")])
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1621602188]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.8)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ColorRect" unique_id=432999787]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50

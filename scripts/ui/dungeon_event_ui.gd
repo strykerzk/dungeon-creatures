@@ -1,8 +1,8 @@
 extends CanvasLayer
 
-@onready var round_banner: Label = $RoundBanner
-@onready var event_banner: Label = $EventBanner
-@onready var roster_list: RichTextLabel = $RosterList
+@onready var round_banner: Label = $UI/RoundBanner
+@onready var event_banner: Label = $UI/EventBanner
+@onready var roster_list: RichTextLabel = $UI/RosterList
 
 func _ready() -> void:
 	if typeof(StageManager) == TYPE_NIL: return
@@ -37,7 +37,7 @@ func _ready() -> void:
 	seq.tween_interval(1.5)
 	
 	# Fade everything out right as the 3.0s spawn lock releases
-	seq.tween_property(self, "modulate:a", 0.0, 0.3)
+	seq.tween_property($UI, "modulate:a", 0.0, 0.3)
 	seq.tween_callback(queue_free)
 
 func _setup_blind_roster() -> void:

@@ -40,6 +40,7 @@ var is_falling: bool = false
 @onready var interact_prompt: Label = %InteractPrompt
 @export var speech_bubble_scene: PackedScene
 @export var emote_wheel_scene: PackedScene
+@export var mutation_draft_scene: PackedScene
 var selected_slot_index: int = 0
 var active_wheel = null
 
@@ -59,6 +60,7 @@ var pickup_history: Array[EquipmentData] = []
 var pending_loot_data: EquipmentData = null 
 var active_interactable: Node2D = null
 var channel_time: float = 0.0
+var has_drafted_mutation: bool = false
 
 var spawn_lock_timer: float = 0.0
 var max_spawn_lock: float = 0.0
@@ -417,7 +419,10 @@ func unregister_interactable(node: Node2D) -> void:
 func _start_channeling() -> void:
 	# Pre-check for inventory limits so we don't waste time channeling
 	if active_interactable is LootItem:
-		if not _can_pickup(active_interactable.item_data):
+		if not _can_pickup(active_interactable.item_data): return
+	elif active_interactable is MajorAltar:
+		if has_drafted_mutation:
+			_show_feedback("You can only draft one Major Mutation per run!")
 			return
 
 	current_state = State.LOOTING
@@ -436,6 +441,9 @@ func _start_channeling() -> void:
 	elif active_interactable is EscapePortal:
 		sfx_channel.pitch_scale = 0.8
 		required_channel_time = 1.5
+	elif active_interactable is MajorAltar:
+		sfx_channel.pitch_scale = 0.6
+		required_channel_time = 2.0
 	sfx_channel.play()
 
 func _handle_looting_state(delta: float) -> void:
@@ -468,6 +476,12 @@ func _complete_channeling() -> void:
 		_request_loot_pickup(active_interactable)
 	elif active_interactable is EscapePortal:
 		extract_from_dungeon(false)
+	elif active_interactable is MajorAltar:
+		if mutation_draft_scene:
+			var ui = mutation_draft_scene.instantiate()
+			get_tree().current_scene.add_child(ui) # Dungeon root
+			ui.setup(self, active_interactable)
+			has_drafted_mutation = true
 		
 	current_state = State.NORMAL
 	if channel_bar:
@@ -733,3 +747,19 @@ func _apply_timeout_penalty() -> void:
 		lost_count += 1
 		
 	_show_feedback("PENALTY: Lost " + str(lost_count) + " items!")
+
+func confirm_major_mutation(resource_path: String) -> void:
+	_show_feedback("Mutation locked in!")
+	rpc_id(1, "server_grant_major_mutation", resource_path)
+
+@rpc("any_peer", "call_local", "reliable")
+func server_grant_major_mutation(path: String) -> void:
+	if not multiplayer.is_server(): return
+	
+	var sender_id = multiplayer.get_remote_sender_id()
+	if sender_id == 0: sender_id = 1
+	
+	var profile = CreatureManager.get_profile(sender_id)
+	profile.major_mutation = load(path)
+	
+	print("[Server] Granted major mutation to Player ", sender_id)

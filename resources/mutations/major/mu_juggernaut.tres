@@ -1,10 +1,12 @@
 [gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://m6rog86jgg5g"]
 
 [ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_poam1"]
+[ext_resource type="Texture2D" uid="uid://cwbvowie8o5fs" path="res://art/mutations/major/mu_juggernaut.png" id="1_s8aio"]
 
 [resource]
 script = ExtResource("1_poam1")
 mutation_name = "Juggernaut"
+icon = ExtResource("1_s8aio")
 health_mult = 1.5
 damage_mult = 1.2
 speed_mult = 0.6

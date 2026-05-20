@@ -48,7 +48,10 @@ func _spawn_creatures() -> void:
 		# Move them to a spawn marker
 		if i < spawn_markers.size():
 			creature_inst.global_position = spawn_markers[i].global_position
-			
+		
+		if profile.major_mutation != null:
+			creature_inst.set_mutation(profile.major_mutation)
+		
 		# Equip the items locally on the Host, and record the paths for the clients
 		var serialized_loadout = {}
 		for slot in profile.equipped_items:

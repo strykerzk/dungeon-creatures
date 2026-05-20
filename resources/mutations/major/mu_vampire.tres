@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://cjkv2ys0pwk1r"]
+
+[ext_resource type="Texture2D" uid="uid://dval2mberst4g" path="res://art/mutations/major/mu_vampire.png" id="1_2umi4"]
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_yrlgd"]
+
+[resource]
+script = ExtResource("1_yrlgd")
+mutation_name = "Vampire"
+icon = ExtResource("1_2umi4")
+metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

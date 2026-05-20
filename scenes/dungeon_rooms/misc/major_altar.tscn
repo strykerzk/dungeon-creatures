@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bpdmevhg8edx1"]
+
+[ext_resource type="Script" uid="uid://ceotw66m03hhq" path="res://scripts/dungeon/major_altar.gd" id="1_wpjrv"]
+[ext_resource type="Texture2D" uid="uid://da464iknx611e" path="res://art/mutations/vat.png" id="2_4ol7w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7hjpl"]
+size = Vector2(156, 191)
+
+[node name="MajorAltar" type="Area2D" unique_id=1328702463]
+collision_layer = 128
+collision_mask = 2
+script = ExtResource("1_wpjrv")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1716112802]
+texture = ExtResource("2_4ol7w")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=680356360]
+position = Vector2(0, 8.5)
+shape = SubResource("RectangleShape2D_7hjpl")

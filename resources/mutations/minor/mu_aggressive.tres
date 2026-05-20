@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="MutationData" format=3 uid="uid://dtjl1wso6in5"]
+
+[ext_resource type="Script" uid="uid://b7erkwe1hqqbs" path="res://scripts/resources/mutation_data.gd" id="1_grxys"]
+[ext_resource type="Texture2D" uid="uid://d3wtydtv686sx" path="res://art/mutations/minor/mu_angry.png" id="1_paa1n"]
+
+[resource]
+script = ExtResource("1_grxys")
+mutation_name = "Aggressive"
+type = "minor"
+icon = ExtResource("1_paa1n")
+aggression_bonus = 1.0
+metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

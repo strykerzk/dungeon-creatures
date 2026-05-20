@@ -325,7 +325,7 @@ func recalculate_stats() -> void:
 	precision = clamp(precision + precision_bonus, stat_config.min_precision, stat_config.max_precision)
 	
 	self.scale = Vector2.ONE * size
-	acceleration = 10.0 / size 
+	acceleration = min(10.0 / size, 30.0) 
 	_update_attack_range_by_style()
 	retreat_threshold = attack_range * (1.1 - aggression)
 	if nav_agent: nav_agent.target_desired_distance = attack_range

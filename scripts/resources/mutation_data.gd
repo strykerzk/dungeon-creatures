@@ -1,7 +1,9 @@
 class_name MutationData extends Resource
 
-@export var mutation_name: String
-@export_enum("major", "minor") var type: String = "major"
+@export var mutation_name: String = "Unknown Mutation"
+@export_multiline var description: String = "Stat changes go here."
+@export_enum("major", "minor") var mutation_type: String = "major"
+@export var icon: Texture2D
 @export var provided_skill: PackedScene
 
 # Major Mutations have all mults plus choice of additive mods
