@@ -54,7 +54,30 @@ func register_player(id: int) -> void:
 func commit_dungeon_loot(id: int, new_loot: Array[EquipmentData]) -> void:
 	if not profiles.has(id):
 		register_player(id)
-	profiles[id].stash.append_array(new_loot)
+		
+	var profile = profiles[id]
+	var items_added = 0
+	
+	# NEW: Filter out items the player already has!
+	for item in new_loot:
+		var is_duplicate = false
+		
+		# 1. Check if it's already in the unequipped stash
+		for stash_item in profile.stash:
+			if stash_item.resource_path == item.resource_path:
+				is_duplicate = true
+				break
+				
+		# 2. Check if the creature is currently wearing it
+		if not is_duplicate:
+			for slot in profile.equipped_items:
+				if profile.equipped_items[slot].resource_path == item.resource_path:
+					is_duplicate = true
+					break
+				
+		if not is_duplicate:
+			profile.stash.append(item)
+			items_added += 1
 	print("[CreatureManager] Player ", id, " stash updated. Total items: ", profiles[id].stash.size())
 
 func get_profile(id: int) -> CreatureProfile:

@@ -7,7 +7,7 @@ extends CharacterBody2D
 @export var friction: float = 8000.0
 
 @export_group("Dodge Roll Settings")
-@export var roll_speed: float = 700.0
+@export var roll_speed: float = 900.0
 @export var roll_duration: float = 0.35
 @export var roll_iframe_percent: float = 0.7
 @export var dodge_timer: Timer
@@ -44,8 +44,16 @@ var is_falling: bool = false
 var selected_slot_index: int = 0
 var active_wheel = null
 
+# --- INVENTORY AND INTERACTIONS ---
 @export_category("Loot & Drops")
 @export var loot_item_scene: PackedScene
+var inventory: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
+var pickup_history: Array[EquipmentData] = [] 
+var pending_loot_data: EquipmentData = null 
+var nearby_interactables: Array[Area2D] = []
+var active_interactable: Area2D = null
+var channel_time: float = 0.0
+var has_drafted_mutation: bool = false
 
 enum State { NORMAL, ROLLING, LOOTING }
 var current_state: State = State.NORMAL
@@ -54,13 +62,6 @@ var roll_direction: Vector2 = Vector2.DOWN
 var is_invulnerable: bool = false
 var is_stunned: bool = false
 var last_facing_direction: Vector2 = Vector2.DOWN
-
-var inventory: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
-var pickup_history: Array[EquipmentData] = [] 
-var pending_loot_data: EquipmentData = null 
-var active_interactable: Node2D = null
-var channel_time: float = 0.0
-var has_drafted_mutation: bool = false
 
 var spawn_lock_timer: float = 0.0
 var max_spawn_lock: float = 0.0
@@ -130,7 +131,10 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			handle_animations()
 			return # Skip all other state logic while locked!
-
+		
+		# Interactables
+		_update_closest_interactable()
+		
 		# Normal State Machine
 		match current_state:
 			State.NORMAL:
@@ -394,28 +398,6 @@ func apply_stun(duration: float) -> void:
 
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
-
-func register_interactable(node: Node2D) -> void:
-	active_interactable = node
-	if interact_prompt and current_state != State.LOOTING:
-		var target_pos = node.global_position + Vector2(0, -50)
-		interact_prompt.reset_size()
-		interact_prompt.global_position = target_pos - (interact_prompt.size / 2.0)
-		interact_prompt.show()
-		if node is LootItem:
-			interact_prompt.text = "[F] Pick Up"
-		elif node is EscapePortal:
-			interact_prompt.text = "[F] Escape"
-
-func unregister_interactable(node: Node2D) -> void:
-	if active_interactable == node:
-		active_interactable = null
-		if interact_prompt: 
-			interact_prompt.hide()
-			
-		if current_state == State.LOOTING:
-			_cancel_channeling()
-
 func _start_channeling() -> void:
 	# Pre-check for inventory limits so we don't waste time channeling
 	if active_interactable is LootItem:
@@ -512,11 +494,17 @@ func _can_pickup(item_data: EquipmentData) -> bool:
 		current_total += inventory[key].size()
 		
 	if current_total >= total_max:
-		_show_feedback("Bag Full!")
+		_show_feedback("Bag Full! (Limit: " + str(total_max) + ")")
 		return false
 	if inventory[item_data.slot].size() >= type_max:
 		_show_feedback("Too many " + item_data.slot + " items!")
 		return false
+	
+	for key in inventory:
+		for item in inventory[key]:
+			if item.resource_path == item_data.resource_path:
+				_show_feedback("You already have a " + item_data.item_name + "!")
+				return false
 	return true
 
 func _request_loot_pickup(loot_node: Node2D) -> void:
@@ -822,3 +810,59 @@ func server_grant_major_mutation(path: String) -> void:
 	profile.major_mutation = load(path)
 	
 	print("[Server] Granted major mutation to Player ", sender_id)
+
+
+func _on_interaction_detector_area_entered(area: Area2D) -> void:
+	if not area in nearby_interactables:
+		nearby_interactables.append(area)
+		if interact_prompt and current_state != State.LOOTING:
+			var target_pos = area.global_position + Vector2(0, -50)
+			interact_prompt.reset_size()
+			interact_prompt.global_position = target_pos - (interact_prompt.size / 2.0)
+			interact_prompt.show()
+			if area is LootItem or area is MinorOrb:
+				interact_prompt.text = "[F] Pick Up"
+			elif area is EscapePortal:
+				interact_prompt.text = "[F] Escape"
+
+func _on_interaction_detector_area_exited(area: Area2D) -> void:
+	nearby_interactables.erase(area)
+	if area == active_interactable:
+		_set_active_interactable(null)
+		if interact_prompt: 
+			interact_prompt.hide()
+			
+		if current_state == State.LOOTING:
+			_cancel_channeling()
+
+func _update_closest_interactable() -> void:
+	# Clean out deleted items safely
+	nearby_interactables = nearby_interactables.filter(func(a): return is_instance_valid(a))
+	
+	if nearby_interactables.is_empty():
+		if active_interactable != null: 
+			_set_active_interactable(null)
+		return
+		
+	var closest_item = null
+	var min_dist_sq = INF
+	
+	for item in nearby_interactables:
+		var dist_sq = global_position.distance_squared_to(item.global_position)
+		if dist_sq < min_dist_sq:
+			min_dist_sq = dist_sq
+			closest_item = item
+			
+	if closest_item != active_interactable:
+		_set_active_interactable(closest_item)
+
+func _set_active_interactable(new_target: Area2D) -> void:
+	# Turn OFF the old highlight
+	if is_instance_valid(active_interactable) and active_interactable.has_method("set_highlight"):
+		active_interactable.set_highlight(false)
+		
+	active_interactable = new_target
+	
+	# Turn ON the new highlight
+	if is_instance_valid(active_interactable) and active_interactable.has_method("set_highlight"):
+		active_interactable.set_highlight(true)

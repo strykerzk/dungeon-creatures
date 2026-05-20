@@ -2,15 +2,51 @@
 
 [ext_resource type="Script" uid="uid://djtokune1t7u3" path="res://scripts/misc/minor_orb.gd" id="1_fm27t"]
 
+[sub_resource type="Shader" id="Shader_fm27t"]
+code = "shader_type canvas_item;
+
+uniform vec4 outline_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float outline_width : hint_range(0.0, 10.0) = 1.0;
+uniform bool is_outlined = false;
+
+void fragment() {
+    vec4 col = texture(TEXTURE, UV);
+    
+    if (is_outlined && col.a == 0.0) {
+        vec2 size = TEXTURE_PIXEL_SIZE * outline_width;
+        float outline = texture(TEXTURE, UV + vec2(-size.x, 0)).a;
+        outline += texture(TEXTURE, UV + vec2(0, size.y)).a;
+        outline += texture(TEXTURE, UV + vec2(size.x, 0)).a;
+        outline += texture(TEXTURE, UV + vec2(0, -size.y)).a;
+        outline += texture(TEXTURE, UV + vec2(-size.x, size.y)).a;
+        outline += texture(TEXTURE, UV + vec2(size.x, size.y)).a;
+        outline += texture(TEXTURE, UV + vec2(-size.x, -size.y)).a;
+        outline += texture(TEXTURE, UV + vec2(size.x, -size.y)).a;
+        outline = min(outline, 1.0);
+        
+        COLOR = mix(col, outline_color, outline);
+    } else {
+        COLOR = col;
+    }
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lh3x8"]
+shader = SubResource("Shader_fm27t")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/is_outlined = false
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_lh3x8"]
 radius = 30.016663
 
 [node name="MinorOrb" type="Area2D" unique_id=1320830487 groups=["minor_orb"]]
 collision_layer = 128
-collision_mask = 2
+collision_mask = 0
 script = ExtResource("1_fm27t")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1437421940]
+material = SubResource("ShaderMaterial_lh3x8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=478586148]
 shape = SubResource("CircleShape2D_lh3x8")

@@ -1,19 +1,15 @@
 extends Area2D
 class_name MajorAltar
 
-func _ready() -> void:
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+@onready var sprite: Sprite2D = $Sprite2D
 
-func _on_body_entered(body: Node2D) -> void:
-	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
-		if body.has_method("register_interactable"):
-			body.register_interactable(self)
-
-func _on_body_exited(body: Node2D) -> void:
-	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id():
-		if body.has_method("unregister_interactable"):
-			body.unregister_interactable(self)
+func set_highlight(active: bool) -> void:
+	# Add any visual flair you want here (like glowing runes or an outline)
+	if active:
+		modulate = Color(1.5, 1.5, 1.5, 1.0) # Brighten slightly
+	else:
+		modulate = Color(1.0, 1.0, 1.0, 1.0) # Normal
+	sprite.material.set_shader_parameter("is_outlined", active)
 
 @rpc("any_peer", "call_local", "reliable")
 func rpc_deactivate() -> void:

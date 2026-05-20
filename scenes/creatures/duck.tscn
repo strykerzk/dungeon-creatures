@@ -222,6 +222,19 @@ properties/6/path = NodePath(".:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
+[sub_resource type="GDScript" id="GDScript_tddeu"]
+resource_name = "hpbar"
+script/source = "extends ProgressBar
+
+func _ready() -> void:
+	max_value = get_parent().max_health
+	value = max_value
+
+func _physics_process(delta: float) -> void:
+	if value != get_parent().current_health:
+		value = get_parent().current_health
+"
+
 [node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
@@ -336,3 +349,11 @@ volume_db = -8.0
 volume_db = -10.0
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1328682961]
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=121112240]
+offset_left = -58.0
+offset_top = 34.0
+offset_right = 62.0
+offset_bottom = 61.0
+show_percentage = false
+script = SubResource("GDScript_tddeu")

@@ -102,7 +102,7 @@ animations = [{
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
 radius = 1.0
-height = 48.0
+height = 26.0
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_i3pqv"]
 
@@ -169,6 +169,9 @@ radius = 1.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_hqtel"]
 radius = 1.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_nvl01"]
+radius = 60.0
+
 [node name="Player" type="CharacterBody2D" unique_id=2000300669 node_paths=PackedStringArray("dodge_timer")]
 y_sort_enabled = true
 collision_layer = 2
@@ -180,7 +183,6 @@ mutation_draft_scene = ExtResource("4_nvl01")
 loot_item_scene = ExtResource("2_2hs0m")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=381582361]
-z_index = 2
 y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_urp6f")
 animation = &"idle"
@@ -190,6 +192,7 @@ offset = Vector2(0, -38)
 position = Vector2(-1, 0)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_onrkg")
+debug_color = Color(0.9021759, 0.30977157, 0, 0.41960785)
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=745080250]
 tree_root = SubResource("AnimationNodeStateMachine_i3pqv")
@@ -283,6 +286,7 @@ collision_mask = 256
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="VoidDetector" unique_id=539559882]
 shape = SubResource("CircleShape2D_onrkg")
+debug_color = Color(1.6544945e-07, 0.08674515, 0.10881, 0.41960785)
 
 [node name="WaterDetector" type="Area2D" parent="." unique_id=844938683]
 unique_name_in_owner = true
@@ -291,6 +295,16 @@ collision_mask = 512
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WaterDetector" unique_id=1810717736]
 shape = SubResource("CircleShape2D_hqtel")
+
+[node name="InteractionDetector" type="Area2D" parent="." unique_id=901938580]
+y_sort_enabled = true
+collision_layer = 0
+collision_mask = 192
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionDetector" unique_id=627193488]
+position = Vector2(0, -34)
+shape = SubResource("CircleShape2D_nvl01")
+debug_color = Color(0, 0.64150155, 0.3382681, 0.41960785)
 
 [node name="InteractPrompt" type="Label" parent="." unique_id=2107380072]
 unique_name_in_owner = true
@@ -309,3 +323,5 @@ position = Vector2(0, -34)
 texture = ExtResource("7_1jxqw")
 
 [connection signal="timeout" from="DodgeTimer" to="." method="_on_dodge_timer_timeout"]
+[connection signal="area_entered" from="InteractionDetector" to="." method="_on_interaction_detector_area_entered"]
+[connection signal="area_exited" from="InteractionDetector" to="." method="_on_interaction_detector_area_exited"]
