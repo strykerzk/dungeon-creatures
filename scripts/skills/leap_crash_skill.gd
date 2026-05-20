@@ -13,6 +13,7 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 
 	var start_pos = creature.global_position
 	var end_pos = target.global_position
+	end_pos += Vector2(randf_range(-15.0, 15.0), randf_range(-15.0, 15.0)) # To avoid landing on same spot
 
 	# 1. Takeoff
 	creature.is_invulnerable = true # Avoid taking damage mid-air!

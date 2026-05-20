@@ -513,6 +513,9 @@ func movement(delta: float) -> void:
 	var target_range = current_intended_action.range
 	var distance_to_target = global_position.distance_to(target.global_position)
 	var dir_to_target = global_position.direction_to(target.global_position)
+	if dir_to_target == Vector2.ZERO:
+		dir_to_target = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
+	
 	var has_los = has_line_of_sight()
 	
 	var requires_los = current_intended_action.get("requires_los", true)
