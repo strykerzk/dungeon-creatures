@@ -19,6 +19,10 @@ var minimap_instance = null
 @export var loot_item_scene: PackedScene
 @export var loot_pool: Array[EquipmentData]
 
+@export_group("Mutations")
+var minor_mutation_pool: Array[MutationData] = []
+var mutation_draw_deck: Array[MutationData] = []
+
 @export_group("Player Spawning")
 @export var player_scene: PackedScene
 @export var escape_portal_scene: PackedScene
@@ -34,6 +38,13 @@ var generator = DungeonGenerator.new()
 @onready var bgm_player: AudioStreamPlayer = $"../BGMPlayer"
 
 func _ready() -> void:
+	# Ref setup
+	var raw_res = FileUtils.load_resources_from_folder("res://resources/mutations/minor/")
+	for res in raw_res:
+		if res is MutationData:
+			minor_mutation_pool.append(res)
+	
+	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.escape_portal_opened.connect(_on_escape_portal_opened)
 		grid_size = StageManager.get_round_settings()["size"]
@@ -103,6 +114,7 @@ func build_dungeon() -> void:
 					room_instance.room_discovered.connect(minimap_instance.discover_room)
 
 	_scatter_loot(spawned_rooms)
+	_assign_minor_orbs()
 
 func _scatter_loot(rooms: Array[Node2D]) -> void:
 	if not loot_item_scene or loot_pool.is_empty(): return
@@ -158,6 +170,41 @@ func _scatter_loot(rooms: Array[Node2D]) -> void:
 				
 		for full_room in rooms_to_remove:
 			eligible_rooms.erase(full_room)
+
+func _assign_minor_orbs() -> void:
+	# Only the host decides what the orbs contain!
+	if not multiplayer.is_server() or minor_mutation_pool.is_empty(): return
+	
+	# Wait exactly 1 frame to ensure all instantiated rooms have successfully registered their groups!
+	await get_tree().process_frame
+	
+	# Fetch every orb in the entire dungeon via the group
+	var orbs = get_tree().get_nodes_in_group("minor_orb")
+	for orb in orbs:
+		
+		# If our draw deck is empty, refill and shuffle it!
+		if mutation_draw_deck.is_empty():
+			mutation_draw_deck = minor_mutation_pool.duplicate()
+			mutation_draw_deck.shuffle()
+			
+		var chosen_mutation = mutation_draw_deck.pop_back()
+		
+		# Optional: Skip assignment if we didn't have enough mutations in the pool
+		if not chosen_mutation: continue 
+		
+		orb.mutation_data = chosen_mutation
+		orb.setup()
+		
+		# Tell clients to update this orb!
+		rpc("client_sync_orb", orb.get_path(), chosen_mutation.resource_path)
+
+@rpc("authority", "call_local", "reliable")
+func client_sync_orb(orb_path: NodePath, mutation_path: String) -> void:
+	var orb = get_node_or_null(orb_path)
+	if orb is MinorOrb:
+		orb.mutation_data = load(mutation_path)
+		# Optional polish: Add logic here to tint the orb's sprite based on the mutation!
+
 
 func _spawn_players() -> void:
 	if not player_scene or not players_container: return

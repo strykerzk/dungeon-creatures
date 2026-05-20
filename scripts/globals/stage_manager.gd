@@ -10,7 +10,7 @@ enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }
 
 @export_category("Round Progression")
 var round_config: Dictionary = {
-	1: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 90},
+	1: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 90},
 	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 80},
 	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 0}, # 0 = Disabled
 	4: {"size": 7, "event": DungeonEvent.NORMAL, "timer": 120},
@@ -163,6 +163,8 @@ func _prepare_data_for_state(state: GameState) -> void:
 func _apply_round_settings() -> void:
 	var settings = get_round_settings()
 	current_dungeon_event = settings["event"]
+	if settings["event"] == DungeonEvent.MINOR_MIX:
+		CreatureManager.minor_slot_limit += 1
 	
 	print("[StageManager] Round ", current_round, " Event: ", DungeonEvent.keys()[current_dungeon_event])
 	

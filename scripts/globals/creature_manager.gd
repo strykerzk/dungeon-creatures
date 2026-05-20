@@ -14,6 +14,7 @@ var profiles: Dictionary = {}
 var current_round: int = 0
 var inv_total_limit: int = 3
 var inv_type_limit: int = 3
+var minor_slot_limit: int = 0
 
 func _ready() -> void:
 	update_round_limits(1)
@@ -24,6 +25,7 @@ func update_round_limits(round_num: int) -> void:
 		1:
 			inv_total_limit = 3
 			inv_type_limit = 3 
+			minor_slot_limit = 0
 		2:
 			inv_total_limit = 5
 			inv_type_limit = 1

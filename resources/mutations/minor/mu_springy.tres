@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_rsj16")
 mutation_name = "Spring Loaded"
-type = "minor"
 icon = ExtResource("1_p0376")
 dexterity_bonus = 0.5
 metadata/_custom_type_script = "uid://b7erkwe1hqqbs"

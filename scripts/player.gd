@@ -424,6 +424,11 @@ func _start_channeling() -> void:
 		if has_drafted_mutation:
 			_show_feedback("You can only draft one Major Mutation per run!")
 			return
+	elif active_interactable is MinorOrb:
+		var profile = CreatureManager.get_profile(name.to_int())
+		if profile and profile.minor_mutations.size() >= CreatureManager.minor_slot_limit:
+			_show_feedback("DNA Capacity Reached! (Limit: " + str(CreatureManager.minor_slot_limit) + ")")
+			return
 
 	current_state = State.LOOTING
 	channel_time = 0.0
@@ -438,6 +443,9 @@ func _start_channeling() -> void:
 	if active_interactable is LootItem:
 		sfx_channel.pitch_scale = 1.2
 		required_channel_time = 0.8
+	elif active_interactable is MinorOrb:
+		sfx_channel.pitch_scale = 1.2
+		required_channel_time = 1.5
 	elif active_interactable is EscapePortal:
 		sfx_channel.pitch_scale = 0.8
 		required_channel_time = 1.5
@@ -474,6 +482,8 @@ func _cancel_channeling() -> void:
 func _complete_channeling() -> void:
 	if active_interactable is LootItem:
 		_request_loot_pickup(active_interactable)
+	elif active_interactable is MinorOrb:
+		_request_orb_pickup(active_interactable)
 	elif active_interactable is EscapePortal:
 		extract_from_dungeon(false)
 	elif active_interactable is MajorAltar:
@@ -555,6 +565,55 @@ func client_grant_loot() -> void:
 	_show_feedback("Picked up: " + pending_loot_data.item_name)
 	pending_loot_data = null
 	_update_hotbar_ui()
+
+func _request_orb_pickup(orb_node: Node2D) -> void:
+	_show_feedback("Splicing DNA...")
+	# FIX 3: Send the exact, unique NodePath instead of the generic string name!
+	rpc_id(1, "server_request_orb", orb_node.get_path())
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_orb(orb_path: NodePath) -> void:
+	if not multiplayer.is_server(): return
+	
+	# Fetch by exact path, preventing mismatches
+	var orb_node = get_node_or_null(orb_path)
+	
+	if is_instance_valid(orb_node) and not orb_node.is_queued_for_deletion():
+		# 1. Final Server-Side Capacity Check
+		var sender_id = multiplayer.get_remote_sender_id()
+		if sender_id == 0: sender_id = 1
+		
+		var profile = CreatureManager.get_profile(sender_id)
+		if profile.minor_mutations.size() >= CreatureManager.minor_slot_limit:
+			return # Reject pickup
+			
+		var path = orb_node.mutation_data.resource_path
+		
+		# FIX 1: Tell ALL clients to securely destroy this exact orb
+		rpc("client_destroy_orb", orb_path)
+		
+		# FIX 2: Tell ALL clients that this specific player got the mutation!
+		rpc("client_grant_orb", sender_id, path)
+
+
+@rpc("authority", "call_local", "reliable")
+func client_destroy_orb(orb_path: NodePath) -> void:
+	var orb_node = get_node_or_null(orb_path)
+	if is_instance_valid(orb_node):
+		orb_node.queue_free()
+
+@rpc("authority", "call_local", "reliable")
+func client_grant_orb(target_player_id: int, path: String) -> void:
+	var data = load(path)
+	var profile = CreatureManager.get_profile(target_player_id)
+	
+	if profile:
+		profile.minor_mutations.append(data)
+	
+	# Only play the UI feedback and sound if WE are the ones who picked it up!
+	if target_player_id == name.to_int():
+		_show_feedback("DNA Spliced: " + data.mutation_name)
+		if sfx_success: sfx_success.play()
 
 func _update_hotbar_ui() -> void:
 	if not is_multiplayer_authority() or not hotbar_container: return

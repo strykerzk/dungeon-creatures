@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("1_grxys")
 mutation_name = "Aggressive"
-type = "minor"
 icon = ExtResource("1_paa1n")
 aggression_bonus = 1.0
 metadata/_custom_type_script = "uid://b7erkwe1hqqbs"
