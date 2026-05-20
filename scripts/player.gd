@@ -30,6 +30,7 @@ var is_falling: bool = false
 @onready var sfx_dodge: AudioStreamPlayer2D = $SFXDodge
 @onready var sfx_channel: AudioStreamPlayer2D = $SFXChannel
 @onready var sfx_success: AudioStreamPlayer2D = $SFXSuccess
+@onready var sfx_emote: AudioStreamPlayer2D = $SFXEmote
 @onready var dodge_particles: GPUParticles2D = $DodgeParticles
 @onready var handicap_chains: Sprite2D = $HandicapLock
 
@@ -679,6 +680,7 @@ func client_show_emote(emoji_text: String) -> void:
 	
 	# Spawn it slightly higher than interaction prompts
 	bubble.position = Vector2(0, -90) 
+	sfx_emote.play()
 	
 	if bubble.has_method("setup"):
 		bubble.setup(emoji_text)

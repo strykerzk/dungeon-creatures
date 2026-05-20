@@ -9,6 +9,7 @@ class_name BaseSkill extends Node2D
 @export var cooldown_time: float = 5.0 
 @export var is_passive: bool = false
 @export var priority_weight: float = 200.0 ## Base weight used for the AI deliberation roll
+@export var requires_los: bool = true
 
 var creature: Creature = null
 var current_cooldown: float = 0.0

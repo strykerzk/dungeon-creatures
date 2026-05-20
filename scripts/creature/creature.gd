@@ -70,7 +70,7 @@ var weapon_node: Weapon = null
 
 # --- SKILL TRACKING ---
 @export_group("Skill System")
-@export var skill_container: Node2D # Container for instantiated skill nodes
+@onready var skill_container: Node2D = $SkillContainer # Container for instantiated skill nodes
 var skill_directory = {
 	"major": null,         # Single BaseSkill node
 	"utility": [],        # Array of BaseSkill nodes
@@ -221,6 +221,8 @@ func equip(data: EquipmentData) -> void:
 	if equipment.has(slot):
 		equipment.erase(slot)
 	
+	equipment[slot] = data
+	
 	if slot == "weapon" and data.visual_scene:
 		if weapon_node: weapon_node.queue_free()
 		weapon_node = data.visual_scene.instantiate()
@@ -231,10 +233,7 @@ func equip(data: EquipmentData) -> void:
 		if weapon_node.has_method("setup"): weapon_node.setup(data)
 		base_cooldown = weapon_node.attack_cd
 		current_attack_style = weapon_node.attack_style
-	
-	equipment[slot] = data
-	
-	if slot != "weapon":
+	elif slot != "weapon":
 		var target_sprite = _get_sprite_for_slot(slot)
 		if target_sprite and data.get("visual_id") and data.visual_id != "":
 			var file_path = "res://art/equipment/"+slot+"/"+data.visual_id+"_"+species+".png"
@@ -276,7 +275,8 @@ func recalculate_stats() -> void:
 	if active_major_mutation: sources.append(active_major_mutation)
 	sources.append_array(active_minor_mutations)
 	for slot in equipment: 
-		if "data" in equipment[slot]: sources.append(equipment[slot].data)
+		if equipment[slot] is EquipmentData: sources.append(equipment[slot])
+	
 	
 	# 2. Accumulate stats and skills
 	for data in sources:
@@ -463,22 +463,24 @@ func _randomize_behavior() -> void:
 	_pick_intended_action() # Determine what we WANT to do next
 
 func _pick_intended_action() -> void:
-	var choices = [] # Array of { "action": node/string, "weight": float, "range": float }
+	var choices = [] # Array of { "action": node/string, "weight": float, "range": float, "requires_los": bool }
 	
 	# Fallback Weapon Attack (Base Weight influenced by Aggression)
 	var weapon_range = attack_range # Uses the cached _update_attack_range_by_style value
-	choices.append({"action": "weapon", "weight": 100.0 * (1.0 + aggression), "range": weapon_range})
+	choices.append({"action": "weapon", "weight": 100.0 * (1.0 + aggression), "range": weapon_range, "requires_los": true})
 	
 	# Check Major Skill
 	if skill_directory.major and skill_directory.major.has_method("can_use") and skill_directory.major.can_use(target):
 		var weight = 250.0 * (1.0 + (IQ * 0.1))
-		choices.append({"action": skill_directory.major, "weight": weight, "range": skill_directory.major.skill_range})
+		var req_los = skill_directory.major.requires_los if "requires_los" in skill_directory.major else true
+		choices.append({"action": skill_directory.major, "weight": weight, "range": skill_directory.major.skill_range, "requires_los": req_los})
 	
 	# Check Utility Skills
 	for skill in skill_directory.utility:
 		if skill.has_method("can_use") and skill.can_use(target):
 			var weight = 150.0 + (aggression * 50.0)
-			choices.append({"action": skill, "weight": weight, "range": skill.skill_range})
+			var req_los = skill.requires_los if "requires_los" in skill else true
+			choices.append({"action": skill, "weight": weight, "range": skill.skill_range, "requires_los": req_los})
 			
 	# Weighted Random Selection
 	var total_weight = 0.0
@@ -492,8 +494,6 @@ func _pick_intended_action() -> void:
 			current_intended_action = c
 			break
 
-## !!! DYNAMIC RANGE CHECKING HIGHLIGHT !!!
-## The creature now moves according to the range of its PICKED action (Skill or Weapon).
 func movement(delta: float) -> void:
 	if not current_intended_action: _pick_intended_action()
 	
@@ -502,8 +502,11 @@ func movement(delta: float) -> void:
 	var dir_to_target = global_position.direction_to(target.global_position)
 	var has_los = has_line_of_sight()
 	
+	var requires_los = current_intended_action.get("requires_los", true)
+	var action_ready = has_los or not requires_los
+	
 	if nav_agent:
-		nav_agent.target_desired_distance = target_range if has_los else 10.0
+		nav_agent.target_desired_distance = target_range if action_ready else 10.0
 	
 	# 1. Navigation: If too far for the INTENDED action or no LOS
 	if distance_to_target > target_range + 20.0 or not has_los:

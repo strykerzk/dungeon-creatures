@@ -16,6 +16,7 @@
 [ext_resource type="Resource" uid="uid://bpgdogjqoy37x" path="res://resources/equipment_data/weapons/ranged/pistol.tres" id="9_2vmh0"]
 [ext_resource type="Resource" uid="uid://bih5j1yep2t4j" path="res://resources/equipment_data/head/helmet.tres" id="10_g3byy"]
 [ext_resource type="PackedScene" uid="uid://b6c3fkkgojbcj" path="res://scenes/dungeon_rooms/misc/escape_portal.tscn" id="11_6qlut"]
+[ext_resource type="Resource" uid="uid://c8aoccjdxyvgc" path="res://resources/equipment_data/back/temp_wings.tres" id="15_ct7uw"]
 [ext_resource type="Script" uid="uid://dul3p1sllf3q8" path="res://scripts/misc/dungeon_camera.gd" id="15_sq7w3"]
 [ext_resource type="AudioStream" uid="uid://b2sfbg3uqcs1v" path="res://sounds/music/pmk_bnw_ancient_castle.wav" id="18_nwgp8"]
 
@@ -32,7 +33,7 @@ inner_room_scenes = Array[PackedScene]([ExtResource("3_cvwnr"), ExtResource("4_2
 outer_room_scenes = Array[PackedScene]([ExtResource("4_3dlxy"), ExtResource("6_6obk2")])
 major_altar_scenes = Array[PackedScene]([ExtResource("5_cvwnr")])
 loot_item_scene = ExtResource("6_06edt")
-loot_pool = Array[ExtResource("7_6qlut")]([ExtResource("8_g3byy"), ExtResource("9_2vmh0"), ExtResource("10_g3byy")])
+loot_pool = Array[ExtResource("7_6qlut")]([ExtResource("8_g3byy"), ExtResource("9_2vmh0"), ExtResource("10_g3byy"), ExtResource("15_ct7uw")])
 player_scene = ExtResource("5_1o2ik")
 escape_portal_scene = ExtResource("11_6qlut")
 
@@ -48,5 +49,5 @@ spawn_path = NodePath("..")
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=2131380541]
 stream = ExtResource("18_nwgp8")
-volume_db = -15.0
+volume_db = -30.0
 autoplay = true

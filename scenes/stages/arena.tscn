@@ -71,5 +71,5 @@ creatures_container = NodePath("../Creatures")
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1830574538]
 stream = ExtResource("6_pf2by")
-volume_db = -15.0
+volume_db = -30.0
 autoplay = true

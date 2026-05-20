@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://fhgn4fgcwa2u" path="res://scenes/ui/emote_wheel_ui.tscn" id="3_n7ghd"]
 [ext_resource type="Texture2D" uid="uid://pa5yxmlc1at5" path="res://art/misc_sprites/dust_particle.png" id="3_sweqy"]
 [ext_resource type="Material" uid="uid://d0byr0c54dp0j" path="res://resources/materials/smoke_puff_material.tres" id="5_2hs0m"]
+[ext_resource type="AudioStream" uid="uid://bt7m8nia3yd4n" path="res://sounds/sfx/ping.wav" id="6_n7ghd"]
 [ext_resource type="Texture2D" uid="uid://dwry31msrcenc" path="res://art/misc_sprites/handicap_lock.png" id="7_1jxqw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_i3pqv"]
@@ -228,6 +229,7 @@ color = Color(0, 0, 0, 1)
 [node name="ChannelBar" type="ProgressBar" parent="." unique_id=1668071656]
 unique_name_in_owner = true
 visible = false
+z_index = 5
 offset_left = -29.0
 offset_top = -88.0
 offset_right = 29.0
@@ -241,6 +243,9 @@ show_percentage = false
 [node name="SFXChannel" type="AudioStreamPlayer2D" parent="." unique_id=1626897788]
 
 [node name="SFXSuccess" type="AudioStreamPlayer2D" parent="." unique_id=1355865740]
+
+[node name="SFXEmote" type="AudioStreamPlayer2D" parent="." unique_id=728884640]
+stream = ExtResource("6_n7ghd")
 
 [node name="RunDust" type="GPUParticles2D" parent="." unique_id=510310330]
 position = Vector2(0, -2)

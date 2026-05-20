@@ -48,8 +48,7 @@ func _process(delta: float) -> void:
 			if int(current_time_left + delta) != int(current_time_left):
 				rpc("sync_dungeon_time", int(current_time_left))
 			
-			# 50% Threshold Check -> Open the Portal!
-			if current_time_left <= (dungeon_time_limit * 0.5) and not has_portal_opened:
+			if current_time_left <= (dungeon_time_limit * 0.4) and not has_portal_opened:
 				has_portal_opened = true
 				rpc("rpc_open_escape_portal")
 			

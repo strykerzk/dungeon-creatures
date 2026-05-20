@@ -29,8 +29,9 @@ var minimap_instance = null
 @export var room_height: float = 1152.0 
 
 var generator = DungeonGenerator.new()
-@onready var dungeon_camera = $"../DungeonCamera" 
-@onready var players_container = $"../Players" # A new Node2D we will create
+@onready var dungeon_camera: Camera2D = $"../DungeonCamera" 
+@onready var players_container: Node2D = $"../Players" # A new Node2D we will create
+@onready var bgm_player: AudioStreamPlayer = $"../BGMPlayer"
 
 func _ready() -> void:
 	if typeof(StageManager) != TYPE_NIL:
@@ -50,7 +51,7 @@ func _ready() -> void:
 	
 	if event_ui_scene:
 		var ui_inst = event_ui_scene.instantiate()
-		get_parent().add_child(ui_inst)
+		add_child(ui_inst)
 	
 @rpc("authority", "call_local", "reliable")
 func rpc_build_synced_dungeon(dungeon_seed: int) -> void:
@@ -183,5 +184,6 @@ func _on_escape_portal_opened() -> void:
 		
 	var portal_instance = escape_portal_scene.instantiate()
 	add_child(portal_instance)
+	bgm_player.pitch_scale = 1.1
 	# Center Room is always built at Vector2.ZERO in our world space!
 	portal_instance.global_position = Vector2.ZERO

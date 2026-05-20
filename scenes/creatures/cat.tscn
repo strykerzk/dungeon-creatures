@@ -217,7 +217,7 @@ properties/5/path = NodePath(".:look_direction")
 properties/5/spawn = true
 properties/5/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge", "skill_container") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
@@ -240,7 +240,6 @@ sfx_hit = NodePath("SFXHit")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
 dmg_number_scene = ExtResource("3_34ith")
-skill_container = NodePath("SkillContainer")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=265705832]
 
@@ -323,7 +322,6 @@ replication_config = SubResource("SceneReplicationConfig_fkb2k")
 
 [node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=117175611]
 stream = ExtResource("7_34ith")
-volume_db = -5.0
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=2090440747]
 
