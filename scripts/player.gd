@@ -667,9 +667,25 @@ func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func client_hide_player() -> void:
-	hide()
 	set_physics_process(false)
 	set_process_unhandled_input(false)
+	
+	if sprite:
+		var tween = create_tween().set_parallel(true)
+		
+		# Squish horizontally to 10% width
+		tween.tween_property(sprite, "scale:x", 0.1, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		
+		# Stretch vertically to 300% height
+		tween.tween_property(sprite, "scale:y", 3.0, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		
+		# Shoot upwards 300 pixels
+		tween.tween_property(sprite, "position:y", sprite.position.y - 300.0, 0.4).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_IN)
+		
+		# Hide the node completely ONLY after the animation finishes
+		tween.chain().tween_callback(hide)
+	else:
+		hide()
 
 @rpc("any_peer", "call_local", "reliable")
 func client_show_emote(emoji_text: String) -> void:

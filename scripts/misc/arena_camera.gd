@@ -36,7 +36,7 @@ func _process(delta: float) -> void:
 		current_shake_strength = lerpf(current_shake_strength, 0.0, shake_decay_rate * delta)
 		var random_offset = Vector2(
 			randf_range(-1.0, 1.0),
-			randf_range(-1.0, 1.0)
+			randf_range(-1.0, 1.0) 
 		).normalized() * current_shake_strength
 		
 		offset = random_offset
@@ -54,7 +54,7 @@ func _update_alive_creatures() -> void:
 	for child in creatures_container.get_children():
 		# Assuming dead creatures are queue_freed. 
 		# If you keep them around for death animations, add an `and child.current_health > 0` check!
-		if child is CharacterBody2D: 
+		if child is Creature and child.current_health > 0: 
 			alive_creatures.append(child)
 
 ## Listens for the player's spectator inputs

@@ -38,6 +38,7 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 	
 	creature.rpc("client_trigger_shake", 12.0)
 	if get_node_or_null("SFXCrash"): $SFXCrash.play()
+	if get_node_or_null("CrashParticles"): $CrashParticles.restart()
 	
 	# Deal Area-of-Effect Damage
 	if multiplayer.is_server():

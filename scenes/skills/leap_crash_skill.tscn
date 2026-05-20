@@ -3,11 +3,37 @@
 [ext_resource type="Script" uid="uid://bbypstomflwuv" path="res://scripts/skills/leap_crash_skill.gd" id="1_i4lmc"]
 [ext_resource type="AudioStream" uid="uid://c544lixd31o6j" path="res://sounds/sfx/dragon_land.wav" id="2_87wch"]
 
+[sub_resource type="Curve" id="Curve_87wch"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_lale4"]
+curve = SubResource("Curve_87wch")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ifdwt"]
+particle_flag_disable_z = true
+direction = Vector3(0, -1, 0)
+initial_velocity_min = 150.0
+initial_velocity_max = 500.0
+gravity = Vector3(0, 200, 0)
+scale_min = 8.0
+scale_max = 8.0
+scale_curve = SubResource("CurveTexture_lale4")
+color = Color(0.5132334, 0.51323277, 0.5132329, 1)
+
 [node name="LeapCrashSkill" type="Node2D" unique_id=314699818]
 script = ExtResource("1_i4lmc")
-skill_range = 700.0
+skill_range = 1200.0
 requires_los = false
 
 [node name="SFXCrash" type="AudioStreamPlayer2D" parent="." unique_id=599129963]
 stream = ExtResource("2_87wch")
-volume_db = -10.0
+volume_db = -5.0
+
+[node name="CrashParticles" type="GPUParticles2D" parent="." unique_id=1058541285]
+emitting = false
+amount = 50
+lifetime = 2.0
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_ifdwt")

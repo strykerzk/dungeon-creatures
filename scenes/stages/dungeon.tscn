@@ -49,5 +49,5 @@ spawn_path = NodePath("..")
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=2131380541]
 stream = ExtResource("18_nwgp8")
-volume_db = -30.0
+volume_db = -20.0
 autoplay = true

@@ -32,6 +32,7 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @export var whisker_left: RayCast2D
 @export var whisker_right: RayCast2D
 var is_combat_locked: bool = false
+var is_dead: bool = false
 
 # --- SIGNALS ---
 signal attack_started(attacker: Creature, defender: Creature)
@@ -333,14 +334,15 @@ func recalculate_stats() -> void:
 
 func _update_attack_range_by_style() -> void:
 	match current_attack_style:
-		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 250.0 * size
-		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 350.0 * size
-		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 800.0
+		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 350.0 * size
+		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 450.0 * size
+		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 1000.0
 
 func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	if not multiplayer.is_server(): return
 	
-	if is_invulnerable or current_health <= 0: return
+	if is_invulnerable or current_health <= 0 or is_dead: return
+	
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
 	
@@ -352,7 +354,9 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	var shake_intensity: float = clamp(amount * 0.8, 3.0, 25.0)
 	rpc("client_trigger_shake", shake_intensity)
 	
-	if current_health <= 0: die()
+	if current_health <= 0:
+		is_dead = true
+		die(attacker_ref)
 	else:
 		_trigger_hit_iframe()
 		search_for_target(attacker_ref)
@@ -386,9 +390,18 @@ func _trigger_hit_iframe() -> void:
 	await get_tree().create_timer(0.2).timeout
 	is_invulnerable = false
 
-func die() -> void:
+func die(attacker_ref: Creature = null) -> void:
 	died.emit()
 	set_physics_process(false)
+	
+	var yeet_dir = Vector2(randf_range(-1, 1), -1).normalized() # Fallback
+	if attacker_ref and is_instance_valid(attacker_ref):
+		yeet_dir = attacker_ref.global_position.direction_to(global_position)
+		yeet_dir = (yeet_dir + Vector2(0, -0.8)).normalized() # Arc it upwards
+		
+	rpc("client_play_death_animation", yeet_dir)
+	
+	await get_tree().create_timer(2.0).timeout
 	queue_free()
 
 @rpc("authority", "call_local", "unreliable")
@@ -478,7 +491,7 @@ func _pick_intended_action() -> void:
 	# Check Utility Skills
 	for skill in skill_directory.utility:
 		if skill.has_method("can_use") and skill.can_use(target):
-			var weight = 150.0 + (aggression * 50.0)
+			var weight = 200.0 + (aggression * 50.0)
 			var req_los = skill.requires_los if "requires_los" in skill else true
 			choices.append({"action": skill, "weight": weight, "range": skill.skill_range, "requires_los": req_los})
 			
@@ -679,6 +692,38 @@ func _fire_projectile(direction: Vector2) -> void:
 	get_parent().add_child(proj)
 	proj.global_position = global_position
 	if proj.has_method("launch"): proj.launch(direction, damage, self)
+
+@rpc("authority", "call_local", "reliable")
+func client_play_death_animation(yeet_dir: Vector2) -> void:
+	# 1. Stop processing standard visuals
+	set_process(false) 
+	if animation_player:
+		animation_player.stop()
+		
+	# 2. Time Stop (Smash Bros hit-stop)
+	Engine.time_scale = 0.1
+	
+	# Ignore time scale for this specific timer (the 'true' flag at the end) 
+	# so it reliably restores speed after 0.15 real-time seconds!
+	var timer = get_tree().create_timer(1.0, true, false, true)
+	timer.timeout.connect(func(): Engine.time_scale = 1.0)
+	
+	# 3. Super Screen Shake
+	if typeof(StageManager) != TYPE_NIL:
+		StageManager.screen_shake_requested.emit(30.0)
+		
+	# 4. The Yeet (Smash Bros Launch)
+	var tween = create_tween().set_parallel(true)
+	
+	# Spin wildly
+	tween.tween_property(self, "rotation_degrees", 1080.0 * (1 if randf() > 0.5 else -1), 1.5)
+	
+	# Launch way off screen
+	var launch_pos = global_position + (yeet_dir * 1500.0)
+	tween.tween_property(self, "global_position", launch_pos, 1.5).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	
+	# Fade Out
+	tween.tween_property(self, "modulate:a", 0.0, 1.0).set_delay(0.5)
 
 func _on_attack_cooldown_finished() -> void:
 	if not is_inside_tree(): return
