@@ -92,10 +92,22 @@ func build_dungeon() -> void:
 				"CoopRoom": if coop_event_scenes.size() > 0: scene_to_spawn = coop_event_scenes.pick_random()
 			
 			if scene_to_spawn == null:
-				match blueprint.ring_level:
-					0: scene_to_spawn = center_room_scene
-					1: if inner_room_scenes.size() > 0: scene_to_spawn = inner_room_scenes.pick_random()
-					_: if outer_room_scenes.size() > 0: scene_to_spawn = outer_room_scenes.pick_random()
+				match grid_size:
+					5:
+						match blueprint.ring_level:
+							0: scene_to_spawn = center_room_scene
+							1: if inner_room_scenes.size() > 0: scene_to_spawn = inner_room_scenes.pick_random()
+							_: if outer_room_scenes.size() > 0: scene_to_spawn = outer_room_scenes.pick_random()
+					7 or 9:
+						match blueprint.ring_level:
+							0: scene_to_spawn = center_room_scene
+							1 or 2: if inner_room_scenes.size() > 0: scene_to_spawn = inner_room_scenes.pick_random()
+							_: if outer_room_scenes.size() > 0: scene_to_spawn = outer_room_scenes.pick_random()
+					11:
+						match blueprint.ring_level:
+							0: scene_to_spawn = center_room_scene
+							1 or 2 or 3: if inner_room_scenes.size() > 0: scene_to_spawn = inner_room_scenes.pick_random()
+							_: if outer_room_scenes.size() > 0: scene_to_spawn = outer_room_scenes.pick_random()
 			
 			if scene_to_spawn:
 				var room_instance = scene_to_spawn.instantiate()

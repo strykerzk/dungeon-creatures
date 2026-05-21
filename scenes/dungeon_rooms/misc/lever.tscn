@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://c6n8q74nhnem7"]
+
+[ext_resource type="Texture2D" uid="uid://domr76rwye32o" path="res://art/misc_sprites/lever.png" id="1_pctxr"]
+[ext_resource type="Script" uid="uid://cfneb7gau227h" path="res://scripts/misc/lever.gd" id="1_r364w"]
+[ext_resource type="Shader" uid="uid://dlnmsf80mg52e" path="res://shaders/outline.gdshader" id="2_3fm4q"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bmeb5"]
+shader = ExtResource("2_3fm4q")
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_width = 1.0
+shader_parameter/is_outlined = false
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pctxr"]
+size = Vector2(30, 20)
+
+[node name="Lever" type="Area2D" unique_id=761525415]
+collision_layer = 128
+collision_mask = 0
+script = ExtResource("1_r364w")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1910585061]
+material = SubResource("ShaderMaterial_bmeb5")
+texture = ExtResource("1_pctxr")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=14845809]
+shape = SubResource("RectangleShape2D_pctxr")

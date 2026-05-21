@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://cfee0o5oycr8w"]
+
+[ext_resource type="Texture2D" uid="uid://c0iglio0w5sry" path="res://art/dungeon_sprites/10x10_walls.png" id="1_1qo8r"]
+[ext_resource type="Script" uid="uid://2jqbj1cbte37" path="res://scripts/dungeon/coop_door.gd" id="1_x54y2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x54y2"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_de1wq"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(0, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u7jnw"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(640, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6yq3o"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(1280, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n75sm"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(1920, 0, 640, 640)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_acwea"]
+atlas = ExtResource("1_1qo8r")
+region = Rect2(2560, 0, 640, 640)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lstlo"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x54y2")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_de1wq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u7jnw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6yq3o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n75sm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_acwea")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"open",
+"speed": 3.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l18ng"]
+size = Vector2(512, 512)
+
+[node name="WallSurround10x" type="StaticBody2D" unique_id=451720344]
+y_sort_enabled = true
+script = ExtResource("1_x54y2")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=80538604]
+sprite_frames = SubResource("SpriteFrames_lstlo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1274154847]
+shape = SubResource("RectangleShape2D_l18ng")

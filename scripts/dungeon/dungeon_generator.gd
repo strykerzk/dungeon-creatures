@@ -129,7 +129,8 @@ func _assign_event_rooms() -> void:
 		StageManager.DungeonEvent.MINOR_MIX:
 			# Pick 3 random outer rooms
 			outer_rooms.shuffle()
-			for i in range(min(3, outer_rooms.size())):
+			var minor_room_amt = 3 + (2 * (CreatureManager.minor_slot_limit - 1))
+			for i in range(min(minor_room_amt, outer_rooms.size())):
 				outer_rooms[i].template_type = "MinorAltar"
 				
 		StageManager.DungeonEvent.MAJOR_COOP:

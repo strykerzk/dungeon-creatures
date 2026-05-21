@@ -247,9 +247,11 @@ dmg_number_scene = ExtResource("3_34ith")
 [node name="SkillContainer" type="Node2D" parent="." unique_id=265705832]
 
 [node name="FlipContainer" type="Node2D" parent="." unique_id=419443522]
+y_sort_enabled = true
 
 [node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=1379841005]
 unique_name_in_owner = true
+y_sort_enabled = true
 material = ExtResource("3_rt1jr")
 
 [node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=888726358]
@@ -295,6 +297,10 @@ position = Vector2(3.5, 1.5)
 rotation = 1.5707964
 shape = SubResource("RectangleShape2D_3j7ha")
 debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
+
+[node name="WeaponMarker" type="Marker2D" parent="." unique_id=1331011333]
+position = Vector2(-3, -35)
+rotation = 0.4223697
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1720695310]
 libraries/ = SubResource("AnimationLibrary_34ith")

@@ -3,8 +3,9 @@ extends Area2D
 @export var damage: float = 15.0
 @export var stun_time: float = 0.8
 @export var active_time: float = 1.0
-@export var inactive_time: float = 1.0
-@export_enum("Inactive", "Active") var type: int
+@export var inactive_time: float = 1.5
+@export var delay: float = 0.0
+@export_enum("Inactive", "Active") var starting_state: int
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var timer: Timer = $Timer
@@ -14,7 +15,8 @@ var is_active: bool = false
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	timer.timeout.connect(_on_timer_timeout)
-	match type:
+	await get_tree().create_timer(delay).timeout
+	match starting_state:
 		0: _set_inactive()
 		1: _set_active()
 

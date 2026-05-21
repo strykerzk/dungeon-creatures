@@ -399,7 +399,6 @@ func apply_stun(duration: float) -> void:
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 func _start_channeling() -> void:
-	# Pre-check for inventory limits so we don't waste time channeling
 	if active_interactable is LootItem:
 		if not _can_pickup(active_interactable.item_data): return
 	elif active_interactable is MajorAltar:
@@ -411,6 +410,11 @@ func _start_channeling() -> void:
 		if profile and profile.minor_mutations.size() >= CreatureManager.minor_slot_limit:
 			_show_feedback("DNA Capacity Reached! (Limit: " + str(CreatureManager.minor_slot_limit) + ")")
 			return
+	elif active_interactable is Lever:
+		if active_interactable.is_pulled or active_interactable.is_locked:
+			return
+		sfx_channel.pitch_scale = 1.0
+		required_channel_time = 0.4
 
 	current_state = State.LOOTING
 	channel_time = 0.0
@@ -468,6 +472,8 @@ func _complete_channeling() -> void:
 		_request_orb_pickup(active_interactable)
 	elif active_interactable is EscapePortal:
 		extract_from_dungeon(false)
+	elif active_interactable is Lever:
+		active_interactable.rpc("rpc_pull_lever")
 	elif active_interactable is MajorAltar:
 		if mutation_draft_scene:
 			var ui = mutation_draft_scene.instantiate()
@@ -824,6 +830,8 @@ func _on_interaction_detector_area_entered(area: Area2D) -> void:
 				interact_prompt.text = "[F] Pick Up"
 			elif area is EscapePortal:
 				interact_prompt.text = "[F] Escape"
+			else:
+				interact_prompt.text = "[F] Interact"
 
 func _on_interaction_detector_area_exited(area: Area2D) -> void:
 	nearby_interactables.erase(area)

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmqx8anfg3y0d"
-path="res://.godot/imported/kenny_wall.png-4fc92ce124417be9e61b9d8f10bee147.ctex"
+uid="uid://5rgko213o4uo"
+path="res://.godot/imported/kenny_wall_east.png-b4e2e5e3bfcef97ee32f1627c9e1a26e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/dungeon_sprites/kenny_wall.png"
-dest_files=["res://.godot/imported/kenny_wall.png-4fc92ce124417be9e61b9d8f10bee147.ctex"]
+source_file="res://art/dungeon_sprites/kenny_wall_east.png"
+dest_files=["res://.godot/imported/kenny_wall_east.png-b4e2e5e3bfcef97ee32f1627c9e1a26e.ctex"]
 
 [params]
 

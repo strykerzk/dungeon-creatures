@@ -261,9 +261,11 @@ dmg_number_scene = ExtResource("3_tddeu")
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
 
 [node name="FlipContainer" type="Node2D" parent="." unique_id=520853665]
+y_sort_enabled = true
 
 [node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=200071240]
 unique_name_in_owner = true
+y_sort_enabled = true
 material = ExtResource("3_ygove")
 
 [node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1436436277]
