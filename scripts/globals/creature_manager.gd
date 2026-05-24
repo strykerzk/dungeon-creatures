@@ -22,7 +22,7 @@ func _ready() -> void:
 func update_round_limits(round_num: int) -> void:
 	current_round = round_num
 	match current_round:
-		1:
+		0 or 1:
 			inv_total_limit = 3
 			inv_type_limit = 3 
 			minor_slot_limit = 0

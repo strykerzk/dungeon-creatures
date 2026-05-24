@@ -38,6 +38,7 @@ var is_falling: bool = false
 @onready var hotbar_container: HBoxContainer = %HotbarContainer
 @onready var channel_bar: ProgressBar = %ChannelBar
 @onready var interact_prompt: Label = %InteractPrompt
+@onready var name_label: Label = %NameLabel
 @export var speech_bubble_scene: PackedScene
 @export var emote_wheel_scene: PackedScene
 @export var mutation_draft_scene: PackedScene
@@ -79,6 +80,7 @@ func _ready() -> void:
 	last_safe_position = global_position
 	delayed_safe_position = global_position
 	
+	name_label.text = NetworkManager.players[int(name)].name
 	_update_hotbar_ui()
 	if channel_bar:
 		channel_bar.hide()
@@ -122,14 +124,14 @@ func _physics_process(delta: float) -> void:
 		if is_falling or is_stunned:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations()
+			handle_animations.rpc()
 			return
 		
 		# The Lock
 		if spawn_lock_timer > 0:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations()
+			handle_animations.rpc()
 			return # Skip all other state logic while locked!
 		
 		# Interactables
@@ -144,7 +146,7 @@ func _physics_process(delta: float) -> void:
 			State.LOOTING:
 				_handle_looting_state(delta)
 		
-		handle_animations()
+		handle_animations.rpc()
 	
 	# 3. HAZARD DETECTION
 	if is_multiplayer_authority() and not is_falling and not is_stunned:
@@ -153,7 +155,7 @@ func _physics_process(delta: float) -> void:
 		if touching_void:
 			safe_timer = 0.0 
 			if current_state != State.ROLLING:
-				_trigger_fall()
+				_trigger_fall.rpc()
 		else:
 			if current_state == State.NORMAL:
 				safe_timer += delta
@@ -226,7 +228,7 @@ func _handle_normal_state(delta: float) -> void:
 	move_and_slide()
 	
 	if Input.is_action_just_pressed("dodge") and can_roll and not in_water:
-		_start_roll()
+		_start_roll.rpc()
 		
 	# Check for Interaction
 	if Input.is_action_just_pressed("interact") and active_interactable:
@@ -267,6 +269,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if picked_emote != "":
 				rpc("client_show_emote", picked_emote)
 
+@rpc("any_peer","call_local","reliable")
 func handle_animations() -> void:
 	if velocity.x != 0:
 		sprite.flip_h = velocity.x < 0
@@ -284,9 +287,9 @@ func handle_animations() -> void:
 	var in_water = false
 	if has_node("WaterDetector"):
 		in_water = $WaterDetector.has_overlapping_bodies()
-
+	
 	var is_running = (current_state == State.NORMAL and velocity.length() > 20.0 and not is_falling)
-
+	
 	if has_node("RunDust") and has_node("WaterSplash"):
 		var run_dust = $RunDust
 		var water_splash = $WaterSplash
@@ -302,6 +305,7 @@ func handle_animations() -> void:
 			run_dust.emitting = false
 			water_splash.emitting = false
 
+@rpc("any_peer","call_local","reliable")
 func _start_roll() -> void:
 	current_state = State.ROLLING
 	can_roll = false
@@ -329,6 +333,7 @@ func _end_roll() -> void:
 func _on_dodge_timer_timeout() -> void:
 	can_roll = true
 
+@rpc("any_peer","call_local","reliable")
 func _trigger_fall() -> void:
 	is_falling = true
 	current_state = State.NORMAL # Cancel any looting/interactions
@@ -366,14 +371,14 @@ func _respawn_from_fall() -> void:
 	apply_stun(0.4)
 
 func apply_stun(duration: float) -> void:
-	if not is_multiplayer_authority() or is_invulnerable: return
+	if is_invulnerable: return
 	
 	current_state = State.NORMAL
 	velocity = Vector2.ZERO
 	is_stunned = true
 	is_invulnerable = true
 	
-	if typeof(StageManager) != TYPE_NIL:
+	if typeof(StageManager) != TYPE_NIL and is_multiplayer_authority():
 		StageManager.screen_shake_requested.emit(8.0)
 	
 	# Calculate how many times to loop the animation based on duration

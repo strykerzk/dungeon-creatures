@@ -119,12 +119,22 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath("AnimatedSprite2D:flip_h")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:rotation")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:scale")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_onrkg"]
 bg_color = Color(0.4392157, 0.4392157, 0.4392157, 0.6901961)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i3pqv"]
 bg_color = Color(3.85046e-07, 0.736423, 0.823885, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_nvl01"]
+outline_size = 4
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Curve" id="Curve_3wdsa"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
@@ -243,6 +253,27 @@ theme_override_styles/background = SubResource("StyleBoxFlat_onrkg")
 theme_override_styles/fill = SubResource("StyleBoxFlat_i3pqv")
 show_percentage = false
 
+[node name="NameLabel" type="Label" parent="." unique_id=785727020]
+unique_name_in_owner = true
+offset_left = -149.0
+offset_top = -100.0
+offset_right = 149.0
+offset_bottom = -77.0
+text = "DFEFDFEF"
+label_settings = SubResource("LabelSettings_nvl01")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InteractPrompt" type="Label" parent="." unique_id=2107380072]
+unique_name_in_owner = true
+visible = false
+offset_right = 121.0
+offset_bottom = 34.0
+text = "[F] Pick Up"
+label_settings = ExtResource("3_i3pqv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1618508772]
 
 [node name="SFXChannel" type="AudioStreamPlayer2D" parent="." unique_id=1626897788]
@@ -305,16 +336,6 @@ collision_mask = 192
 position = Vector2(0, -34)
 shape = SubResource("CircleShape2D_nvl01")
 debug_color = Color(0, 0.64150155, 0.3382681, 0.41960785)
-
-[node name="InteractPrompt" type="Label" parent="." unique_id=2107380072]
-unique_name_in_owner = true
-visible = false
-offset_right = 121.0
-offset_bottom = 34.0
-text = "[F] Pick Up"
-label_settings = ExtResource("3_i3pqv")
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="HandicapLock" type="Sprite2D" parent="." unique_id=1130015856]
 visible = false

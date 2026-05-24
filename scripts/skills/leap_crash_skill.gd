@@ -38,8 +38,7 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 	creature.is_dodging = false
 	
 	creature.rpc("client_trigger_shake", 12.0)
-	if get_node_or_null("SFXCrash"): $SFXCrash.play()
-	if get_node_or_null("CrashParticles"): $CrashParticles.restart()
+	play_effects.rpc()
 	
 	# Deal Area-of-Effect Damage
 	if multiplayer.is_server():
@@ -53,3 +52,8 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 
 	# Tiny recovery delay before the AI resumes
 	await get_tree().create_timer(0.2).timeout
+
+@rpc("any_peer","call_local","reliable")
+func play_effects() -> void:
+	if get_node_or_null("SFXCrash"): $SFXCrash.play()
+	if get_node_or_null("CrashParticles"): $CrashParticles.restart()

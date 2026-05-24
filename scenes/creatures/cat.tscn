@@ -299,7 +299,7 @@ shape = SubResource("RectangleShape2D_3j7ha")
 debug_color = Color(0.99793094, 0, 0.16522166, 0.41960785)
 
 [node name="WeaponMarker" type="Marker2D" parent="." unique_id=1331011333]
-position = Vector2(-3, -35)
+position = Vector2(12.000001, 1)
 rotation = 0.4223697
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1720695310]

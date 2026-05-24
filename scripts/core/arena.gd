@@ -95,20 +95,21 @@ func _end_arena_match() -> void:
 	var max_wins_to_end: int = 3
 	
 	# 1. Find the survivor and grant them a win
-	for child in creatures_container.get_children():
-		if child is Creature and child.current_health > 0:
-			var winner_id = child.name.to_int()
-			
-			if typeof(CreatureManager) != TYPE_NIL:
-				var profile = CreatureManager.get_profile(winner_id)
-				profile.wins += 1
-				print("[Arena] Player ", winner_id, " wins the round! Total Wins: ", profile.wins)
+	if StageManager.current_round != 0:
+		for child in creatures_container.get_children():
+			if child is Creature and child.current_health > 0:
+				var winner_id = child.name.to_int()
 				
-				# Check the Endgame Condition!
-				if profile.wins >= max_wins_to_end:
-					is_game_over = true
-					overall_winner_id = winner_id
-			break 
+				if typeof(CreatureManager) != TYPE_NIL:
+					var profile = CreatureManager.get_profile(winner_id)
+					profile.wins += 1
+					print("[Arena] Player ", winner_id, " wins the round! Total Wins: ", profile.wins)
+					
+					# Check the Endgame Condition!
+					if profile.wins >= max_wins_to_end:
+						is_game_over = true
+						overall_winner_id = winner_id
+				break 
 
 	# 2. Sync the profiles to all clients
 	if typeof(CreatureManager) != TYPE_NIL:

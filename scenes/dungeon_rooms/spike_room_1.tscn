@@ -38,7 +38,6 @@ tile_map_data = PackedByteArray("AAD6//f/AQABAAQAAAD6/wcAAQABAAMAAADy/wQAAQABAAM
 tile_set = ExtResource("1_qp32x")
 
 [node name="DoorBlockers" type="Node2D" parent="." unique_id=963140776]
-visible = false
 
 [node name="NorthBlocker" type="StaticBody2D" parent="DoorBlockers" unique_id=170945947]
 position = Vector2(0, -480)

@@ -2,6 +2,7 @@ class_name Creature extends CharacterBody2D
 
 @export var stat_config: CreatureData
 var species: String = "duck" # Default species
+var id: int = 1
 
 enum AttackStyle { TACKLE, MELEE, RANGED }
 
@@ -118,12 +119,16 @@ func _enter_tree() -> void:
 	set_collision_mask_value(1, true)
 
 func _ready() -> void:
+	setup()
 	_initialize_base_stats()
 	recalculate_stats()
 	if nav_timer: nav_timer.timeout.connect(_on_nav_timer_timeout)
 	if body_hitbox: body_hitbox.monitoring = false
 	setup_physics_layers()
 	_randomize_behavior()
+
+func setup() -> void:
+	id = int(name)
 
 func _initialize_base_stats() -> void:
 	if stat_config:
@@ -260,6 +265,7 @@ func recalculate_stats() -> void:
 	
 	if skill_container:
 		for child in skill_container.get_children():
+			skill_container.remove_child(child)
 			child.queue_free()
 	
 	skill_directory = {"major": null, "utility": [], "passive": []}

@@ -19,6 +19,9 @@ func _ready() -> void:
 	NetworkManager.player_connected.connect(_on_player_list_changed)
 	NetworkManager.player_disconnected.connect(_on_player_list_changed)
 	
+	if multiplayer.multiplayer_peer != null:
+		NetworkManager.leave_game()
+	
 	start_game_button.hide()
 	status_label.text = "Waiting for action..."
 	name_input.text = "Runner_" + str(randi() % 1000)
@@ -96,4 +99,4 @@ func _on_start_game_pressed() -> void:
 func rpc_start_game() -> void:
 	print("[Menu] Host started the game. Transitioning to Selection Phase...")
 	if typeof(StageManager) != TYPE_NIL:
-		StageManager.change_stage(StageManager.GameState.SELECTION)
+		StageManager.change_stage(StageManager.GameState.DUNGEON)

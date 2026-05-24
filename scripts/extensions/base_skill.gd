@@ -17,6 +17,7 @@ var current_cooldown: float = 0.0
 ## Called by Creature during recalculate_stats()
 func setup(p_creature: Creature) -> void:
 	creature = p_creature
+	name = skill_name
 
 func _physics_process(delta: float) -> void:
 	if current_cooldown > 0:
