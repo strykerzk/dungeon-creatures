@@ -236,3 +236,8 @@ starting_state = 1
 
 [node name="MinorOrb" parent="." unique_id=1320830487 instance=ExtResource("8_fhcq8")]
 position = Vector2(0, -31)
+
+[node name="FogOfWar" type="ColorRect" parent="." unique_id=865277540]
+z_index = 5
+offset_right = 40.0
+offset_bottom = 40.0

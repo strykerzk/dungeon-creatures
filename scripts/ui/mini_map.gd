@@ -47,7 +47,7 @@ func _on_map_draw() -> void:
 	
 	# Calculate grid center to offset the drawing so the hub is exactly in the middle of the screen
 	var grid_width = grid.size()
-	var center_room = Vector2(grid_width / 2.0, grid_width / 2.0)
+	var center_room = Vector2(grid_width / 2, grid_width / 2)
 	
 	for x in range(grid.size()):
 		for y in range(grid[x].size()):
@@ -68,11 +68,20 @@ func _on_map_draw() -> void:
 						map_control.draw_line(draw_pos, end_pos, Color.WHITE, 6.0)
 						
 				# 2. Draw Room Background
-				map_control.draw_rect(rect, Color.BLACK, true)
+				if blueprint.ring_level == 0:
+					map_control.draw_rect(rect, Color.DARK_GREEN, true)
+				elif blueprint.template_type == "MajorAltar":
+					map_control.draw_rect(rect, Color.DARK_RED, true)
+				elif blueprint.template_type == "MinorAltar":
+					map_control.draw_rect(rect, Color.DEEP_SKY_BLUE, true)
+				else:
+					map_control.draw_rect(rect, Color.BLACK, true)
 				
 				# 3. Draw Room Border
 				map_control.draw_rect(rect, Color.WHITE, false, 3.0)
 				
 				# 4. Highlight Major Event Rooms (Red Dot)
-				if blueprint.template_type == "MajorAltar":
-					map_control.draw_circle(draw_pos, 6.0, Color.RED)
+				#if blueprint.template_type == "MajorAltar":
+				#	map_control.draw_circle(draw_pos, 6.0, Color.RED)
+				#elif blueprint.template_type == "MinorAltar":
+				#	map_control.draw_circle(draw_pos, 6.0, Color.AQUA)

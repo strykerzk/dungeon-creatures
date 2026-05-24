@@ -24,7 +24,7 @@ color = Color(0.5132334, 0.51323277, 0.5132329, 1)
 [node name="LeapCrashSkill" type="Node2D" unique_id=314699818]
 script = ExtResource("1_i4lmc")
 skill_name = "Leap Crash"
-skill_range = 1200.0
+skill_range = 900.0
 requires_los = false
 
 [node name="SFXCrash" type="AudioStreamPlayer2D" parent="." unique_id=599129963]

@@ -18,4 +18,5 @@ attack_style = 2
 attack_range = 1000.0
 damage_bonus = 10.0
 attack_cooldown = 6.0
+projectile_speed = 2500.0
 metadata/_custom_type_script = "uid://cne6whdroxgp7"

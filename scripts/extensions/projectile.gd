@@ -4,7 +4,7 @@ var damage_value: float = 0.0
 var attacker: Creature = null
 
 var velocity: Vector2 = Vector2.ZERO
-var speed: float = 1500.0
+var speed: float = 4000.0
 
 func _enter_tree() -> void:
 	body_entered.connect(_on_body_entered)
@@ -29,7 +29,7 @@ func _on_area_entered(area: Area2D) -> void:
 		
 		if entity.has_method("take_damage"):
 			entity.take_damage(damage_value, attacker)
-			print("Damage dealt!")
+			print("Projectile hit!")
 		queue_free()
 
 func launch(direction: Vector2, p_damage: float, p_attacker: Creature, p_speed: float) -> void:

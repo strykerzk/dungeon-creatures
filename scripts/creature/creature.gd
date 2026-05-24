@@ -453,6 +453,7 @@ func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> v
 	var dodge_chance = 0.15 + (IQ * 0.07)
 	if (current_health / max_health) < 0.3 and aggression > 0.5: dodge_chance *= 0.2 
 	if randf() < dodge_chance: dodge(attacker_node)
+	else: print("Dodge Failed!")
 
 func dodge(attacker_node: Creature) -> void:
 	is_dodging = true 
@@ -531,14 +532,14 @@ func movement(delta: float) -> void:
 		nav_agent.target_desired_distance = target_range if action_ready else 10.0
 	
 	# 1. Navigation: If too far for the INTENDED action or no LOS
-	if distance_to_target > target_range + 20.0 or not has_los:
+	if distance_to_target > target_range + 20.0 or not action_ready:
 		if not nav_agent.is_navigation_finished():
 			var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
 			var target_vel = move_dir * (speed * speed_mult)
 			target_vel = _apply_whisker_avoidance(target_vel) # NEW: Steer away from corners!
 			velocity = velocity.lerp(target_vel, acceleration * delta)
 		else:
-			if not has_los:
+			if not action_ready:
 				var target_vel = dir_to_target * (speed * 0.5)
 				target_vel = _apply_whisker_avoidance(target_vel)
 				velocity = velocity.lerp(target_vel, acceleration * delta)
@@ -547,6 +548,7 @@ func movement(delta: float) -> void:
 	else:
 		# 2. Execution
 		if can_attack:
+			await get_tree().create_timer(randf_range(0.1, 0.5)).timeout
 			attack()
 			return 
 		else:

@@ -129,8 +129,8 @@ func build_dungeon() -> void:
 	_assign_minor_orbs()
 
 func _scatter_loot(rooms: Array[Node2D]) -> void:
-	if not loot_item_scene or loot_pool.is_empty(): return
-		
+	if not multiplayer.is_server() or not loot_item_scene or loot_pool.is_empty(): return
+	
 	var eligible_rooms: Array[Dictionary] = []
 	var total_markers = 0
 	
@@ -176,12 +176,27 @@ func _scatter_loot(rooms: Array[Node2D]) -> void:
 			chosen_marker.add_child(loot_instance)
 			loot_instance.position = Vector2.ZERO
 			
+			rpc("client_spawn_loot", chosen_marker.get_path(), loot_instance.item_data.resource_path)
+			
 			drops_remaining -= 1
 			if markers.is_empty():
 				rooms_to_remove.append(room_data)
 				
 		for full_room in rooms_to_remove:
 			eligible_rooms.erase(full_room)
+
+@rpc("authority", "call_local", "reliable")
+func client_spawn_loot(marker_path: NodePath, item_path: String) -> void:
+	# The Host already spawned it locally, so we only run this on clients
+	if multiplayer.is_server(): return 
+	
+	var marker = get_node_or_null(marker_path)
+	if marker and loot_item_scene:
+		var loot_instance = loot_item_scene.instantiate() as LootItem
+		loot_instance.item_data = load(item_path)
+		loot_instance.name = "LootItem" # Keep the name identical for interactions!
+		marker.add_child(loot_instance)
+		loot_instance.position = Vector2.ZERO
 
 func _assign_minor_orbs() -> void:
 	# Only the host decides what the orbs contain!
@@ -215,6 +230,7 @@ func client_sync_orb(orb_path: NodePath, mutation_path: String) -> void:
 	var orb = get_node_or_null(orb_path)
 	if orb is MinorOrb:
 		orb.mutation_data = load(mutation_path)
+		orb.setup()
 		# Optional polish: Add logic here to tint the orb's sprite based on the mutation!
 
 

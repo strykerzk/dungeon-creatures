@@ -104,3 +104,8 @@ position = Vector2(-789, -410)
 
 [node name="Lever3" parent="." unique_id=815869007 instance=ExtResource("9_xsehd")]
 position = Vector2(-789, 410)
+
+[node name="FogOfWar" type="ColorRect" parent="." unique_id=229818187]
+z_index = 5
+offset_right = 40.0
+offset_bottom = 40.0

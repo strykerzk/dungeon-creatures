@@ -8,24 +8,32 @@ font_size = 80
 [sub_resource type="LabelSettings" id="LabelSettings_60cu5"]
 font_size = 50
 
+[sub_resource type="LabelSettings" id="LabelSettings_bneod"]
+font_size = 50
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
 [node name="DungeonEventUI" type="CanvasLayer" unique_id=1991494037]
 script = ExtResource("1_bneod")
 
 [node name="UI" type="Control" parent="." unique_id=177289692]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="RoundBanner" type="Label" parent="UI" unique_id=2084526824]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = 759.0
-offset_top = -150.0
-offset_right = 1121.0
-offset_bottom = -40.0
+offset_left = -181.0
+offset_top = -137.0
+offset_right = 181.0
+offset_bottom = -27.0
 grow_horizontal = 2
 text = "ROUND 1"
 label_settings = SubResource("LabelSettings_hcdaj")
@@ -33,6 +41,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="EventBanner" type="Label" parent="UI" unique_id=744926616]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = 8
@@ -40,10 +49,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 700.5
-offset_top = 485.5
-offset_right = 1179.5
-offset_bottom = 554.5
+offset_left = -239.5
+offset_top = -34.5
+offset_right = 239.5
+offset_bottom = 34.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "MINOR MUTATIONS"
@@ -51,7 +60,21 @@ label_settings = SubResource("LabelSettings_60cu5")
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="CountdownBanner" type="Label" parent="UI" unique_id=673527881]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -49.5
+offset_right = 49.5
+offset_bottom = 69.0
+grow_horizontal = 2
+text = "3:00"
+label_settings = SubResource("LabelSettings_bneod")
+
 [node name="RosterList" type="RichTextLabel" parent="UI" unique_id=254959196]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = 7
@@ -65,3 +88,7 @@ offset_right = 960.0
 offset_bottom = 1040.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="CountdownTimer" type="Timer" parent="." unique_id=883538159]
+unique_name_in_owner = true
+one_shot = true

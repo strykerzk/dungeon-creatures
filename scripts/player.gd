@@ -595,13 +595,13 @@ func server_request_orb(orb_path: NodePath) -> void:
 		rpc("client_grant_orb", sender_id, path)
 
 
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func client_destroy_orb(orb_path: NodePath) -> void:
 	var orb_node = get_node_or_null(orb_path)
 	if is_instance_valid(orb_node):
 		orb_node.queue_free()
 
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func client_grant_orb(target_player_id: int, path: String) -> void:
 	var data = load(path)
 	var profile = CreatureManager.get_profile(target_player_id)
@@ -824,6 +824,8 @@ func server_grant_major_mutation(path: String) -> void:
 
 
 func _on_interaction_detector_area_entered(area: Area2D) -> void:
+	if not is_multiplayer_authority(): return
+	
 	if not area in nearby_interactables:
 		nearby_interactables.append(area)
 		if interact_prompt and current_state != State.LOOTING:
@@ -839,6 +841,8 @@ func _on_interaction_detector_area_entered(area: Area2D) -> void:
 				interact_prompt.text = "[F] Interact"
 
 func _on_interaction_detector_area_exited(area: Area2D) -> void:
+	if not is_multiplayer_authority(): return
+	
 	nearby_interactables.erase(area)
 	if area == active_interactable:
 		_set_active_interactable(null)
