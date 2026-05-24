@@ -2,6 +2,10 @@ extends Area2D
 class_name MajorAltar
 
 @onready var sprite: Sprite2D = $Sprite2D
+var grid_pos: Vector2i = Vector2i.ZERO
+
+func _ready() -> void:
+	grid_pos = get_parent().grid_pos
 
 func set_highlight(active: bool) -> void:
 	# Add any visual flair you want here (like glowing runes or an outline)

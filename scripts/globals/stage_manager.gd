@@ -10,7 +10,7 @@ enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }
 
 @export_category("Round Progression")
 var round_config: Dictionary = {
-	1: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 90},
+	1: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 90},
 	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 80},
 	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 100}, # 0 = Disabled
 	4: {"size": 7, "event": DungeonEvent.NORMAL, "timer": 120},
@@ -20,6 +20,10 @@ var round_config: Dictionary = {
 var current_state: GameState = GameState.MENU
 var current_round: int = 0
 var current_dungeon_event: DungeonEvent = DungeonEvent.NORMAL
+
+# --- MUTATION INFO ---
+var mutation_dictionary: Dictionary = {
+}
 
 # --- TIMER & EXTRACTION LOGIC ---
 var dungeon_time_limit: int = 30
@@ -196,3 +200,21 @@ func set_current_state(new_state: GameState) -> void:
 
 func get_current_state() -> GameState:
 	return current_state
+
+
+func update_mutation_dictionary(grid_pos: Vector2i, array: Array[MutationData]) -> void:
+	if mutation_dictionary.has(grid_pos):
+		mutation_dictionary.erase(grid_pos)
+	mutation_dictionary[grid_pos] = array
+	var safe_paths: Array[String] = []
+	for mut in array:
+		safe_paths.append(mut.resource_path)
+	rpc("sync_mutation_dictionary", grid_pos, safe_paths)
+
+@rpc("any_peer","call_remote","reliable")
+func sync_mutation_dictionary(grid_pos: Vector2i, safe_paths: Array[String]) -> void:
+	var loaded_mutations: Array[MutationData] = []
+	for path in safe_paths:
+		loaded_mutations.append(load(path))
+	
+	mutation_dictionary[grid_pos] = loaded_mutations

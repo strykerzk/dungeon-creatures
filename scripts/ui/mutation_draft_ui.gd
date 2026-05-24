@@ -4,6 +4,7 @@ extends CanvasLayer
 @onready var container: HBoxContainer = $ColorRect/HBoxContainer
 var player_ref: Node2D = null
 var altar_ref: Node2D = null
+var room_pos: Vector2i = Vector2i.ZERO
 
 func setup(player: Node2D, altar: Node2D) -> void:
 	player_ref = player
@@ -13,22 +14,30 @@ func setup(player: Node2D, altar: Node2D) -> void:
 func _populate_choices() -> void:
 	for child in container.get_children():
 		child.queue_free()
-		
-	# 1. Gather the currently active mutation
-	var active_mutation: MutationData = null
-	if typeof(CreatureManager) != TYPE_NIL and player_ref:
-		var profile = CreatureManager.get_profile(player_ref.name.to_int())
-		if profile and profile.major_mutation:
-			active_mutation = profile.major_mutation
-			
-	# 2. Filter the pool to EXCLUDE the active mutation
+	
 	var valid_mutations: Array[MutationData] = []
-	for mut in mutation_pool:
-		if mut != active_mutation:
-			valid_mutations.append(mut)
-			
-	# 3. Pick up to 3 random options
-	valid_mutations.shuffle()
+	if StageManager.mutation_dictionary.has(altar_ref.grid_pos):
+		valid_mutations = StageManager.mutation_dictionary[altar_ref.grid_pos]
+	else:
+		# 1. Gather the currently active mutation
+		var active_mutation: MutationData = null
+		if typeof(CreatureManager) != TYPE_NIL and player_ref:
+			var profile = CreatureManager.get_profile(player_ref.name.to_int())
+			if profile and profile.major_mutation:
+				active_mutation = profile.major_mutation
+				
+		# 2. Filter the pool to EXCLUDE the active mutation
+		
+		for mut in mutation_pool:
+			if mut != active_mutation:
+				valid_mutations.append(mut)
+				
+		# 3. Pick up to 3 random options
+		valid_mutations.shuffle()
+		
+		# 4. Update the StageManager dictionary to avoid rerolling
+		StageManager.update_mutation_dictionary(altar_ref.grid_pos, valid_mutations)
+	
 	var choices_to_show = min(3, valid_mutations.size())
 	
 	for i in range(choices_to_show):
@@ -76,4 +85,5 @@ func _on_mutation_chosen(path: String) -> void:
 	if altar_ref and altar_ref.has_method("rpc_deactivate"):
 		altar_ref.rpc("rpc_deactivate")
 	
+	player_ref.has_drafted_mutation = true
 	queue_free() # Close the UI

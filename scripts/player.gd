@@ -419,7 +419,7 @@ func _start_channeling() -> void:
 		if active_interactable.is_pulled or active_interactable.is_locked:
 			return
 		sfx_channel.pitch_scale = 1.0
-		required_channel_time = 0.4
+		required_channel_time = 0.0
 
 	current_state = State.LOOTING
 	channel_time = 0.0
@@ -436,13 +436,13 @@ func _start_channeling() -> void:
 		required_channel_time = 0.8
 	elif active_interactable is MinorOrb:
 		sfx_channel.pitch_scale = 1.2
-		required_channel_time = 1.5
+		required_channel_time = 1.2
 	elif active_interactable is EscapePortal:
 		sfx_channel.pitch_scale = 0.8
-		required_channel_time = 1.5
+		required_channel_time = 1.0
 	elif active_interactable is MajorAltar:
 		sfx_channel.pitch_scale = 0.6
-		required_channel_time = 2.0
+		required_channel_time = 1.5
 	sfx_channel.play()
 
 func _handle_looting_state(delta: float) -> void:
@@ -484,7 +484,6 @@ func _complete_channeling() -> void:
 			var ui = mutation_draft_scene.instantiate()
 			get_tree().current_scene.add_child(ui) # Dungeon root
 			ui.setup(self, active_interactable)
-			has_drafted_mutation = true
 		
 	current_state = State.NORMAL
 	if channel_bar:
