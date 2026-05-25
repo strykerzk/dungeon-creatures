@@ -220,7 +220,7 @@ properties/6/path = NodePath(".:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
@@ -232,6 +232,7 @@ doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
 doll_boots = NodePath("FlipContainer/PaperDoll/BootsSprite")
 doll_armor = NodePath("FlipContainer/PaperDoll/ArmorSprite")
 doll_head = NodePath("FlipContainer/PaperDoll/HeadSprite")
+weapon_marker = NodePath("WeaponMarker")
 body_hitbox = NodePath("Hitbox")
 nav_agent = NodePath("NavigationAgent2D")
 nav_timer = NodePath("NavTimer")

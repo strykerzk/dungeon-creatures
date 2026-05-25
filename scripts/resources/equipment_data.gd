@@ -6,6 +6,7 @@ class_name EquipmentData extends Resource
 @export var visual_id: String = "" # sword, wooden_hammer
 @export var sprite_texture: Texture
 @export var provided_skill: PackedScene
+@export var ranged_projectile: PackedScene
 
 @export_group("Primary Bonuses")
 @export var health_bonus: float = 0.0

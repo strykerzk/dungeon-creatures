@@ -44,8 +44,10 @@ func round_start() -> void:
 	var seq = create_tween()
 	
 	# Banner 1: Slam the Round text down
-	var center_y = get_viewport().size.y / 2.0 - 80.0
-	seq.tween_property(round_banner, "position:y", center_y - 30.0, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	#var center_y = (get_viewport().size.y / 2.0) - 80.0
+	#seq.tween_property(round_banner, "position:y", center_y - 30.0, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+	seq.tween_property(round_banner, "modulate:a", 1.0, 0.3)
+	
 	
 	# Pause for a beat
 	seq.tween_interval(0.3)

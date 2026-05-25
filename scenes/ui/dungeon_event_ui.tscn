@@ -26,15 +26,19 @@ grow_vertical = 2
 
 [node name="RoundBanner" type="Label" parent="UI" unique_id=2084526824]
 unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0)
 layout_mode = 1
-anchors_preset = 5
+anchors_preset = 8
 anchor_left = 0.5
+anchor_top = 0.5
 anchor_right = 0.5
+anchor_bottom = 0.5
 offset_left = -181.0
-offset_top = -137.0
+offset_top = -141.0
 offset_right = 181.0
-offset_bottom = -27.0
+offset_bottom = -30.999939
 grow_horizontal = 2
+grow_vertical = 2
 text = "ROUND 1"
 label_settings = SubResource("LabelSettings_hcdaj")
 horizontal_alignment = 1

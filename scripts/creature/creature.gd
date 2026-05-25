@@ -310,6 +310,13 @@ func recalculate_stats() -> void:
 				skill_directory.major = skill_node
 			else:
 				skill_directory.utility.append(skill_node)
+		
+		if "ranged_projectile" in data and data.ranged_projectile:
+			if projectile_scene: projectile_scene = null
+			projectile_scene = data.ranged_projectile.instantiate()
+			
+			if "attack_style" in data and data.attack_style:
+				current_attack_style = data.attack_style # Ranged
 	
 	# 3. Finalize math
 	var modded_speed = speed * (1.0 + speed_mod)
