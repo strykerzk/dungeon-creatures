@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://txywmpbqug8v"]
+
+[ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_ecl71"]
+[ext_resource type="Texture2D" uid="uid://clbnka83367nr" path="res://art/dungeon_sprites/kenny_wall_west.png" id="2_enovb"]
+
+[sub_resource type="Gradient" id="Gradient_6kqty"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_xj3vo"]
+gradient = SubResource("Gradient_6kqty")
+width = 128
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.85, 0.85)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_athhm"]
+polygon = PackedVector2Array(-64, -384, 64, -384, 64, 384, -64, 384)
+
+[node name="LightingSandbox" type="Node2D" unique_id=1633526910]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1720639244]
+color = Color(0.15686275, 0.17254902, 0.23921569, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1295801907]
+position = Vector2(931, 477)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_ecl71")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=416217467]
+position = Vector2(1213.0001, 470)
+scale = Vector2(10.796874, 10.796874)
+shadow_enabled = true
+shadow_filter = 2
+shadow_filter_smooth = 2.0
+texture = SubResource("GradientTexture2D_xj3vo")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=811595441]
+position = Vector2(1091, 84)
+texture = ExtResource("2_enovb")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D2" unique_id=1250700046]
+occluder = SubResource("OccluderPolygon2D_athhm")

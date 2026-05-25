@@ -10,11 +10,15 @@ enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }
 
 @export_category("Round Progression")
 var round_config: Dictionary = {
-	1: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 90},
-	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 80},
-	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 100}, # 0 = Disabled
+	1: {"size": 5, "event": DungeonEvent.NORMAL, "timer": 0}, # 0 = Disabled
+	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 100},
+	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 100}, 
 	4: {"size": 7, "event": DungeonEvent.NORMAL, "timer": 120},
-	5: {"size": 7, "event": DungeonEvent.MAJOR_COOP, "timer": 0}
+	5: {"size": 7, "event": DungeonEvent.MINOR_MIX, "timer": 140},
+	6: {"size": 7, "event": DungeonEvent.MAJOR_COOP, "timer": 140},
+	7: {"size": 9, "event": DungeonEvent.MINOR_MIX, "timer": 180},
+	8: {"size": 9, "event": DungeonEvent.MAJOR_ALTARS, "timer": 180},
+	9: {"size": 11, "event": DungeonEvent.MINOR_MIX, "timer": 240}
 }
 
 var current_state: GameState = GameState.MENU
@@ -67,7 +71,7 @@ func get_round_settings() -> Dictionary:
 	
 	# Infinite scaling fallback for rounds 6+
 	return {
-		"size": 7 + ((current_round - 5) * 2), 
+		"size": 11, 
 		"event": DungeonEvent.MINOR_MIX, 
 		"timer": max(60, 120 - (current_round * 5))
 	}
