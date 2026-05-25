@@ -42,15 +42,18 @@ shader_parameter/is_outlined = false
 size = Vector2(156, 191)
 
 [node name="MajorAltar" type="Area2D" unique_id=1328702463]
+y_sort_enabled = true
 collision_layer = 128
 collision_mask = 0
 script = ExtResource("1_wpjrv")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1716112802]
+y_sort_enabled = true
 material = SubResource("ShaderMaterial_7hjpl")
+position = Vector2(0, -81)
 texture = ExtResource("2_4ol7w")
 hframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=680356360]
-position = Vector2(0, 8.5)
+position = Vector2(0, -72.5)
 shape = SubResource("RectangleShape2D_7hjpl")

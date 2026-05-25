@@ -4,7 +4,7 @@
 [ext_resource type="LabelSettings" uid="uid://ciys2ubebfy1j" path="res://resources/ui/basic_label_settings.tres" id="2_p7ulp"]
 
 [node name="DamageNumber" type="Node2D" unique_id=652840954]
-z_index = 3
+z_index = 5
 script = ExtResource("1_o4k5i")
 
 [node name="Label" type="Label" parent="." unique_id=151811471]

@@ -15,13 +15,16 @@ shader_parameter/is_outlined = false
 radius = 30.0
 
 [node name="LootItem" type="Area2D" unique_id=1865406233]
+y_sort_enabled = true
 collision_layer = 64
 collision_mask = 0
 script = ExtResource("1_wuk4u")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=149729940]
 material = SubResource("ShaderMaterial_mt5ti")
+position = Vector2(0, -32)
 texture = ExtResource("3_6m5kr")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=585133002]
+position = Vector2(0, -32)
 shape = SubResource("CircleShape2D_a4lhv")

@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://dtmot3i6q8o8m"]
+
+[ext_resource type="Texture2D" uid="uid://dmqx8anfg3y0d" path="res://art/dungeon_sprites/kenny_wall_north.png" id="1_sxbtj"]
+[ext_resource type="Texture2D" uid="uid://duxxt56ovvgac" path="res://art/dungeon_sprites/kenny_wall_south.png" id="2_locwa"]
+[ext_resource type="Texture2D" uid="uid://5rgko213o4uo" path="res://art/dungeon_sprites/kenny_wall_east.png" id="3_3rtgo"]
+[ext_resource type="Texture2D" uid="uid://clbnka83367nr" path="res://art/dungeon_sprites/kenny_wall_west.png" id="4_ku3jn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_upsnv"]
+size = Vector2(768, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4op3r"]
+size = Vector2(768.0005, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qnfy4"]
+size = Vector2(128, 768)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sr47u"]
+size = Vector2(128, 768)
+
+[node name="DoorBlockers" type="Node2D" unique_id=1934263565]
+y_sort_enabled = true
+
+[node name="NorthBlocker" type="StaticBody2D" parent="." unique_id=1611139331]
+position = Vector2(0, -448)
+collision_mask = 38
+
+[node name="Sprite2D" type="Sprite2D" parent="NorthBlocker" unique_id=1573386634]
+position = Vector2(0, -64)
+texture = ExtResource("1_sxbtj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NorthBlocker" unique_id=1206276446]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_upsnv")
+
+[node name="SouthBlocker" type="StaticBody2D" parent="." unique_id=530895915]
+y_sort_enabled = true
+position = Vector2(0, 576)
+collision_mask = 38
+
+[node name="Sprite2D" type="Sprite2D" parent="SouthBlocker" unique_id=647343668]
+position = Vector2(0, -64)
+texture = ExtResource("2_locwa")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SouthBlocker" unique_id=1581294493]
+position = Vector2(0, -32)
+shape = SubResource("RectangleShape2D_4op3r")
+
+[node name="EastBlocker" type="StaticBody2D" parent="." unique_id=831514806]
+z_index = 2
+position = Vector2(896, 0)
+collision_mask = 38
+
+[node name="Sprite2D" type="Sprite2D" parent="EastBlocker" unique_id=131931450]
+position = Vector2(0, -64)
+texture = ExtResource("3_3rtgo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EastBlocker" unique_id=333488667]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_qnfy4")
+
+[node name="WestBlocker" type="StaticBody2D" parent="." unique_id=1529130407]
+z_index = 2
+position = Vector2(-896, 0)
+collision_mask = 38
+
+[node name="Sprite2D" type="Sprite2D" parent="WestBlocker" unique_id=891831384]
+position = Vector2(0, -64)
+texture = ExtResource("4_ku3jn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WestBlocker" unique_id=1271687848]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_sr47u")
