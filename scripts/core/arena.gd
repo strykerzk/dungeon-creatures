@@ -52,6 +52,9 @@ func _spawn_creatures() -> void:
 		if profile.major_mutation != null:
 			creature_inst.set_mutation(profile.major_mutation)
 		
+		for minor_mut in profile.minor_mutations:
+			creature_inst.set_mutation(minor_mut)
+		
 		# Equip the items locally on the Host, and record the paths for the clients
 		var serialized_loadout = {}
 		for slot in profile.equipped_items:

@@ -1,6 +1,5 @@
 extends CanvasLayer
 
-@export var mutation_pool: Array[MutationData]
 @onready var container: HBoxContainer = $ColorRect/HBoxContainer
 var player_ref: Node2D = null
 var altar_ref: Node2D = null
@@ -15,52 +14,51 @@ func _populate_choices() -> void:
 	for child in container.get_children():
 		child.queue_free()
 	
-	var valid_mutations: Array[MutationData] = []
-	if StageManager.mutation_dictionary.has(altar_ref.grid_pos):
-		valid_mutations = StageManager.mutation_dictionary[altar_ref.grid_pos]
-	else:
-		# 1. Gather the currently active mutation
-		var active_mutation: MutationData = null
-		if typeof(CreatureManager) != TYPE_NIL and player_ref:
-			var profile = CreatureManager.get_profile(player_ref.name.to_int())
-			if profile and profile.major_mutation:
-				active_mutation = profile.major_mutation
-				
-		# 2. Filter the pool to EXCLUDE the active mutation
-		
-		for mut in mutation_pool:
-			if mut != active_mutation:
-				valid_mutations.append(mut)
-				
-		# 3. Pick up to 3 random options
-		valid_mutations.shuffle()
-		
-		# 4. Update the StageManager dictionary to avoid rerolling
-		StageManager.update_mutation_dictionary(altar_ref.grid_pos, valid_mutations)
+	# Get what's still available in the announced pool
+	var available: Array[MutationData] = StageManager.get_available_pool()
 	
-	var choices_to_show = min(3, valid_mutations.size())
+	# Filter out the player's current mutation (no re-drafting the same one)
+	if typeof(CreatureManager) != TYPE_NIL and player_ref:
+		var profile = CreatureManager.get_profile(player_ref.name.to_int())
+		if profile and profile.major_mutation:
+			available = available.filter(func(m): return m != profile.major_mutation)
+	
+	if available.is_empty():
+		# All mutations in pool have been claimed by other players
+		var empty_label = RichTextLabel.new()
+		empty_label.bbcode_enabled = true
+		empty_label.text = "[center][color=red]All mutations have been claimed!\nExplore other altars or skip.[/color][/center]"
+		container.add_child(empty_label)
+		# Auto-close after a moment
+		await get_tree().create_timer(2.5).timeout
+		if is_inside_tree(): queue_free()
+		return
+	
+	# Show up to 3 random options from the still-available pool
+	available.shuffle()
+	var choices_to_show: int = min(3, available.size())
 	
 	for i in range(choices_to_show):
-		var mut = valid_mutations[i]
+		var mut: MutationData = available[i]
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(250, 350)
-		
+	
 		var text = "[center]"
 		text += "[font_size=24][color=gold]" + mut.mutation_name + "[/color][/font_size]\n\n"
 		text += mut.description
 		text += "[/center]"
-		
+	
 		var label = RichTextLabel.new()
 		label.bbcode_enabled = true
 		label.text = text
-		label.mouse_filter = Control.MOUSE_FILTER_IGNORE 
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		label.set_anchors_preset(Control.PRESET_FULL_RECT)
-		
+	
 		btn.add_child(label)
 		btn.pressed.connect(_on_mutation_chosen.bind(mut.resource_path))
 		container.add_child(btn)
-		
-	# 4. Add the SKIP Button
+	
+	# Skip button
 	var skip_btn = Button.new()
 	skip_btn.custom_minimum_size = Vector2(150, 350)
 	
@@ -80,10 +78,14 @@ func _on_skip_chosen() -> void:
 	queue_free()
 
 func _on_mutation_chosen(path: String) -> void:
+	# Immediately broadcast the claim to all machines BEFORE the UI closes
+	# This prevents a race where two players simultaneously pick the same mutation
+	StageManager.rpc("rpc_mark_mutation_drafted", path)
+	
 	if player_ref and player_ref.has_method("confirm_major_mutation"):
 		player_ref.confirm_major_mutation(path)
 	if altar_ref and altar_ref.has_method("rpc_deactivate"):
 		altar_ref.rpc("rpc_deactivate")
 	
 	player_ref.has_drafted_mutation = true
-	queue_free() # Close the UI
+	queue_free()

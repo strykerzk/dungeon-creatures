@@ -72,31 +72,45 @@ func _carve_doors() -> void:
 						_connect_rooms(room, neighbor, dir)
 
 func _ensure_full_connectivity() -> void:
-	# ... (Keep existing flood fill logic exactly as it was) ...
-	var visited = []
-	var queue = [grid[center_pos.x][center_pos.y]]
+	# BFS from center to find all reachable rooms
+	var visited: Array = []
+	var queue: Array = [grid[center_pos.x][center_pos.y]]
+
 	while queue.size() > 0:
 		var current: RoomBlueprint = queue.pop_front()
-		if current in visited: continue
+		if current in visited:
+			continue
 		visited.append(current)
 		for dir in current.doors:
 			if current.doors[dir]:
-				queue.append(grid[current.grid_pos.x + dir.x][current.grid_pos.y + dir.y])
-				
-	var expected_total = grid_size * grid_size
-	if visited.size() < expected_total:
+				var n_pos = current.grid_pos + dir
+				queue.append(grid[n_pos.x][n_pos.y])
+
+	# For any room not reached, find its nearest visited neighbor and connect them
+	# Iterative: keep looping until all rooms are connected
+	var changed = true
+	while changed:
+		changed = false
 		for x in range(grid_size):
 			for y in range(grid_size):
-				var room = grid[x][y]
-				if not room in visited:
-					for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
-						var n_pos = room.grid_pos + dir
-						if n_pos.x >= 0 and n_pos.x < grid_size and n_pos.y >= 0 and n_pos.y < grid_size:
-							var neighbor = grid[n_pos.x][n_pos.y]
-							if neighbor in visited:
-								_connect_rooms(room, neighbor, dir)
-								_ensure_full_connectivity()
-								return
+				var room: RoomBlueprint = grid[x][y]
+				if room in visited:
+					continue
+				# Find a visited neighbor to connect to
+				for dir in [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]:
+					var n_pos = room.grid_pos + dir
+					if n_pos.x < 0 or n_pos.x >= grid_size or n_pos.y < 0 or n_pos.y >= grid_size:
+						continue
+					var neighbor = grid[n_pos.x][n_pos.y]
+					if neighbor in visited:
+						_connect_rooms(room, neighbor, dir)
+						visited.append(room)
+						changed = true
+						break
+				if changed:
+					break
+			if changed:
+				break
 
 func _connect_rooms(room_a: RoomBlueprint, room_b: RoomBlueprint, dir_from_a: Vector2i) -> void:
 	room_a.doors[dir_from_a] = true

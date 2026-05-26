@@ -137,7 +137,7 @@ func _initialize_base_stats() -> void:
 		damage = stat_config.get("damage") if stat_config.get("damage") != null else 10.0
 		speed = stat_config.get("speed") if stat_config.get("speed") != null else 250.0
 		speed *= randf_range(0.9, 1.1) # Randomize for variance
-		IQ = stat_config.get("IQ") if stat_config.get("IQ") != null else 0.6
+		IQ = stat_config.get("IQ") if stat_config.get("IQ") != null else 6
 		aggression = stat_config.get("aggression") if stat_config.get("aggression") != null else 0.5
 		dexterity = stat_config.get("dexterity") if stat_config.get("dexterity") != null else 1.0
 		size = stat_config.get("size") if stat_config.get("size") != null else 1.0
@@ -565,6 +565,7 @@ func movement(delta: float) -> void:
 	else:
 		# 2. Execution
 		if can_attack:
+			can_attack = false
 			await get_tree().create_timer(randf_range(0.1, 0.5)).timeout
 			attack()
 			return 

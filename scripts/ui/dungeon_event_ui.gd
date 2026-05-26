@@ -37,43 +37,46 @@ func _physics_process(delta: float) -> void:
 		countdown_banner.label_settings.outline_size = 24
 
 func round_start() -> void:
-	# 1. Setup the Text
 	round_banner.text = "ROUND " + str(StageManager.current_round)
 	
 	var event_enum = StageManager.current_dungeon_event
 	event_banner.text = StageManager.DungeonEvent.keys()[event_enum].replace("_", " ")
 	
 	if event_enum == StageManager.DungeonEvent.MAJOR_ALTARS:
-		_setup_blind_roster()
+		if not StageManager.announced_major_pool.is_empty():
+			# Pool already arrived (host's local call resolves instantly)
+			_setup_announced_roster()
+		else:
+			# Clients: pool is in transit, wait for the signal
+			StageManager.announced_pool_ready.connect(
+				_setup_announced_roster, CONNECT_ONE_SHOT
+			)
 		
-	# 2. Sequence the Animations
+	# Sequence animations (same as before)
 	var seq = create_tween()
-	
-	# Banner 1: Slam the Round text down
-	#var center_y = (get_viewport().size.y / 2.0) - 80.0
-	#seq.tween_property(round_banner, "position:y", center_y - 30.0, 0.5).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
 	seq.tween_property(round_banner, "modulate:a", 1.0, 0.3)
-	
-	
-	# Pause for a beat
 	seq.tween_interval(0.3)
-	
-	# Banner 2: Fade in the Event type underneath it
 	seq.tween_property(event_banner, "modulate:a", 1.0, 0.5)
 	
-	# Banner 3: Fade in the Roster (if applicable)
 	if event_enum == StageManager.DungeonEvent.MAJOR_ALTARS:
 		seq.parallel().tween_property(roster_list, "modulate:a", 1.0, 0.5)
-		
-	# Pause so players can read it
-	seq.tween_interval(1.5)
 	
-	# Fade everything out right as the 3.0s spawn lock releases
+	seq.tween_interval(2.5)  # Slightly longer so players can read the mutation list
 	seq.tween_property(event_banner, "modulate:a", 0.0, 0.3)
 	seq.tween_property(round_banner, "modulate:a", 0.0, 0.3)
+	seq.tween_property(roster_list, "modulate:a", 0.0, 0.3)
 	#seq.tween_callback(queue_free)
 
-func _setup_blind_roster() -> void:
-	# TODO: In the future, we will pull the actual generated mutations for this seed!
-	# For now, just show a placeholder hype message.
-	roster_list.text = "[center]Hidden Corners contain Major Mutations![/center]"
+func _setup_announced_roster() -> void:
+	var pool = StageManager.announced_major_pool
+	
+	if pool.is_empty():
+		roster_list.text = "[center][color=gray]Loading mutations...[/color][/center]"
+		return
+	
+	var text = "[center][font_size=16][color=gold]━━ MAJOR MUTATIONS IN PLAY ━━[/color][/font_size]\n\n"
+	for mut in pool:
+		text += "[color=gold]◆ " + mut.mutation_name + "[/color]\n"
+		text += "[color=gray][font_size=12]" + mut.description + "[/font_size][/color]\n\n"
+	text += "[/center]"
+	roster_list.text = text

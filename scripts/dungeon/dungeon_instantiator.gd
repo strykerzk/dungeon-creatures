@@ -20,6 +20,7 @@ var minimap_instance = null
 @export var loot_pool: Array[EquipmentData]
 
 @export_group("Mutations")
+var major_mutation_pool: Array[MutationData] = []
 var minor_mutation_pool: Array[MutationData] = []
 var mutation_draw_deck: Array[MutationData] = []
 
@@ -41,11 +42,15 @@ var camera_tween: Tween
 
 func _ready() -> void:
 	# Ref setup
-	var raw_res = FileUtils.load_resources_from_folder("res://resources/mutations/minor/")
-	for res in raw_res:
+	var raw_minor = FileUtils.load_resources_from_folder("res://resources/mutations/minor/")
+	for res in raw_minor:
 		if res is MutationData:
 			minor_mutation_pool.append(res)
 	
+	var raw_major = FileUtils.load_resources_from_folder("res://resources/mutations/major/")
+	for res in raw_major:
+		if res is MutationData:
+			major_mutation_pool.append(res)
 	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.escape_portal_opened.connect(_on_escape_portal_opened)
@@ -53,14 +58,14 @@ func _ready() -> void:
 	
 	# Only the Host decides the seed and spawns the players
 	if multiplayer.is_server():
-		randomize() # Create a truly random seed based on system time
+		randomize()
 		var dungeon_seed = randi()
-		
-		# Tell all clients (including the host) to build the dungeon using this exact seed
 		rpc("rpc_build_synced_dungeon", dungeon_seed)
-		
-		# Give the dungeon a frame to physically build, then spawn players
 		call_deferred("_spawn_players")
+		
+		if typeof(StageManager) != TYPE_NIL and \
+		   StageManager.current_dungeon_event == StageManager.DungeonEvent.MAJOR_ALTARS:
+			call_deferred("_generate_and_announce_pool")
 	
 	if event_ui_scene:
 		var ui_inst = event_ui_scene.instantiate()
@@ -174,7 +179,7 @@ func _scatter_loot(rooms: Array[Node2D]) -> void:
 			
 			var loot_instance = loot_item_scene.instantiate() as LootItem
 			loot_instance.item_data = loot_pool.pick_random()
-			loot_instance.name = "LootItem"
+			loot_instance.name = "Loot_" + chosen_marker.name
 			chosen_marker.add_child(loot_instance)
 			loot_instance.position = Vector2.ZERO
 			
@@ -196,9 +201,26 @@ func client_spawn_loot(marker_path: NodePath, item_path: String) -> void:
 	if marker and loot_item_scene:
 		var loot_instance = loot_item_scene.instantiate() as LootItem
 		loot_instance.item_data = load(item_path)
-		loot_instance.name = "LootItem" # Keep the name identical for interactions!
+		loot_instance.name = "Loot_" + marker.name
 		marker.add_child(loot_instance)
 		loot_instance.position = Vector2.ZERO
+
+func _generate_and_announce_pool() -> void:
+	if major_mutation_pool.is_empty():
+		push_warning("[Dungeon] No major mutations found to announce!")
+		return
+	
+	var shuffled = major_mutation_pool.duplicate()
+	shuffled.shuffle()
+	
+	var pool_size: int = min(6, shuffled.size())
+	var pool_paths: Array[String] = []
+	for i in range(pool_size):
+		pool_paths.append(shuffled[i].resource_path)
+	
+	# Broadcast to all machines including self
+	StageManager.rpc("rpc_set_announced_pool", pool_paths)
+	print("[Dungeon] Announced ", pool_size, " major mutations for this run.")
 
 func _assign_minor_orbs() -> void:
 	# Only the host decides what the orbs contain!
@@ -234,7 +256,6 @@ func client_sync_orb(orb_path: NodePath, mutation_path: String) -> void:
 		orb.mutation_data = load(mutation_path)
 		orb.setup()
 		# Optional polish: Add logic here to tint the orb's sprite based on the mutation!
-
 
 func _spawn_players() -> void:
 	if not player_scene or not players_container: return

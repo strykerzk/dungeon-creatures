@@ -48,13 +48,13 @@ var active_wheel = null
 # --- INVENTORY AND INTERACTIONS ---
 @export_category("Loot & Drops")
 @export var loot_item_scene: PackedScene
-var inventory: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
 var pickup_history: Array[EquipmentData] = [] 
 var pending_loot_data: EquipmentData = null 
 var nearby_interactables: Array[Area2D] = []
 var active_interactable: Area2D = null
 var channel_time: float = 0.0
 var has_drafted_mutation: bool = false
+var minor_pickups: int = 0
 
 enum State { NORMAL, ROLLING, LOOTING }
 var current_state: State = State.NORMAL
@@ -125,14 +125,14 @@ func _physics_process(delta: float) -> void:
 		if is_falling or is_stunned:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations.rpc()
+			handle_animations()
 			return
 		
 		# The Lock
 		if spawn_lock_timer > 0:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations.rpc()
+			handle_animations()
 			return # Skip all other state logic while locked!
 		
 		# Interactables
@@ -147,7 +147,7 @@ func _physics_process(delta: float) -> void:
 			State.LOOTING:
 				_handle_looting_state(delta)
 		
-		handle_animations.rpc()
+		handle_animations()
 	
 	# 3. HAZARD DETECTION
 	if is_multiplayer_authority() and not is_falling and not is_stunned:
@@ -270,7 +270,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			if picked_emote != "":
 				rpc("client_show_emote", picked_emote)
 
-@rpc("any_peer","call_local","reliable")
 func handle_animations() -> void:
 	if velocity.x != 0:
 		sprite.flip_h = velocity.x < 0
@@ -402,6 +401,11 @@ func apply_stun(duration: float) -> void:
 	await get_tree().create_timer(0.2).timeout
 	is_invulnerable = false
 
+func _get_inventory() -> Dictionary:
+	var dict: Dictionary = {"weapon": [], "head": [], "body": [], "boots": [], "back": []}
+	for item in pickup_history:
+		dict[item.slot].append(item)
+	return dict
 
 # --- INTERACTION & INVENTORY (NETWORKED) ---
 func _start_channeling() -> void:
@@ -412,10 +416,8 @@ func _start_channeling() -> void:
 			_show_feedback("You can only draft one Major Mutation per run!")
 			return
 	elif active_interactable is MinorOrb:
-		var profile = CreatureManager.get_profile(name.to_int())
-		if profile and profile.minor_mutations.size() >= CreatureManager.minor_slot_limit:
-			_show_feedback("DNA Capacity Reached! (Limit: " + str(CreatureManager.minor_slot_limit) + ")")
-			return
+		if minor_pickups >= CreatureManager.minor_slot_limit:
+			_show_feedback("DNA Capacity Reached this run! (Limit: " + str(CreatureManager.minor_slot_limit) + ")")
 	elif active_interactable is Lever:
 		if active_interactable.is_pulled or active_interactable.is_locked:
 			return
@@ -494,25 +496,25 @@ func _complete_channeling() -> void:
 	sfx_success.play()
 
 func _can_pickup(item_data: EquipmentData) -> bool:
-	var total_max = 5
-	var type_max = 1
-	if typeof(CreatureManager) != TYPE_NIL:
-		total_max = CreatureManager.inv_total_limit
-		type_max = CreatureManager.inv_type_limit
-
-	var current_total = 0
-	for key in inventory:
-		current_total += inventory[key].size()
-		
-	if current_total >= total_max:
+	var total_max: int = CreatureManager.inv_total_limit if typeof(CreatureManager) != TYPE_NIL else 5
+	var type_max: int = CreatureManager.inv_type_limit if typeof(CreatureManager) != TYPE_NIL else 1
+	
+	if pickup_history.size() >= total_max:
 		_show_feedback("Bag Full! (Limit: " + str(total_max) + ")")
 		return false
 	
-	for key in inventory:
-		for item in inventory[key]:
-			if item.resource_path != item_data.resource_path and inventory[item_data.slot].size() >= type_max:
-				_show_feedback("Too many " + item_data.slot + " items!")
-				return false
+	var slot_items = pickup_history.filter(func(i): return i.slot == item_data.slot)
+	var unique_types: Dictionary = {}
+	for item in slot_items:
+		unique_types[item.resource_path] = true
+	
+	if unique_types.has(item_data.resource_path):
+		return true
+	
+	if unique_types.size() >= type_max:
+		_show_feedback("Can't carry another " + item_data.slot + " type!")
+		return false
+	
 	return true
 
 func _request_loot_pickup(loot_node: Node2D) -> void:
@@ -554,7 +556,7 @@ func client_grant_loot() -> void:
 	if pending_loot_data == null: return
 	
 	current_state = State.NORMAL
-	inventory[pending_loot_data.slot].append(pending_loot_data)
+	_get_inventory()[pending_loot_data.slot].append(pending_loot_data)
 	pickup_history.append(pending_loot_data)
 	_show_feedback("Picked up: " + pending_loot_data.item_name)
 	pending_loot_data = null
@@ -569,24 +571,18 @@ func _request_orb_pickup(orb_node: Node2D) -> void:
 func server_request_orb(orb_path: NodePath) -> void:
 	if not multiplayer.is_server(): return
 	
-	# Fetch by exact path, preventing mismatches
 	var orb_node = get_node_or_null(orb_path)
-	
 	if is_instance_valid(orb_node) and not orb_node.is_queued_for_deletion():
-		# 1. Final Server-Side Capacity Check
 		var sender_id = multiplayer.get_remote_sender_id()
 		if sender_id == 0: sender_id = 1
-		
-		var profile = CreatureManager.get_profile(sender_id)
-		if profile.minor_mutations.size() >= CreatureManager.minor_slot_limit:
-			return # Reject pickup
-			
+	
+		# Server-side per-run check using the host's copy of this player's node
+		# self here IS the host's copy of the requesting player's node (Godot routes RPCs by node path)
+		if minor_pickups >= CreatureManager.minor_slot_limit:
+			return
+	
 		var path = orb_node.mutation_data.resource_path
-		
-		# FIX 1: Tell ALL clients to securely destroy this exact orb
 		rpc("client_destroy_orb", orb_path)
-		
-		# FIX 2: Tell ALL clients that this specific player got the mutation!
 		rpc("client_grant_orb", sender_id, path)
 
 
@@ -606,6 +602,7 @@ func client_grant_orb(target_player_id: int, path: String) -> void:
 	
 	# Only play the UI feedback and sound if WE are the ones who picked it up!
 	if target_player_id == name.to_int():
+		minor_pickups += 1
 		_show_feedback("DNA Spliced: " + data.mutation_name)
 		if sfx_success: sfx_success.play()
 
@@ -653,24 +650,16 @@ func _update_hotbar_ui() -> void:
 		hotbar_container.add_child(panel)
 
 func _discard_selected_item() -> void:
-	if pickup_history.is_empty():
-		_show_feedback("Bag is empty!")
-		return
-		
-	# Check if the selected slot actually has an item in it
-	if selected_slot_index >= pickup_history.size():
+	if pickup_history.is_empty() or selected_slot_index >= pickup_history.size():
 		_show_feedback("That slot is empty!")
 		return
-		
-	# Remove the specific item we selected
+	
 	var item_to_drop = pickup_history[selected_slot_index]
-	inventory[item_to_drop.slot].erase(item_to_drop)
 	pickup_history.remove_at(selected_slot_index)
-	
+	# Clamp index in case we removed the last item
+	selected_slot_index = min(selected_slot_index, pickup_history.size() - 1)
 	_show_feedback("Discarded: " + item_to_drop.item_name)
-	
 	_update_hotbar_ui()
-	
 	rpc_id(1, "server_request_drop_item", item_to_drop.resource_path, global_position)
 
 @rpc("any_peer", "call_local", "reliable")
@@ -705,10 +694,7 @@ func _show_feedback(msg: String) -> void:
 ## Called when the player safely reaches the exit, OR when time runs out.
 func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
 	if not is_multiplayer_authority(): return
-	
-	current_state = State.LOOTING # Freeze the player's inputs
-	
-	# Tell ALL clients to hide my avatar
+	current_state = State.LOOTING
 	rpc("client_hide_player")
 	
 	if forced_by_timeout:
@@ -716,26 +702,19 @@ func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
 		_apply_timeout_penalty()
 	else:
 		_show_feedback("Extracted safely!")
-
-	var extracted_loot: Array[EquipmentData] = []
-	for slot in inventory.keys():
-		extracted_loot.append_array(inventory[slot])
 	
 	if typeof(CreatureManager) != TYPE_NIL:
-		CreatureManager.commit_dungeon_loot(name.to_int(), extracted_loot)
-		_show_feedback("Saved " + str(extracted_loot.size()) + " items to Stash.")
+		CreatureManager.commit_dungeon_loot(name.to_int(), pickup_history.duplicate())
+		_show_feedback("Saved " + str(pickup_history.size()) + " items to Stash.")
 	
-	for slot in inventory.keys():
-		inventory[slot].clear()
 	pickup_history.clear()
 	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.rpc_id(1, "server_player_extracted", multiplayer.get_unique_id())
 	
-	if is_multiplayer_authority():
-		var cam = get_tree().current_scene.get_node_or_null("DungeonCamera")
-		if cam and cam.has_method("start_spectating"):
-			cam.start_spectating()
+	var cam = get_tree().current_scene.get_node_or_null("DungeonCamera")
+	if cam and cam.has_method("start_spectating"):
+		cam.start_spectating()
 
 @rpc("any_peer", "call_local", "reliable")
 func client_hide_player() -> void:
@@ -774,37 +753,13 @@ func client_show_emote(emoji_text: String) -> void:
 		bubble.setup(emoji_text)
 
 func _apply_timeout_penalty() -> void:
-	# Penalty logic: Lose 50% of the items you picked up this run, chosen randomly.
-	var total_items = 0
-	for slot in inventory.keys():
-		total_items += inventory[slot].size()
-		
-	if total_items == 0: return # Nothing to lose!
-	
-	var items_to_lose = max(1, total_items / 2) # Lose half, at least 1
-	var lost_count = 0
-	
-	while lost_count < items_to_lose:
-		# Pick a random slot
-		var available_slots = []
-		for slot in inventory.keys():
-			if inventory[slot].size() > 0:
-				available_slots.append(slot)
-				
-		if available_slots.is_empty(): break
-		
-		var random_slot = available_slots.pick_random()
-		var slot_array: Array = inventory[random_slot]
-		
-		# Erase a random item from that slot
-		var item_to_drop = slot_array.pick_random()
-		slot_array.erase(item_to_drop)
-		
-		# Also remove it from history so discard doesn't break
-		pickup_history.erase(item_to_drop)
-		lost_count += 1
-		
-	_show_feedback("PENALTY: Lost " + str(lost_count) + " items!")
+	if pickup_history.is_empty(): return
+	var items_to_lose: int = max(1, pickup_history.size() / 2)
+	for i in range(items_to_lose):
+		if pickup_history.is_empty(): break
+		var idx = randi() % pickup_history.size()
+		pickup_history.remove_at(idx)
+	_show_feedback("PENALTY: Lost " + str(items_to_lose) + " items!")
 
 func confirm_major_mutation(resource_path: String) -> void:
 	_show_feedback("Mutation locked in!")
@@ -817,11 +772,20 @@ func server_grant_major_mutation(path: String) -> void:
 	var sender_id = multiplayer.get_remote_sender_id()
 	if sender_id == 0: sender_id = 1
 	
+	# Race condition guard: was this mutation stolen in the window between
+	# the player opening the UI and confirming their pick?
+	if path in StageManager.drafted_mutation_paths:
+		rpc_id(sender_id, "client_draft_stolen")
+		return
+	
 	var profile = CreatureManager.get_profile(sender_id)
 	profile.major_mutation = load(path)
-	
 	print("[Server] Granted major mutation to Player ", sender_id)
 
+@rpc("authority", "call_local", "reliable")
+func client_draft_stolen() -> void:
+	_show_feedback("That mutation was just claimed! Try another altar.")
+	has_drafted_mutation = false  # Let them try again at a different altar
 
 func _on_interaction_detector_area_entered(area: Area2D) -> void:
 	if not is_multiplayer_authority(): return

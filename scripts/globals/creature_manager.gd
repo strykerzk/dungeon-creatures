@@ -22,16 +22,16 @@ func _ready() -> void:
 func update_round_limits(round_num: int) -> void:
 	current_round = round_num
 	match current_round:
-		0 or 1:
+		0, 1:
 			inv_total_limit = 3
 			inv_type_limit = 1 
 			minor_slot_limit = 0
-		2:
+		2, 3:
 			inv_total_limit = 5
-			inv_type_limit = 1
+			inv_type_limit = 2
 		_:
 			inv_total_limit = 8
-			inv_type_limit = 2
+			inv_type_limit = 3
 
 func get_player_inv_limit(id: int) -> int:
 	var base_limit = inv_total_limit

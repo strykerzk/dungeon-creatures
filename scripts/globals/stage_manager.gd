@@ -24,10 +24,12 @@ var round_config: Dictionary = {
 var current_state: GameState = GameState.MENU
 var current_round: int = 0
 var current_dungeon_event: DungeonEvent = DungeonEvent.NORMAL
+var minor_mix_count: int = 0
 
 # --- MUTATION INFO ---
-var mutation_dictionary: Dictionary = {
-}
+signal announced_pool_ready()
+var announced_major_pool: Array[MutationData] = []
+var drafted_mutation_paths: Array[String] = []
 
 # --- TIMER & EXTRACTION LOGIC ---
 var dungeon_time_limit: int = 30
@@ -68,12 +70,29 @@ func _process(delta: float) -> void:
 func get_round_settings() -> Dictionary:
 	if round_config.has(current_round):
 		return round_config[current_round]
-	
-	# Infinite scaling fallback for rounds 6+
+
+	# Endless mode scaling (rounds 10+)
+	# Size: grows in steps of 2, capped at 13 to avoid absurd maps
+	var endless_size: int = min(13, 11 + (2 * ((current_round - 9) / 4)))
+	if endless_size % 2 == 0: endless_size += 1  # Always odd
+
+	# Timer: starts at 240s and increases, rewarding experienced players
+	# with more exploration time rather than punishing them with less
+	var endless_timer: int = 240 + (current_round - 9) * 15
+
+	# Event: rotates through all 3 types in a fixed pattern so every 3 rounds
+	# players get one of each, but in varied order
+	var event_cycle = [
+		DungeonEvent.MINOR_MIX,
+		DungeonEvent.MAJOR_ALTARS,
+		DungeonEvent.MAJOR_COOP
+	]
+	var endless_event = event_cycle[(current_round - 1) % event_cycle.size()]
+
 	return {
-		"size": 11, 
-		"event": DungeonEvent.MINOR_MIX, 
-		"timer": max(60, 120 - (current_round * 5))
+		"size": endless_size,
+		"event": endless_event,
+		"timer": endless_timer
 	}
 
 @rpc("authority", "call_local", "unreliable")
@@ -148,6 +167,9 @@ func _prepare_data_for_state(state: GameState) -> void:
 	match state:
 		GameState.MENU:
 			current_round = 0
+			announced_major_pool.clear()
+			drafted_mutation_paths.clear()
+			minor_mix_count = 0
 			if typeof(CreatureManager) != TYPE_NIL:
 				CreatureManager.reset_session()
 			print("Stage Manager: Returned to Main Menu. Session reset.")
@@ -164,6 +186,8 @@ func _prepare_data_for_state(state: GameState) -> void:
 			
 			has_portal_opened = false
 			extracted_players.clear()
+			announced_major_pool.clear()
+			drafted_mutation_paths.clear()
 			_apply_round_settings()
 		GameState.EDITOR:
 			print("Stage Manager: Preparing Creature Lab...")
@@ -172,18 +196,25 @@ func _apply_round_settings() -> void:
 	var settings = get_round_settings()
 	current_dungeon_event = settings["event"]
 	if settings["event"] == DungeonEvent.MINOR_MIX:
-		CreatureManager.minor_slot_limit += 1
+		minor_mix_count += 1
 	
 	print("[StageManager] Round ", current_round, " Event: ", DungeonEvent.keys()[current_dungeon_event])
+	
+	if settings["event"] == DungeonEvent.MINOR_MIX:
+		minor_mix_count += 1
+		rpc("sync_minor_mix_count", minor_mix_count)
 	
 	if settings["timer"] > 0:
 		is_timer_active = true
 		dungeon_time_limit = settings["timer"]
 		current_time_left = dungeon_time_limit
-		print("[StageManager] Timer ENABLED (", dungeon_time_limit, "s)")
 	else:
 		is_timer_active = false
-		print("[StageManager] Timer DISABLED.")
+
+@rpc("authority", "call_local", "reliable")
+func sync_minor_mix_count(count: int) -> void:
+	minor_mix_count = count
+	CreatureManager.minor_slot_limit = count  # Single assignment, not increment
 
 # Helper to move to the next step in core loop
 func advance_loop() -> void:
@@ -205,20 +236,25 @@ func set_current_state(new_state: GameState) -> void:
 func get_current_state() -> GameState:
 	return current_state
 
+func get_available_pool() -> Array[MutationData]:
+	var available: Array[MutationData] = []
+	for mut in announced_major_pool:
+		if not mut.resource_path in drafted_mutation_paths:
+			available.append(mut)
+	return available
 
-func update_mutation_dictionary(grid_pos: Vector2i, array: Array[MutationData]) -> void:
-	if mutation_dictionary.has(grid_pos):
-		mutation_dictionary.erase(grid_pos)
-	mutation_dictionary[grid_pos] = array
-	var safe_paths: Array[String] = []
-	for mut in array:
-		safe_paths.append(mut.resource_path)
-	rpc("sync_mutation_dictionary", grid_pos, safe_paths)
+@rpc("authority", "call_local", "reliable")
+func rpc_set_announced_pool(paths: Array[String]) -> void:
+	announced_major_pool.clear()
+	for path in paths:
+		var mut = load(path) as MutationData
+		if mut:
+			announced_major_pool.append(mut)
+	print("[StageManager] Announced pool set: ", announced_major_pool.size(), " mutations.")
+	announced_pool_ready.emit()
 
-@rpc("any_peer","call_remote","reliable")
-func sync_mutation_dictionary(grid_pos: Vector2i, safe_paths: Array[String]) -> void:
-	var loaded_mutations: Array[MutationData] = []
-	for path in safe_paths:
-		loaded_mutations.append(load(path))
-	
-	mutation_dictionary[grid_pos] = loaded_mutations
+@rpc("authority", "call_local", "reliable")
+func rpc_mark_mutation_drafted(path: String) -> void:
+	if not path in drafted_mutation_paths:
+		drafted_mutation_paths.append(path)
+		print("[StageManager] Mutation drafted: ", path)
