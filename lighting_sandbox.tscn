@@ -28,7 +28,7 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_ecl71")
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=416217467]
-position = Vector2(1213.0001, 470)
+position = Vector2(1276, 471)
 scale = Vector2(10.796874, 10.796874)
 shadow_enabled = true
 shadow_filter = 2

@@ -37,6 +37,8 @@ var generator = DungeonGenerator.new()
 @onready var players_container: Node2D = $"../Players" # A new Node2D we will create
 @onready var bgm_player: AudioStreamPlayer = $"../BGMPlayer"
 
+var camera_tween: Tween
+
 func _ready() -> void:
 	# Ref setup
 	var raw_res = FileUtils.load_resources_from_folder("res://resources/mutations/minor/")
@@ -249,8 +251,12 @@ func _spawn_players() -> void:
 
 func _on_room_entered(target_pos: Vector2) -> void:
 	if not dungeon_camera: return
-	var tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tween.tween_property(dungeon_camera, "global_position", target_pos, 0.4)
+	
+	if camera_tween and camera_tween.is_valid():
+		camera_tween.kill()
+	
+	camera_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	camera_tween.tween_property(dungeon_camera, "global_position", target_pos, 0.4)
 
 func _on_escape_portal_opened() -> void:
 	if not escape_portal_scene:
@@ -262,3 +268,11 @@ func _on_escape_portal_opened() -> void:
 	bgm_player.pitch_scale = 1.1
 	# Center Room is always built at Vector2.ZERO in our world space!
 	portal_instance.global_position = Vector2.ZERO
+
+func lift_fog() -> void:
+	var rooms = get_tree().get_nodes_in_group("dungeon_room")
+	
+	if !rooms.is_empty():
+		for i in rooms.size():
+			if rooms[i].has_method("lift_fog"):
+				rooms[i].lift_fog()

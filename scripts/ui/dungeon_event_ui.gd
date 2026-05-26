@@ -18,8 +18,14 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	time_left -= delta
+	
+	if time_left < 0:
+		countdown_banner.hide()
+		return
+	
 	var minutes: int = time_left / 60
 	var seconds: int = time_left - (minutes * 60)
+	
 	if seconds < 10:
 		countdown_banner.text = str(minutes) + ":0" + str(seconds)
 	else:

@@ -10,7 +10,7 @@ enum DungeonEvent { NORMAL, MINOR_MIX, MAJOR_ALTARS, MAJOR_COOP }
 
 @export_category("Round Progression")
 var round_config: Dictionary = {
-	1: {"size": 5, "event": DungeonEvent.NORMAL, "timer": 0}, # 0 = Disabled
+	1: {"size": 5, "event": DungeonEvent.NORMAL, "timer": 80}, # 0 = Disabled
 	2: {"size": 5, "event": DungeonEvent.MINOR_MIX, "timer": 100},
 	3: {"size": 5, "event": DungeonEvent.MAJOR_ALTARS, "timer": 100}, 
 	4: {"size": 7, "event": DungeonEvent.NORMAL, "timer": 120},
@@ -123,7 +123,7 @@ func rpc_execute_timeout_extraction() -> void:
 			player_node.extract_from_dungeon(true) 
 			
 	if multiplayer.is_server():
-		await get_tree().create_timer(1.5).timeout
+		await get_tree().create_timer(3.0).timeout
 		rpc("rpc_transition_to_editor")
 
 @rpc("authority", "call_local", "reliable")

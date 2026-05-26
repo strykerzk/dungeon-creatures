@@ -63,6 +63,7 @@ var roll_direction: Vector2 = Vector2.DOWN
 var is_invulnerable: bool = false
 var is_stunned: bool = false
 var last_facing_direction: Vector2 = Vector2.DOWN
+var current_room_center: Vector2 = Vector2.ZERO
 
 var spawn_lock_timer: float = 0.0
 var max_spawn_lock: float = 0.0
@@ -159,7 +160,7 @@ func _physics_process(delta: float) -> void:
 		else:
 			if current_state == State.NORMAL:
 				safe_timer += delta
-				if safe_timer >= 0.3:
+				if safe_timer >= 0.2:
 					last_safe_position = delayed_safe_position
 					delayed_safe_position = global_position
 					safe_timer = 0.0
@@ -735,6 +736,11 @@ func extract_from_dungeon(forced_by_timeout: bool = false) -> void:
 	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.rpc_id(1, "server_player_extracted", multiplayer.get_unique_id())
+	
+	if is_multiplayer_authority():
+		var cam = get_tree().current_scene.get_node_or_null("DungeonCamera")
+		if cam and cam.has_method("start_spectating"):
+			cam.start_spectating()
 
 @rpc("any_peer", "call_local", "reliable")
 func client_hide_player() -> void:

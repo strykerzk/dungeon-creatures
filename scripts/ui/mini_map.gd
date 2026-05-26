@@ -40,6 +40,13 @@ func hide_map() -> void:
 	map_control.visible = false
 	background_dim.visible = false
 
+func reveal_all() -> void:
+	discovered_rooms.clear()
+	for x in range(grid.size()):
+		for y in range(grid[x].size()):
+			discovered_rooms.append(grid[x][y].grid_pos)
+	map_control.queue_redraw()
+
 func _on_map_draw() -> void:
 	if grid.is_empty(): return
 	

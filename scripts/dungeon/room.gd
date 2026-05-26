@@ -20,6 +20,8 @@ func _enter_tree() -> void:
 	y_sort_enabled = true
 
 func _ready() -> void:
+	add_to_group("dungeon_room")
+	
 	if camera_trigger:
 		camera_trigger.body_entered.connect(_on_camera_trigger_body_entered)
 		
@@ -39,11 +41,18 @@ func setup(blueprint: DungeonGenerator.RoomBlueprint) -> void:
 
 func _on_camera_trigger_body_entered(body: Node2D) -> void:
 	# FIX: Only trigger the camera if the body is a Player AND it's our local player!
-	if body is CharacterBody2D and body.name.to_int() == multiplayer.get_unique_id(): 
-		player_entered_room.emit(global_position)
+	if body is CharacterBody2D:
+		if "current_room_center" in body:
+			body.current_room_center = global_position
 		
-		if fog_of_war and fog_of_war.visible:
-			room_discovered.emit(grid_pos)
-			var tween = create_tween()
-			tween.tween_property(fog_of_war, "modulate:a", 0.0, 0.4).set_ease(Tween.EASE_OUT)
-			tween.tween_callback(fog_of_war.hide)
+		if body.name.to_int() == multiplayer.get_unique_id(): 
+			player_entered_room.emit(global_position)
+			
+			lift_fog()
+
+func lift_fog() -> void:
+	if fog_of_war and fog_of_war.visible:
+				room_discovered.emit(grid_pos)
+				var tween = create_tween()
+				tween.tween_property(fog_of_war, "modulate:a", 0.0, 0.4).set_ease(Tween.EASE_OUT)
+				tween.tween_callback(fog_of_war.hide)

@@ -92,5 +92,6 @@ animation = &"on"
 frame_progress = 0.22942339
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=645805850]
+energy = 0.5
 shadow_enabled = true
 texture = SubResource("GradientTexture2D_ptwit")

@@ -54,3 +54,7 @@ spawn_path = NodePath("..")
 stream = ExtResource("18_nwgp8")
 volume_db = -20.0
 autoplay = true
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1775207923]
+visible = false
+color = Color(0.15686275, 0.17254902, 0.23921569, 1)
