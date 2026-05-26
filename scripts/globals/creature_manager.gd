@@ -24,7 +24,7 @@ func update_round_limits(round_num: int) -> void:
 	match current_round:
 		0 or 1:
 			inv_total_limit = 3
-			inv_type_limit = 3 
+			inv_type_limit = 1 
 			minor_slot_limit = 0
 		2:
 			inv_total_limit = 5
@@ -56,29 +56,58 @@ func commit_dungeon_loot(id: int, new_loot: Array[EquipmentData]) -> void:
 		register_player(id)
 		
 	var profile = profiles[id]
-	var items_added = 0
 	
 	# NEW: Filter out items the player already has!
 	for item in new_loot:
-		var is_duplicate = false
+		if item.original_path == "":
+			item.original_path = item.resource_path
 		
-		# 1. Check if it's already in the unequipped stash
-		for stash_item in profile.stash:
-			if stash_item.resource_path == item.resource_path:
-				is_duplicate = true
-				break
-				
-		# 2. Check if the creature is currently wearing it
-		if not is_duplicate:
-			for slot in profile.equipped_items:
-				if profile.equipped_items[slot].resource_path == item.resource_path:
-					is_duplicate = true
-					break
-				
-		if not is_duplicate:
-			profile.stash.append(item)
-			items_added += 1
+		profile.stash.append(item)
+	
 	print("[CreatureManager] Player ", id, " stash updated. Total items: ", profiles[id].stash.size())
+	
+	_auto_fuse_stash(id)
+
+func _auto_fuse_stash(id: int) -> void:
+	var profile = profiles[id]
+	var stash = profile.stash
+	var fused_something = false
+	
+	# Dictionary to count items by their original path AND star level
+	# Format: {"res://item.tres_1": [item1, item2, item3]}
+	var groupings = {}
+	
+	for item in stash:
+		var key = item.original_path + "_" + str(item.star_level)
+		if not groupings.has(key):
+			groupings[key] = []
+		groupings[key].append(item)
+		
+	# Check for triplets
+	for key in groupings.keys():
+		var identical_items: Array = groupings[key]
+		
+		# If we have 3 of the exact same item at the exact same star level (and it's not maxed)
+		if identical_items.size() >= 3 and identical_items[0].star_level < 3 and not identical_items[0].is_corrupted:
+			
+			# 1. Remove the 3 base items from the stash
+			stash.erase(identical_items[0])
+			stash.erase(identical_items[1])
+			stash.erase(identical_items[2])
+			
+			# 2. Create the upgraded item
+			var upgraded_item = identical_items[0].duplicate(true)
+			upgraded_item.star_level += 1
+			
+			# 3. Add it to the stash
+			stash.append(upgraded_item)
+			fused_something = true
+			
+			print("[Forge] Fused 3x into a Level ", upgraded_item.star_level, " ", upgraded_item.item_name, "!")
+			
+	# If we fused something, run it again recursively in case we just made three 2-stars!
+	if fused_something:
+		_auto_fuse_stash(id)
 
 func get_profile(id: int) -> CreatureProfile:
 	if not profiles.has(id):

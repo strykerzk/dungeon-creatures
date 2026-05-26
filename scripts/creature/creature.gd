@@ -287,14 +287,24 @@ func recalculate_stats() -> void:
 	
 	# 2. Accumulate stats and skills
 	for data in sources:
+		# Equipment Star System
+		var star_mult: float = 1.0
+		if "star_level" in data:
+			if data.get("is_corrupted"):
+				star_mult = 2.5
+			elif data.star_level == 2:
+				star_mult = 1.5
+			elif data.star_level >= 3:
+				star_mult = 2.5
+		
 		# Stats
-		max_health += data.get("health_bonus") if data.get("health_bonus") else 0.0
-		damage_bonus += data.get("damage_bonus") if data.get("damage_bonus") else 0.0
-		speed_mod += data.get("speed_mod") if data.get("speed_mod") else 0.0
-		iq_bonus += data.get("IQ_bonus") if data.get("IQ_bonus") else 0
-		aggro_bonus += data.get("aggression_bonus") if data.get("aggression_bonus") else 0.0
-		dex_bonus += data.get("dexterity_bonus") if data.get("dexterity_bonus") else 0.0
-		precision_bonus += data.get("precision_bonus") if data.get("precision_bonus") else 0.0
+		max_health += (data.get("health_bonus") if data.get("health_bonus") else 0.0) * star_mult
+		damage_bonus += (data.get("damage_bonus") if data.get("damage_bonus") else 0.0) * star_mult
+		speed_mod += (data.get("speed_mod") if data.get("speed_mod") else 0.0) * star_mult
+		iq_bonus += (data.get("IQ_bonus") if data.get("IQ_bonus") else 0) * star_mult
+		aggro_bonus += (data.get("aggression_bonus") if data.get("aggression_bonus") else 0.0) * star_mult
+		dex_bonus += (data.get("dexterity_bonus") if data.get("dexterity_bonus") else 0.0) * star_mult
+		precision_bonus += (data.get("precision_bonus") if data.get("precision_bonus") else 0.0) * star_mult
 		
 		# Skills
 		if "provided_skill" in data and data.provided_skill and skill_container:

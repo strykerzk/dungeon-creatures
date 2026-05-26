@@ -507,14 +507,11 @@ func _can_pickup(item_data: EquipmentData) -> bool:
 	if current_total >= total_max:
 		_show_feedback("Bag Full! (Limit: " + str(total_max) + ")")
 		return false
-	if inventory[item_data.slot].size() >= type_max:
-		_show_feedback("Too many " + item_data.slot + " items!")
-		return false
 	
 	for key in inventory:
 		for item in inventory[key]:
-			if item.resource_path == item_data.resource_path:
-				_show_feedback("You already have a " + item_data.item_name + "!")
+			if item.resource_path != item_data.resource_path and inventory[item_data.slot].size() >= type_max:
+				_show_feedback("Too many " + item_data.slot + " items!")
 				return false
 	return true
 
@@ -536,10 +533,8 @@ func server_request_loot(loot_path: NodePath) -> void:
 	
 	# If the node exists and isn't already being deleted, you win!
 	if is_instance_valid(loot_node) and not loot_node.is_queued_for_deletion():
-		# 1. Tell all clients to delete the item from the world
 		rpc("client_remove_loot", loot_path)
 		
-		# 2. Tell the specific player who asked that they got it!
 		var sender_id = multiplayer.get_remote_sender_id()
 		if sender_id == 0: sender_id = 1 # Edge case if Host is the one who looted
 		rpc_id(sender_id, "client_grant_loot")

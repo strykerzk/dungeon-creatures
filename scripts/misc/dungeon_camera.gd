@@ -58,9 +58,9 @@ func _update_active_players() -> void:
 
 func _handle_input() -> void:
 	# You can use cycle_right/left, or just piggyback off movement keys!
-	if Input.is_action_just_pressed("move_right"):
+	if Input.is_action_just_pressed("right"):
 		spectate_index = (spectate_index + 1) % active_players.size()
-	elif Input.is_action_just_pressed("move_left"):
+	elif Input.is_action_just_pressed("left"):
 		spectate_index -= 1
 		if spectate_index < 0:
 			spectate_index = active_players.size() - 1
