@@ -80,12 +80,14 @@ func _on_skip_chosen() -> void:
 func _on_mutation_chosen(path: String) -> void:
 	# Immediately broadcast the claim to all machines BEFORE the UI closes
 	# This prevents a race where two players simultaneously pick the same mutation
-	StageManager.rpc("rpc_mark_mutation_drafted", path)
+	
 	
 	if player_ref and player_ref.has_method("confirm_major_mutation"):
 		player_ref.confirm_major_mutation(path)
 	if altar_ref and altar_ref.has_method("rpc_deactivate"):
 		altar_ref.rpc("rpc_deactivate")
+	
+	StageManager.rpc("rpc_mark_mutation_drafted", path)
 	
 	player_ref.has_drafted_mutation = true
 	queue_free()
