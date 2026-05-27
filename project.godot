@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 CreatureManager="*uid://c0bdb53vnj3gi"
 NetworkManager="*uid://bhknutagcttrd"
 StageManager="*uid://bckuj40t1oi5f"
+AudioRecorder="*uid://c1nwqo86wknlk"
 
 [display]
 
