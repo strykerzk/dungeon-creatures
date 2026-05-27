@@ -13,16 +13,18 @@ script = ExtResource("1_yqeox")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=908968190]
 layout_mode = 0
-offset_right = 169.0
-offset_bottom = 101.0
+offset_right = 233.0
+offset_bottom = 167.0
 
 [node name="NameInput" type="LineEdit" parent="VBoxContainer" unique_id=1388523904]
+unique_name_in_owner = true
 layout_mode = 2
-text = "Enter Your Name"
+placeholder_text = "Enter Your Name"
 alignment = 1
 expand_to_text_length = true
 
 [node name="HostButton" type="Button" parent="VBoxContainer" unique_id=1296184235]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Host Game"
 
@@ -30,28 +32,52 @@ text = "Host Game"
 layout_mode = 2
 
 [node name="IPInput" type="LineEdit" parent="VBoxContainer/HBoxContainer" unique_id=1034519517]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "127.0.0.1"
 alignment = 1
 expand_to_text_length = true
 
 [node name="JoinButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1017407156]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Join Game"
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=1951608636]
+[node name="StatusContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1346752251]
+layout_mode = 2
+alignment = 1
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer/StatusContainer" unique_id=1951608636]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Waiting..."
 horizontal_alignment = 1
 
+[node name="TimeoutLabel" type="Label" parent="VBoxContainer/StatusContainer" unique_id=1981684095]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 1
+
 [node name="PlayerList" type="RichTextLabel" parent="VBoxContainer" unique_id=643502536]
+unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
 fit_content = true
 
 [node name="StartGameButton" type="Button" parent="VBoxContainer" unique_id=752052072]
+unique_name_in_owner = true
 layout_mode = 2
 text = "START GAME"
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=292153825]
 autoplay = true
+
+[node name="TimeoutTimer" type="Timer" parent="." unique_id=1033244968]
+unique_name_in_owner = true
+wait_time = 10.0
+one_shot = true
+
+[connection signal="text_changed" from="VBoxContainer/NameInput" to="." method="_on_name_input_text_changed"]
+[connection signal="timeout" from="TimeoutTimer" to="." method="_on_timeout_timer_timeout"]

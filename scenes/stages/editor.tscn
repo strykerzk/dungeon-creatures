@@ -12,6 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_f210w")
 
 [node name="StatusLabel" type="Label" parent="." unique_id=1023291322]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -37,31 +38,39 @@ size_flags_horizontal = 3
 layout_mode = 2
 
 [node name="StashList" type="VBoxContainer" parent="HBoxContainer/StashPanel/ScrollContainer" unique_id=198379627]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="EquipPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1564014224]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="HeadSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=796143091]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="BodySlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=1956680574]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="WeaponSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=463153528]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="BootsSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=232582110]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="BackSlot" type="Button" parent="HBoxContainer/EquipPanel" unique_id=809891215]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="ReadyButton" type="Button" parent="HBoxContainer/EquipPanel" unique_id=1332539762]
+unique_name_in_owner = true
 layout_mode = 2
 text = "LOCK IN & READY"
 

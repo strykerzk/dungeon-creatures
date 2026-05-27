@@ -1,13 +1,17 @@
 extends Control
 
 @export_category("UI References")
-@onready var name_input: LineEdit = $VBoxContainer/NameInput
-@onready var host_button: Button = $VBoxContainer/HostButton
-@onready var ip_input: LineEdit = $VBoxContainer/HBoxContainer/IPInput
-@onready var join_button: Button = $VBoxContainer/HBoxContainer/JoinButton
-@onready var status_label: Label = $VBoxContainer/StatusLabel
-@onready var player_list: RichTextLabel = $VBoxContainer/PlayerList
-@onready var start_game_button: Button = $VBoxContainer/StartGameButton
+@onready var name_input: LineEdit = %NameInput
+@onready var host_button: Button = %HostButton
+@onready var ip_input: LineEdit = %IPInput
+@onready var join_button: Button = %JoinButton
+@onready var status_label: Label = %StatusLabel
+@onready var timeout_label: Label = %TimeoutLabel
+@onready var player_list: RichTextLabel = %PlayerList
+@onready var start_game_button: Button = %StartGameButton
+
+@export_category("Other references")
+@onready var timeout_timer: Timer = %TimeoutTimer
 
 func _ready() -> void:
 	host_button.pressed.connect(_on_host_pressed)
@@ -24,7 +28,8 @@ func _ready() -> void:
 	
 	start_game_button.hide()
 	status_label.text = "Waiting for action..."
-	name_input.text = "Runner_" + str(randi() % 1000)
+	host_button.disabled = true
+	join_button.disabled = true
 
 func _update_local_player_info() -> void:
 	if name_input.text.strip_edges() != "":
@@ -56,6 +61,7 @@ func _on_join_pressed() -> void:
 		join_button.disabled = true
 		ip_input.editable = false
 		name_input.editable = false
+		timeout_timer.start()
 	else:
 		status_label.text = "Failed to initiate connection!"
 
@@ -99,4 +105,19 @@ func _on_start_game_pressed() -> void:
 func rpc_start_game() -> void:
 	print("[Menu] Host started the game. Transitioning to Selection Phase...")
 	if typeof(StageManager) != TYPE_NIL:
-		StageManager.change_stage(StageManager.GameState.DUNGEON)
+		StageManager.change_stage(StageManager.GameState.SELECTION)
+
+func _on_timeout_timer_timeout() -> void:
+	if multiplayer.multiplayer_peer == null: return
+	
+	if multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTING:
+		multiplayer.multiplayer_peer = null
+		_on_connection_fail()
+
+func _on_name_input_text_changed(new_text: String) -> void:
+	if new_text != "":
+		host_button.disabled = false
+		join_button.disabled = false
+	else:
+		host_button.disabled = true
+		join_button.disabled = true

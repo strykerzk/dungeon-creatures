@@ -357,9 +357,9 @@ func recalculate_stats() -> void:
 
 func _update_attack_range_by_style() -> void:
 	match current_attack_style:
-		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 350.0 * size
-		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 450.0 * size
-		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 1000.0
+		AttackStyle.TACKLE: attack_range = weapon_node.attack_range if weapon_node else 550.0 * size
+		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 650.0 * size
+		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 1200.0
 
 func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	if not multiplayer.is_server(): return
@@ -565,8 +565,6 @@ func movement(delta: float) -> void:
 	else:
 		# 2. Execution
 		if can_attack:
-			can_attack = false
-			await get_tree().create_timer(randf_range(0.1, 0.5)).timeout
 			attack()
 			return 
 		else:
@@ -654,6 +652,8 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 
 ## Refactored to execute either a skill or a standard weapon attack
 func attack() -> void:
+	await get_tree().create_timer(randf_range(0.1, 0.3)).timeout # Randomized delay
+	
 	if is_attacking or is_dodging or not current_intended_action: return
 	is_attacking = true
 	can_attack = false
@@ -661,7 +661,8 @@ func attack() -> void:
 	velocity = Vector2.ZERO
 	
 	# Dexterity influences wind-up time
-	await get_tree().create_timer(randf_range(0.05, 0.3 / dexterity)).timeout 
+	var telegraph_time = randf_range(0.05, 0.3 / dexterity)
+	await get_tree().create_timer(telegraph_time).timeout 
 	is_telegraphing = false
 	
 	var base_dir = look_direction
@@ -686,7 +687,7 @@ func _execute_weapon_attack(dir: Vector2) -> void:
 	match current_attack_style:
 		AttackStyle.TACKLE, AttackStyle.MELEE:
 			var dash_dur = 0.25
-			velocity = dir * ((attack_range * 2.0) / dash_dur)
+			velocity = dir * ((attack_range * 1.3) / dash_dur)
 			is_dashing = true
 			rpc("rpc_play_weapon_effects", damage, dir)
 			await get_tree().create_timer(dash_dur).timeout

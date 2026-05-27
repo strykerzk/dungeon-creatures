@@ -6,7 +6,7 @@ var current_mode: CameraMode = CameraMode.STARTUP
 @export_category("Camera Settings")
 @export var creatures_container: Node2D
 @export var margin: Vector2 = Vector2(250, 250) # Padding around the screen edges
-@export var min_zoom: float = 0.2 # Farthest it can zoom out
+@export var min_zoom: float = 0.3 # Farthest it can zoom out
 @export var max_zoom: float = 1.5 # Closest it can zoom in
 @export var follow_speed: float = 5.0
 @export var zoom_speed: float = 3.0

@@ -11,6 +11,8 @@ class CreatureProfile:
 
 var profiles: Dictionary = {}
 
+var default_species: String = "duck"
+
 var current_round: int = 0
 var inv_total_limit: int = 3
 var inv_type_limit: int = 3

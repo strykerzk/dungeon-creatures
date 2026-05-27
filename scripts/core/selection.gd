@@ -8,11 +8,12 @@ extends Control
 # Tracks which players have locked in (Host only)
 var ready_players: Array[int] = []
 
+var locked_in: bool = false
+
 func _ready() -> void:
 	# 1. Populate the dropdown with our available species
 	species_dropdown.add_item("Duck")
 	species_dropdown.add_item("Cat")
-	species_dropdown.add_item("Pig")
 	
 	# 2. Connect the lock-in button
 	lock_in_button.pressed.connect(_on_lock_in_pressed)
@@ -20,30 +21,46 @@ func _ready() -> void:
 	status_label.text = "Choose your starting Creature!"
 
 func _on_lock_in_pressed() -> void:
-	# Disable UI to prevent spamming
-	lock_in_button.disabled = true
-	species_dropdown.disabled = true
-	status_label.text = "Waiting for other players..."
-	
-	# Grab the text of the selected item and make it lowercase (e.g., "duck")
-	var selected_species = species_dropdown.get_item_text(species_dropdown.selected).to_lower()
-	print("[Selection] You locked in: ", selected_species)
-	
-	var my_id = multiplayer.get_unique_id()
-	
-	# Update our local CreatureProfile immediately
-	if typeof(CreatureManager) != TYPE_NIL:
-		var profile = CreatureManager.get_profile(my_id)
-		if profile:
-			profile.species = selected_species
-			
-	# Send our choice to the Host
-	rpc_id(1, "server_player_locked_in", my_id, selected_species)
+	if not locked_in:
+		locked_in = true
+		# Disable UI to prevent spamming
+		species_dropdown.disabled = true
+		status_label.text = "Waiting for other players..."
+		
+		# Grab the text of the selected item and make it lowercase (e.g., "duck")
+		var selected_species = species_dropdown.get_item_text(species_dropdown.selected).to_lower()
+		print("[Selection] You locked in: ", selected_species)
+		
+		var my_id = multiplayer.get_unique_id()
+		
+		# Update our local CreatureProfile immediately
+		if typeof(CreatureManager) != TYPE_NIL:
+			var profile = CreatureManager.get_profile(my_id)
+			if profile:
+				profile.species = selected_species
+				
+		# Send our choice to the Host
+		rpc_id(1, "server_player_pressed_lock_in", my_id, selected_species)
+	else:
+		locked_in = false
+		species_dropdown.disabled = false
+		status_label.text = "Choose your starting Creature!"
+		
+		var my_id = multiplayer.get_unique_id()
+		
+		# Update our local CreatureProfile immediately
+		if typeof(CreatureManager) != TYPE_NIL:
+			var profile = CreatureManager.get_profile(my_id)
+			if profile:
+				profile.species = CreatureManager.default_species
+				
+		# Send our choice to the Host
+		rpc_id(1, "server_player_pressed_lock_in", my_id, CreatureManager.default_species)
 
 # --- NETWORK HANDSHAKE ---
 
 @rpc("any_peer", "call_local", "reliable")
-func server_player_locked_in(peer_id: int, selected_species: String) -> void:
+func server_player_pressed_lock_in(peer_id: int, selected_species: String) -> void:
 	if not multiplayer.is_server(): return
 	
 	# The Host updates its master copy of the client's profile
@@ -51,12 +68,14 @@ func server_player_locked_in(peer_id: int, selected_species: String) -> void:
 		var profile = CreatureManager.get_profile(peer_id)
 		if profile:
 			profile.species = selected_species
-			
-	# Track the ready state
+		
 	if not peer_id in ready_players:
 		ready_players.append(peer_id)
 		print("[Selection] Player ", peer_id, " is ready as a ", selected_species, ". (", ready_players.size(), "/", NetworkManager.players.size(), ")")
-		
+	elif peer_id in  ready_players:
+		ready_players.erase(peer_id)
+		print("[Selection] Player ", peer_id, " canceled ready. (", ready_players.size(), "/", NetworkManager.players.size(), ")")
+	
 	# Check if everyone has locked in
 	if ready_players.size() >= NetworkManager.players.size():
 		print("[Selection] All players ready! Teleporting to Arena...")

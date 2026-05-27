@@ -1,21 +1,22 @@
 extends Control
 
 @export_category("UI References")
-@onready var stash_container: VBoxContainer = $HBoxContainer/StashPanel/ScrollContainer/StashList
-@onready var status_label: Label = $StatusLabel
+@onready var stash_container: VBoxContainer = %StashList
+@onready var status_label: Label = %StatusLabel
 
-@onready var equip_panel: VBoxContainer = $HBoxContainer/EquipPanel
-@onready var ready_button: Button = $HBoxContainer/EquipPanel/ReadyButton
+@onready var equip_panel: VBoxContainer = %EquipPanel
+@onready var ready_button: Button = %ReadyButton
 
 @onready var slot_buttons: Dictionary = {
-	"weapon": $HBoxContainer/EquipPanel/WeaponSlot,
-	"head": $HBoxContainer/EquipPanel/HeadSlot,
-	"body": $HBoxContainer/EquipPanel/BodySlot,
-	"boots": $HBoxContainer/EquipPanel/BootsSlot,
-	"back": $HBoxContainer/EquipPanel/BackSlot
+	"weapon": %WeaponSlot,
+	"head": %HeadSlot,
+	"body": %BodySlot,
+	"boots": %BootsSlot,
+	"back": %BackSlot
 }
 
 var ready_players: Array[int] = []
+var is_ready: bool = false
 var local_profile: CreatureManager.CreatureProfile
 
 func _ready() -> void:
@@ -112,19 +113,25 @@ func _on_equip_slot_clicked(slot_name: String) -> void:
 	_refresh_ui()
 
 func _on_ready_pressed() -> void:
-	ready_button.disabled = true
-	status_label.text = "Waiting for other players..."
-	
-	# Extract resource paths to safely send over the network
-	var serialized_build: Dictionary = {}
-	for slot in local_profile.equipped_items.keys():
-		var item: EquipmentData = local_profile.equipped_items[slot]
-		serialized_build[slot] = item.resource_path
+	if !is_ready:
+		is_ready = true
+		status_label.text = "Waiting for other players..."
 		
-	print("[Editor] Build locked in! Sending to Host...")
-	
-	# Send our build to Peer ID 1 (The Host)
-	rpc_id(1, "server_player_ready", multiplayer.get_unique_id(), serialized_build)
+		# Extract resource paths to safely send over the network
+		var serialized_build: Dictionary = {}
+		for slot in local_profile.equipped_items.keys():
+			var item: EquipmentData = local_profile.equipped_items[slot]
+			serialized_build[slot] = item.resource_path
+			
+		print("[Editor] Build locked in! Sending to Host...")
+		
+		# Send our build to Peer ID 1 (The Host)
+		rpc_id(1, "server_player_ready", multiplayer.get_unique_id(), serialized_build)
+	else:
+		is_ready = false
+		status_label.text = "Canceled ready."
+		
+		rpc_id(1, "server_player_unready", multiplayer.get_unique_id())
 
 @rpc("any_peer", "call_local", "reliable")
 func server_player_ready(peer_id: int, serialized_build: Dictionary) -> void:
@@ -147,9 +154,22 @@ func server_player_ready(peer_id: int, serialized_build: Dictionary) -> void:
 	# 4. Check if everyone is ready
 	if ready_players.size() >= NetworkManager.players.size():
 		print("[Editor] All players ready! Proceeding to Arena...")
+		rpc("toggle_ready_button")
 		# Give a tiny delay so the final player sees the UI update before teleporting
 		await get_tree().create_timer(1.0).timeout
 		rpc("rpc_start_arena")
+
+@rpc("any_peer", "call_local", "reliable")
+func server_player_unready(peer_id: int) -> void:
+	if not multiplayer.is_server(): return
+	
+	if peer_id in ready_players:
+		ready_players.erase(peer_id)
+		print("[Editor] Player ", peer_id, " canceled ready! (", ready_players.size(), "/", NetworkManager.players.size(), ")")
+
+@rpc("authority", "call_local", "reliable")
+func toggle_ready_button() -> void:
+	ready_button.disabled = !ready_button.disabled
 
 @rpc("authority", "call_local", "reliable")
 func rpc_start_arena() -> void:
