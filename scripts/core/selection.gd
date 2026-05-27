@@ -1,9 +1,9 @@
 extends Control
 
 @export_category("UI References")
-@onready var species_dropdown: OptionButton = $VBoxContainer/SpeciesDropdown
-@onready var lock_in_button: Button = $VBoxContainer/LockInButton
-@onready var status_label: Label = $VBoxContainer/StatusLabel
+@onready var species_dropdown: OptionButton = %SpeciesDropdown
+@onready var lock_in_button: Button = %LockInButton
+@onready var status_label: Label = %StatusLabel
 
 # Tracks which players have locked in (Host only)
 var ready_players: Array[int] = []
@@ -78,10 +78,15 @@ func server_player_pressed_lock_in(peer_id: int, selected_species: String) -> vo
 	
 	# Check if everyone has locked in
 	if ready_players.size() >= NetworkManager.players.size():
+		rpc("toggle_lock_in_button")
 		print("[Selection] All players ready! Teleporting to Arena...")
 		# Give a slight delay so the last player sees the UI update
 		await get_tree().create_timer(1.0).timeout
 		rpc("rpc_start")
+
+@rpc("authority", "call_local", "reliable")
+func toggle_lock_in_button() -> void:
+	lock_in_button.disabled = !lock_in_button.disabled
 
 @rpc("authority", "call_local", "reliable")
 func rpc_start() -> void:

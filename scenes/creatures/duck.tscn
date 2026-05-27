@@ -319,8 +319,7 @@ rotation = 0.4223697
 libraries/ = SubResource("AnimationLibrary_i1lxh")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
-path_desired_distance = 40.0
-target_desired_distance = 60.0
+path_postprocessing = 1
 debug_path_custom_color = Color(4.5724214e-06, 0.63863575, 0.23768821, 1)
 
 [node name="NavTimer" type="Timer" parent="." unique_id=421130563]

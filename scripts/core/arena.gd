@@ -42,9 +42,6 @@ func _spawn_creatures() -> void:
 		creature_inst.died.connect(_on_creature_died.bind(p_id))
 		alive_creatures_count += 1
 		
-		# Add to the container (The MultiplayerSpawner will automatically replicate this to clients)
-		creatures_container.add_child(creature_inst)
-		
 		# Move them to a spawn marker
 		if i < spawn_markers.size():
 			creature_inst.global_position = spawn_markers[i].global_position
@@ -63,6 +60,10 @@ func _spawn_creatures() -> void:
 			serialized_loadout[slot] = item_data.resource_path
 			
 		all_loadouts[str(p_id)] = serialized_loadout
+		
+		# Add to the container (The MultiplayerSpawner will automatically replicate this to clients)
+		creatures_container.add_child(creature_inst)
+		
 		print("[Arena] Spawned creature for Player: ", p_id)
 
 	# Broadcast equipment loadouts to clients so they don't have naked ducks!

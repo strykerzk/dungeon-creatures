@@ -26,12 +26,15 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=574288711]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="SpeciesDropdown" type="OptionButton" parent="VBoxContainer" unique_id=116300212]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="LockInButton" type="Button" parent="VBoxContainer" unique_id=2043255851]
+unique_name_in_owner = true
 layout_mode = 2
 text = "LOCK IN"
 

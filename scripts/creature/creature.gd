@@ -61,6 +61,7 @@ var dexterity: float = 1.0
 var size: float = 1.0        
 var precision: float = 0.5   
 var base_cooldown: float = 3.0
+var speed_variance: float = 1.0
 
 # --- MUTATIONS ---
 var active_major_mutation: MutationData = null
@@ -101,6 +102,16 @@ var is_recovering: bool = false
 var is_invulnerable: bool = false
 var is_dodging: bool = false
 
+# --- STUCK DETECTION ---
+var _stuck_timer: float = 0.0
+var _last_pos_sample: Vector2 = Vector2.ZERO
+var _escape_active: bool = false
+var _escape_dir: Vector2 = Vector2.ZERO
+var _escape_timer: float = 0.0
+const STUCK_CHECK_INTERVAL: float = 1.2
+const STUCK_MOVE_THRESHOLD: float = 25.0   # pixels moved; below this = stuck
+const STUCK_ESCAPE_DURATION: float = 0.9
+
 # --- TEST OVERRIDES ---
 @export_group("Test Overrides")
 @export var override_health: float = 0.0
@@ -121,10 +132,10 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	setup()
 	_initialize_base_stats()
+	speed_variance = randf_range(0.9, 1.1)
 	recalculate_stats()
 	if nav_timer: nav_timer.timeout.connect(_on_nav_timer_timeout)
 	if body_hitbox: body_hitbox.monitoring = false
-	setup_physics_layers()
 	_randomize_behavior()
 
 func setup() -> void:
@@ -136,7 +147,6 @@ func _initialize_base_stats() -> void:
 		max_health = stat_config.get("base_health") if stat_config.get("base_health") != null else 100.0
 		damage = stat_config.get("damage") if stat_config.get("damage") != null else 10.0
 		speed = stat_config.get("speed") if stat_config.get("speed") != null else 250.0
-		speed *= randf_range(0.9, 1.1) # Randomize for variance
 		IQ = stat_config.get("IQ") if stat_config.get("IQ") != null else 6
 		aggression = stat_config.get("aggression") if stat_config.get("aggression") != null else 0.5
 		dexterity = stat_config.get("dexterity") if stat_config.get("dexterity") != null else 1.0
@@ -150,7 +160,6 @@ func _initialize_base_stats() -> void:
 	if override_dexterity != 0: dexterity = override_dexterity
 	if override_size != 0: size = override_size
 	if override_precision != 0: precision = override_precision
-	current_health = max_health
 
 func _physics_process(delta: float) -> void:
 	# ONLY for Host
@@ -169,7 +178,7 @@ func _physics_process(delta: float) -> void:
 	if los_ray:
 		los_ray.target_position = los_ray.to_local(target.global_position)
 
-	if is_attacking or is_dodging:
+	if is_attacking or is_dodging or is_recovering:
 		if not is_dashing:
 			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
 		move_and_slide()
@@ -207,12 +216,6 @@ func _process(delta: float) -> void:
 			animation_player.play("run")
 		else:
 			animation_player.play("idle")
-
-
-func setup_physics_layers() -> void:
-	set_collision_layer_value(1, false)
-	set_collision_layer_value(3, true)
-	set_collision_mask_value(1, true)
 
 func set_mutation(data: MutationData) -> void:
 	if not data: return
@@ -261,6 +264,7 @@ func _get_sprite_for_slot(slot: String) -> Node2D:
 	return null
 
 func recalculate_stats() -> void:
+	var stored_health = current_health
 	_initialize_base_stats()
 	
 	if skill_container:
@@ -323,13 +327,13 @@ func recalculate_stats() -> void:
 		
 		if "ranged_projectile" in data and data.ranged_projectile:
 			if projectile_scene: projectile_scene = null
-			projectile_scene = data.ranged_projectile.instantiate()
+			projectile_scene = data.ranged_projectile
 			
 			if "attack_style" in data and data.attack_style:
 				current_attack_style = data.attack_style # Ranged
 	
 	# 3. Finalize math
-	var modded_speed = speed * (1.0 + speed_mod)
+	var modded_speed = speed * speed_variance * (1.0 + speed_mod)
 	var modded_damage = damage + damage_bonus
 	
 	if active_major_mutation:
@@ -351,8 +355,7 @@ func recalculate_stats() -> void:
 	acceleration = min(10.0 / size, 30.0) 
 	_update_attack_range_by_style()
 	retreat_threshold = attack_range * (1.1 - aggression)
-	if nav_agent: nav_agent.target_desired_distance = attack_range
-	current_health = min(current_health, max_health)
+	current_health = min(stored_health, max_health)
 	health_changed.emit(current_health, max_health)
 
 func _update_attack_range_by_style() -> void:
@@ -462,8 +465,8 @@ func search_for_target(attacker_ref: Creature = null) -> void:
 
 func has_line_of_sight() -> bool:
 	if not los_ray: return true
-	los_ray.force_raycast_update()
-	return !los_ray.is_colliding() or los_ray.get_collider() == target
+	#los_ray.force_raycast_update()
+	return not los_ray.is_colliding() or los_ray.get_collider() == target
 
 func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> void:
 	if defender != self or is_attacking or is_dodging: return
@@ -506,19 +509,25 @@ func _pick_intended_action() -> void:
 	var weapon_range = attack_range # Uses the cached _update_attack_range_by_style value
 	choices.append({"action": "weapon", "weight": 100.0 * (1.0 + aggression), "range": weapon_range, "requires_los": true})
 	
-	# Check Major Skill
-	if skill_directory.major and skill_directory.major.has_method("can_use") and skill_directory.major.can_use(target):
-		var weight = 250.0 * (1.0 + (IQ * 0.1))
-		var req_los = skill_directory.major.requires_los if "requires_los" in skill_directory.major else true
-		choices.append({"action": skill_directory.major, "weight": weight, "range": skill_directory.major.skill_range, "requires_los": req_los})
+	if is_instance_valid(target) and target.current_health > 0:
+		# Check Major Skill
+		if skill_directory.major and skill_directory.major.has_method("can_use") and skill_directory.major.can_use(target):
+			var weight = 250.0 * (1.0 + (IQ * 0.1))
+			var req_los = skill_directory.major.requires_los if "requires_los" in skill_directory.major else true
+			choices.append({"action": skill_directory.major, "weight": weight, "range": skill_directory.major.skill_range, "requires_los": req_los})
+		
+		# Check Utility Skills
+		for skill in skill_directory.utility:
+			if skill.has_method("can_use") and skill.can_use(target):
+				var weight = 200.0 + (aggression * 50.0)
+				var req_los = skill.requires_los if "requires_los" in skill else true
+				choices.append({"action": skill, "weight": weight, "range": skill.skill_range, "requires_los": req_los})
 	
-	# Check Utility Skills
-	for skill in skill_directory.utility:
-		if skill.has_method("can_use") and skill.can_use(target):
-			var weight = 200.0 + (aggression * 50.0)
-			var req_los = skill.requires_los if "requires_los" in skill else true
-			choices.append({"action": skill, "weight": weight, "range": skill.skill_range, "requires_los": req_los})
-			
+	# Fallback: if choices is empty, default to weapon
+	if choices.is_empty():
+		current_intended_action = {"action": "weapon", "weight": 1.0, "range": attack_range, "requires_los": true}
+		return
+	
 	# Weighted Random Selection
 	var total_weight = 0.0
 	for c in choices: total_weight += c.weight
@@ -532,69 +541,144 @@ func _pick_intended_action() -> void:
 			break
 
 func movement(delta: float) -> void:
-	if not current_intended_action: _pick_intended_action()
+	if not current_intended_action:
+		_pick_intended_action()
 	
-	var target_range = current_intended_action.range
-	var distance_to_target = global_position.distance_to(target.global_position)
-	var dir_to_target = global_position.direction_to(target.global_position)
+	var target_range: float = current_intended_action.get("range", attack_range)
+	var distance_to_target: float = global_position.distance_to(target.global_position)
+	var dir_to_target: Vector2 = global_position.direction_to(target.global_position)
 	if dir_to_target == Vector2.ZERO:
 		dir_to_target = Vector2(randf_range(-1, 1), randf_range(-1, 1)).normalized()
 	
-	var has_los = has_line_of_sight()
+	var has_los: bool = has_line_of_sight()
+	var requires_los: bool = current_intended_action.get("requires_los", true)
 	
-	var requires_los = current_intended_action.get("requires_los", true)
-	var action_ready = has_los or not requires_los
-	
+	# --- CORE FIX: NavAgent always navigates to 10px of target. ---
+	# Attack range is checked HERE in code, not baked into the agent's desired distance.
+	# This prevents the agent from declaring "arrived" when a wall separates the creatures.
 	if nav_agent:
-		nav_agent.target_desired_distance = target_range if action_ready else 10.0
+		nav_agent.target_position = target.global_position
+		nav_agent.target_desired_distance = 10.0
 	
-	# 1. Navigation: If too far for the INTENDED action or no LOS
-	if distance_to_target > target_range + 20.0 or not action_ready:
-		if not nav_agent.is_navigation_finished():
-			var move_dir = global_position.direction_to(nav_agent.get_next_path_position())
-			var target_vel = move_dir * (speed * speed_mult)
-			target_vel = _apply_whisker_avoidance(target_vel) # NEW: Steer away from corners!
-			velocity = velocity.lerp(target_vel, acceleration * delta)
+	# --- STUCK DETECTION ---
+	_stuck_timer += delta
+	if _stuck_timer >= STUCK_CHECK_INTERVAL:
+		_stuck_timer = 0.0
+		var dist_moved: float = global_position.distance_to(_last_pos_sample)
+		# Only flag stuck if we're actively trying to move (not intentionally idle)
+		if dist_moved < STUCK_MOVE_THRESHOLD and velocity.length() > 40.0 and not _escape_active:
+			_activate_stuck_escape(dir_to_target)
+		_last_pos_sample = global_position
+	
+	if _escape_active:
+		_escape_timer -= delta
+		if _escape_timer <= 0.0:
+			_escape_active = false
 		else:
-			if not action_ready:
-				var target_vel = dir_to_target * (speed * 0.5)
-				target_vel = _apply_whisker_avoidance(target_vel)
-				velocity = velocity.lerp(target_vel, acceleration * delta)
-			else:
-				velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+			velocity = velocity.lerp(_escape_dir * speed, acceleration * delta)
+			move_and_slide()
+			return
+	
+	# --- ATTACK CHECK ---
+	var in_attack_range: bool = distance_to_target <= target_range + 20.0
+	var action_ready: bool = in_attack_range and (has_los or not requires_los)
+	
+	if action_ready and can_attack:
+		attack()
+		return
+	
+	# --- MOVEMENT PHASE ---
+	if not action_ready:
+		_navigate_toward_target(delta)
 	else:
-		# 2. Execution
-		if can_attack:
-			attack()
-			return 
-		else:
-			# 3. Combat Spacing (Kiting/Circling)
-			var eff_retreat = retreat_threshold
-			if (current_health / max_health) < 0.3: 
-				eff_retreat = 0.0 if aggression > 0.5 else eff_retreat * 2.0
-			
-			var target_vel = Vector2.ZERO
-			
-			if distance_to_target < eff_retreat:
-				var r_speed = 0.3
-				if current_attack_style == AttackStyle.RANGED: r_speed = 0.9 if not can_attack else 0.1
-				
-				target_vel = -dir_to_target * (speed * r_speed)
-					
-			elif is_circling:
-				var side_dir = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
-				var range_correction = (distance_to_target - target_range) * 0.05
-				var circle_vector = (side_dir + (dir_to_target * range_correction)).normalized()
-				
-				target_vel = circle_vector * (speed * 0.6 * speed_mult)
-			else:
-				target_vel = dir_to_target * (speed * 0.2)
-			
-			# Apply steering to spacing/circling so they smoothly slide along walls instead of jittering!
+		# In range and LOS confirmed, but attack is on cooldown — do combat spacing
+		_do_combat_spacing(delta, distance_to_target, dir_to_target, target_range)
+	
+	move_and_slide()
+
+func _navigate_toward_target(delta: float) -> void:
+	if not nav_agent:
+		return
+	
+	var target_vel: Vector2
+	
+	if not nav_agent.is_navigation_finished():
+		var next_pos: Vector2 = nav_agent.get_next_path_position()
+		var move_dir: Vector2 = global_position.direction_to(next_pos)
+		target_vel = move_dir * (speed * speed_mult)
+	else:
+		# NavAgent path is done but we're still not in range with LOS.
+		# This means the target moved — nudge directly. Whiskers handle the wall.
+		var dir = global_position.direction_to(target.global_position)
+		target_vel = dir * (speed * 0.5)
+	
+	target_vel = _apply_whisker_avoidance(target_vel)
+	velocity = velocity.lerp(target_vel, acceleration * delta)
+
+func _do_combat_spacing(delta: float, dist: float, dir: Vector2, desired_range: float) -> void:
+	var desired_pos: Vector2
+	var move_speed_mult: float = 0.65
+	
+	# Effective retreat distance scales with health and aggression
+	var eff_retreat = retreat_threshold
+	if (current_health / max_health) < 0.3:
+		eff_retreat = 0.0 if aggression > 0.5 else eff_retreat * 2.0
+	
+	if dist < eff_retreat:
+		# Too close — back away. For ranged, prioritize retreat heavily.
+		var r_mult: float = 0.9 if current_attack_style == AttackStyle.RANGED else 0.5
+		# Retreat destination: move away from target
+		desired_pos = global_position + (-dir * desired_range * 1.2)
+		move_speed_mult = r_mult
+	
+	elif is_circling:
+		# Orbit: perpendicular to approach + slight range correction
+		var side_dir: Vector2 = Vector2(-dir.y, dir.x) * circle_direction
+		var range_correction: float = (dist - desired_range) * 0.05
+		var orbit_dir: Vector2 = (side_dir + dir * range_correction).normalized()
+		# Destination is a point 80px along the orbit direction from current pos
+		desired_pos = global_position + orbit_dir * 80.0
+	
+	else:
+		# Hold position — gentle drift to stay at desired range
+		desired_pos = target.global_position + (-dir * desired_range)
+	
+	# Navigate via NavAgent to the desired spacing position.
+	# This is the key improvement: the agent routes AROUND walls to reach the spacing spot.
+	if nav_agent:
+		nav_agent.target_position = desired_pos
+		nav_agent.target_desired_distance = 15.0
+	
+		if not nav_agent.is_navigation_finished():
+			var next_pos: Vector2 = nav_agent.get_next_path_position()
+			var move_dir: Vector2 = global_position.direction_to(next_pos)
+			var target_vel: Vector2 = move_dir * speed * move_speed_mult
+			# Whiskers still used here, but only as a thin correction layer
 			target_vel = _apply_whisker_avoidance(target_vel)
 			velocity = velocity.lerp(target_vel, acceleration * delta)
-			
-	move_and_slide()
+		else:
+			velocity = velocity.lerp(Vector2.ZERO, acceleration * delta)
+	else:
+		# Fallback: no nav agent — raw velocity with whiskers
+		var raw_dir: Vector2 = global_position.direction_to(desired_pos)
+		var target_vel: Vector2 = raw_dir * speed * move_speed_mult
+		target_vel = _apply_whisker_avoidance(target_vel)
+		velocity = velocity.lerp(target_vel, acceleration * delta)
+
+func _activate_stuck_escape(dir_to_target: Vector2) -> void:
+	_escape_active = true
+	_escape_timer = STUCK_ESCAPE_DURATION
+	
+	# Primary escape: strafe perpendicular to the target direction
+	var perp: Vector2 = Vector2(-dir_to_target.y, dir_to_target.x) * circle_direction
+	
+	# Blend a small amount of backward movement to clear corners
+	_escape_dir = (perp * 0.75 + (-dir_to_target) * 0.25).normalized()
+	
+	# Flip circle_direction so the next attempt tries the other side
+	circle_direction *= -1
+
+	print("[AI] Stuck escape triggered for ", name, " — dir: ", _escape_dir)
 
 func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 	if desired_velocity.length() < 1.0 or not whisker_front: 
@@ -646,13 +730,13 @@ func _apply_whisker_avoidance(desired_velocity: Vector2) -> Vector2:
 			steered_vel = tangent * desired_velocity.length()
 			
 		# Smoothly blend the current velocity into the new sliding velocity
-		return desired_velocity.lerp(steered_vel.normalized() * desired_velocity.length(), 0.8)
+		return desired_velocity.lerp(steered_vel.normalized() * desired_velocity.length(), 0.6)
 		
 	return desired_velocity
 
 ## Refactored to execute either a skill or a standard weapon attack
 func attack() -> void:
-	await get_tree().create_timer(randf_range(0.1, 0.3)).timeout # Randomized delay
+	await get_tree().create_timer(randf_range(0.05, 0.2)).timeout # Randomized delay
 	
 	if is_attacking or is_dodging or not current_intended_action: return
 	is_attacking = true
@@ -665,10 +749,16 @@ func attack() -> void:
 	await get_tree().create_timer(telegraph_time).timeout 
 	is_telegraphing = false
 	
+	if not is_instance_valid(target) or target.current_health <= 0 or target.is_queued_for_deletion():
+		is_attacking = false
+		current_intended_action = {}
+		_on_attack_cooldown_finished()
+		return
+	attack_started.emit(self, target)
+	
 	var base_dir = look_direction
 	var jitter = PI/9 if current_attack_style == AttackStyle.RANGED else PI/12
 	var attack_dir = base_dir.rotated(randf_range(-jitter, jitter) * (1.0 - precision))
-	attack_started.emit(self, target)
 	
 	# EXECUTION PHASE
 	if current_intended_action.action is String and current_intended_action.action == "weapon":
@@ -763,4 +853,5 @@ func _on_attack_cooldown_finished() -> void:
 	can_attack = true
 
 func _on_nav_timer_timeout() -> void:
-	if target: nav_agent.target_position = target.global_position
+	#if target: nav_agent.target_position = target.global_position
+	pass
