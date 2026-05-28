@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://dr8vjx0h4f672" path="res://scripts/core/selection.gd" id="1_ylfnv"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_batdc"]
+font_size = 32
+
 [sub_resource type="LabelSettings" id="LabelSettings_ylfnv"]
 font_size = 20
 
@@ -23,10 +26,11 @@ anchor_top = 0.171
 anchor_right = 0.5
 anchor_bottom = 0.171
 offset_left = -36.0
-offset_top = 1.3199921
+offset_top = -21.680008
 offset_right = 36.0
-offset_bottom = 24.319992
+offset_bottom = 22.986664
 grow_horizontal = 2
+label_settings = SubResource("LabelSettings_batdc")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -56,6 +60,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ColorPickerContainer" type="HBoxContainer" parent="HBoxContainer/MarginContainer/SpeciesSelectPanel" unique_id=1383775494]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="SpeciesDropdown" type="OptionButton" parent="HBoxContainer/MarginContainer/SpeciesSelectPanel" unique_id=116300212]
 unique_name_in_owner = true

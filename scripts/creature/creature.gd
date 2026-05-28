@@ -6,7 +6,7 @@ var id: int = 1
 
 enum AttackStyle { TACKLE, MELEE, RANGED }
 
-# --- EQUIPMENT SLOTS & PAPER DOLL REFS ---
+# --- PAPER DOLL ---
 @export_group("Paper Doll Sprites")
 @onready var paper_doll: CanvasGroup = %PaperDoll
 @onready var flip_container: Node2D = $FlipContainer
@@ -17,7 +17,9 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @export var doll_armor: Sprite2D
 @export var doll_head: Sprite2D
 @export var weapon_marker: Marker2D
+var player_color: Color = Color.WHITE
 
+# --- Equipment ---
 @export_group("Equipment Settings")
 @export var current_attack_style: AttackStyle = AttackStyle.TACKLE
 @export var body_hitbox: Area2D 
@@ -133,6 +135,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	setup()
+	prepare_visuals()
 	_initialize_base_stats()
 	speed_variance = randf_range(0.9, 1.1)
 	recalculate_stats()
@@ -142,6 +145,10 @@ func _ready() -> void:
 
 func setup() -> void:
 	id = int(name)
+
+func prepare_visuals() -> void:
+	set_player_color()
+	apply_sprite_outline()
 
 func _initialize_base_stats() -> void:
 	if stat_config:
@@ -879,3 +886,17 @@ func _play_creature_sound(sound_name: String) -> void:
 			"attack": sfx_attack.play()
 			"dodge":  sfx_dodge.play()
 			"death":  sfx_death.play()
+
+func set_player_color() -> void:
+	var profile = CreatureManager.get_profile(id)
+	if not profile: return
+	
+	player_color = profile.player_color
+
+func apply_sprite_outline() -> void:
+	if paper_doll:
+		paper_doll.material.set_shader_parameter("is_outlined", true)
+		paper_doll.material.set_shader_parameter("outline_color", player_color)
+		paper_doll.material.set_shader_parameter("camera_zoom", 1.0)
+		
+	

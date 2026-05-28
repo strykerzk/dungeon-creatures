@@ -16,10 +16,25 @@ var ready_players: Array[int] = []
 var locked_in: bool = false
 var is_previewing: bool = false
 
+# --- SOUND SYSTEM ---
 const SOUND_SLOTS: Array[String] = ["hurt","attack","dodge","death"]
 var _pending_sounds: Dictionary = {}  # String -> AudioStreamWAV
 var _pending_pitches: Dictionary = {} # String -> float
 var _active_slot: String = ""
+
+# --- COLOR SYSTEM ---
+const COLOR_POOL: Array[Color] = [
+	Color("#EF476F"),  # 0 — Coral Red
+	Color("#118AB2"),  # 1 — Ocean Blue
+	Color("#FFD166"),  # 2 — Sunflower Yellow
+	Color("#06D6A0"),  # 3 — Mint Green
+	Color("#9B5DE5"),  # 4 — Soft Purple
+	Color("#FF6B35"),  # 5 — Tangerine
+	Color("#FF85A1"),  # 6 — Bubblegum Pink
+	Color("#00BBF9"),  # 7 — Sky Cyan
+]
+var local_color_index: int = -1  # -1 = no selection yet
+var _color_buttons: Array[Button] = []
 
 func _ready() -> void:
 	species_dropdown.add_item("Duck")
@@ -36,6 +51,7 @@ func _ready() -> void:
 	AudioRecorder.recording_tick.connect(_on_recording_tick)
 	
 	_build_sound_slot_ui()
+	_build_color_picker()
 
 func _on_lock_in_pressed() -> void:
 	if not locked_in:
@@ -284,3 +300,114 @@ func _sync_sounds_to_peers(player_id: int, profile) -> void:
 			var pitch: float = profile.sound_pitches.get(slot, 1.0)
 			# RPC through CreatureManager autoload — survives scene transitions
 			CreatureManager.rpc("rpc_receive_peer_sound", player_id, slot, raw, pitch)
+
+func _build_color_picker() -> void:
+	# Assumes you have a node called ColorPickerContainer (HFlowContainer works well)
+	var container = %ColorPickerContainer
+	_color_buttons.clear()
+	
+	for i in range(COLOR_POOL.size()):
+		var btn = Button.new()
+		btn.custom_minimum_size = Vector2(48, 48)
+		btn.tooltip_text = "Color " + str(i + 1)
+	
+		# Colored background via StyleBoxFlat
+		var style = StyleBoxFlat.new()
+		style.bg_color = COLOR_POOL[i]
+		style.corner_radius_top_left    = 6
+		style.corner_radius_top_right   = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
+		style.border_width_top    = 3
+		style.border_width_bottom = 3
+		style.border_width_left   = 3
+		style.border_width_right  = 3
+		style.border_color = Color.TRANSPARENT
+		btn.add_theme_stylebox_override("normal", style)
+
+		btn.pressed.connect(_on_color_selected.bind(i))
+		container.add_child(btn)
+		_color_buttons.append(btn)
+
+	_refresh_color_ui()
+
+func _on_color_selected(index: int) -> void:
+	if locked_in: return
+	if index == local_color_index: return  # Already selected
+	rpc_id(1, "server_request_color", multiplayer.get_unique_id(), index)
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_color(player_id: int, color_index: int) -> void:
+	if not multiplayer.is_server(): return
+	
+	if CreatureManager.is_color_claimed(color_index):
+		# Reject — send back the current state so the client resyncs
+		rpc_id(player_id, "client_color_rejected", color_index)
+		return
+	
+	CreatureManager.claim_color(player_id, color_index, COLOR_POOL[color_index])
+	
+	# Broadcast the full claimed_colors map to all clients so UI stays in sync
+	var sync_map: Dictionary = CreatureManager.claimed_colors.duplicate()
+	rpc("client_sync_colors", sync_map)
+
+@rpc("authority", "call_local", "reliable")
+func client_sync_colors(claimed_map: Dictionary) -> void:
+	# Update CreatureManager on this client to match host
+	CreatureManager.claimed_colors = claimed_map
+	
+	# Also update profiles so the color is accessible everywhere
+	for pid in claimed_map:
+		var idx: int = claimed_map[pid]
+		var profile = CreatureManager.get_profile(pid)
+		if profile:
+			profile.player_color = COLOR_POOL[idx]
+	
+	# Update local selection index
+	var local_id = multiplayer.get_unique_id()
+	if claimed_map.has(local_id):
+		local_color_index = claimed_map[local_id]
+	else:
+		local_color_index = -1
+	
+	_refresh_color_ui()
+
+@rpc("authority", "call_local", "reliable")
+func client_color_rejected(attempted_index: int) -> void:
+	_refresh_color_ui()
+
+func _refresh_color_ui() -> void:
+	var claimed_values: Array = CreatureManager.claimed_colors.values()
+	var local_id = multiplayer.get_unique_id()
+	
+	for i in range(_color_buttons.size()):
+		var btn: Button = _color_buttons[i]
+		var style: StyleBoxFlat = btn.get_theme_stylebox("normal").duplicate()
+	
+		var is_mine:   bool = (i == local_color_index)
+		var is_taken:  bool = (i in claimed_values and not is_mine)
+	
+		if is_mine:
+			# White border = my selection
+			style.border_color = Color.WHITE
+			btn.disabled = false
+			btn.modulate = Color.WHITE
+		elif is_taken:
+			# Show who claimed it
+			style.border_color = Color.TRANSPARENT
+			btn.disabled = true
+			btn.modulate = Color(1, 1, 1, 0.35)  # Dimmed
+			# Optional: find the owner's name for a tooltip
+			for pid in CreatureManager.claimed_colors:
+				if CreatureManager.claimed_colors[pid] == i:
+					if NetworkManager.players.has(pid):
+						btn.tooltip_text = NetworkManager.players[pid].name
+					break
+		else:
+			# Available
+			style.border_color = Color.TRANSPARENT
+			btn.disabled = locked_in
+			btn.modulate = Color.WHITE
+			btn.tooltip_text = ""
+		
+		btn.add_theme_stylebox_override("normal", style)

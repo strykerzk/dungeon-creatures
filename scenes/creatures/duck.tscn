@@ -5,8 +5,19 @@
 [ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
 [ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="3_tddeu"]
-[ext_resource type="Material" uid="uid://c0x5tnjlptcsq" path="res://shaders/hit_flash.tres" id="3_ygove"]
+[ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="4_tddeu"]
 [ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="6_rhggd"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tddeu"]
+resource_local_to_scene = true
+shader = ExtResource("4_tddeu")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/is_outlined = true
+shader_parameter/outline_width = 4.000000142499999
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_threshold = 0.2
+shader_parameter/camera_zoom = 1.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
 radius = 6.0
@@ -227,6 +238,7 @@ y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
 stat_config = ExtResource("2_6a5ah")
+dmg_number_scene = ExtResource("3_tddeu")
 doll_back = NodePath("FlipContainer/PaperDoll/BackSprite")
 doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
 doll_boots = NodePath("FlipContainer/PaperDoll/BootsSprite")
@@ -244,17 +256,14 @@ sfx_hurt = NodePath("SFXHurt")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
 sfx_death = NodePath("SFXDeath")
-dmg_number_scene = ExtResource("3_tddeu")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
 
 [node name="FlipContainer" type="Node2D" parent="." unique_id=520853665]
-y_sort_enabled = true
 
 [node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=200071240]
 unique_name_in_owner = true
-y_sort_enabled = true
-material = ExtResource("3_ygove")
+material = SubResource("ShaderMaterial_tddeu")
 
 [node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1436436277]
 position = Vector2(0, -41.25)

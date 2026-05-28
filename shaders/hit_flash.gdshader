@@ -9,8 +9,12 @@ uniform vec4 flash_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 
 // Outline Uniforms
 uniform bool is_outlined = false;
-uniform float outline_width : hint_range(0.0, 10.0) = 1.0;
+uniform float outline_width : hint_range(1.0, 20.0) = 4.0;
 uniform vec4 outline_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float outline_threshold : hint_range(0.0, 1.0) = 0.2;
+uniform float camera_zoom: hint_range(0.1, 10.0) = 1.0;
+
+const int SAMPLES = 16;
 
 void fragment() {
     // 1. Fetch the flattened children from the screen buffer
@@ -24,23 +28,23 @@ void fragment() {
     // 3. Apply the Hit Flash
     c.rgb = mix(c.rgb, flash_color.rgb, flash_modifier);
 
-    // 4. Apply the Outline (Only if this pixel is transparent!)
-    if (is_outlined && c.a < 0.01) {
-        vec2 size = SCREEN_PIXEL_SIZE * outline_width;
-        float out_a = textureLod(screen_texture, SCREEN_UV + vec2(-size.x, 0), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(0, size.y), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(size.x, 0), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(0, -size.y), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(-size.x, size.y), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(size.x, size.y), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(-size.x, -size.y), 0.0).a;
-        out_a += textureLod(screen_texture, SCREEN_UV + vec2(size.x, -size.y), 0.0).a;
-        
-        out_a = min(out_a, 1.0);
-        
-        // If a neighboring pixel has opacity, draw the outline color here
-        if (out_a > 0.0) {
-            c = outline_color;
+    // Circular outline — only on transparent pixels
+    if (is_outlined && c.a < 0.5) {
+        vec2 step = SCREEN_PIXEL_SIZE * outline_width * camera_zoom;
+        float accumulated = 0.0;
+
+        for (int i = 0; i < SAMPLES; i++) {
+            float angle = (float(i) / float(SAMPLES)) * TAU;
+            vec2 offset = vec2(cos(angle), sin(angle)) * step;
+            accumulated += textureLod(screen_texture, SCREEN_UV + offset, 0.0).a;
+        }
+
+        if ((accumulated / float(SAMPLES)) > outline_threshold) {
+            // edge_blend: 1.0 on fully transparent pixels, fades to 0.0 on opaque ones
+            // This smoothly merges the outline into the sprite's soft edge instead of cutting hard
+            float edge_blend = 1.0 - c.a;
+            c.rgb = mix(c.rgb, outline_color.rgb, edge_blend);
+            c.a = max(c.a, outline_color.a * edge_blend);
         }
     }
 

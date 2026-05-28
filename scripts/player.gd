@@ -372,10 +372,10 @@ func client_respawn_at(safe_pos: Vector2) -> void:
 		if typeof(StageManager) != TYPE_NIL:
 			StageManager.screen_shake_requested.emit(8.0)
 		_show_feedback("Fell into the void!")
-	apply_stun(0.4)
+	apply_stun(0.4, true)
 
-func apply_stun(duration: float) -> void:
-	if is_invulnerable: return
+func apply_stun(duration: float, ignore_vulnerability: bool = false) -> void:
+	if is_invulnerable and not ignore_vulnerability: return
 	if stun_blink_tween: stun_blink_tween.kill()
 	if stun_wobble_tween: stun_wobble_tween.kill()
 	

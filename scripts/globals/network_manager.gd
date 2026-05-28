@@ -80,6 +80,11 @@ func _on_player_connected(id: int) -> void:
 func _on_player_disconnected(id: int) -> void:
 	print("[NetworkManager] Peer disconnected: ", id)
 	
+	# CreatureManager cleanup
+	CreatureManager.release_color(id)
+	if multiplayer.is_server():
+		rpc("client_sync_colors", CreatureManager.claimed_colors.duplicate())
+	
 	# Safeguard: Remove them from the tracking dictionary
 	if players.has(id):
 		players.erase(id)

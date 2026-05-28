@@ -15,6 +15,8 @@ class CreatureProfile:
 		"dodge": 1.0,
 		"death": 1.0
 	}
+	var player_color: Color = Color.WHITE
+	
 	func has_custom_sound(sound_name: String) -> bool:
 		return custom_sounds.has(sound_name) and custom_sounds[sound_name] != null
 	
@@ -27,6 +29,7 @@ class CreatureProfile:
 		sound_pitches = {"hurt": 1.0, "attack": 1.0, "dodge": 1.0, "death": 1.0}
 
 var profiles: Dictionary = {}
+var claimed_colors: Dictionary = {}
 
 var default_species: String = "duck"
 
@@ -170,6 +173,26 @@ func rpc_receive_peer_sound(player_id: int, slot: String,
 	profile.set_custom_sound(slot, stream, pitch)
 	print("[Audio] Received '", slot, "' for player ", player_id,
 		  " (", raw.size() / 1024, " KB)")
+
+func is_color_claimed(color_index: int) -> bool:
+	return color_index in claimed_colors.values()
+
+func claim_color(player_id: int, color_index: int, color: Color) -> void:
+	# Release any previous claim this player held
+	claimed_colors.erase(player_id)
+	claimed_colors[player_id] = color_index
+	var profile = get_profile(player_id)
+	if profile:
+		profile.player_color = color
+
+func release_color(player_id: int) -> void:
+	claimed_colors.erase(player_id)
+
+# Call this inside your existing reset_session()
+func reset_colors() -> void:
+	claimed_colors.clear()
+	for id in profiles:
+		profiles[id].player_color = Color.WHITE
 
 func reset_session() -> void:
 	profiles.clear()
