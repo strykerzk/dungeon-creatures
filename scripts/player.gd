@@ -20,8 +20,9 @@ var can_roll: bool = true
 @onready var void_detector: Area2D = %VoidDetector
 @onready var water_detector: Area2D = %WaterDetector
 var last_safe_position: Vector2 = Vector2.ZERO
-var delayed_safe_position: Vector2 = Vector2.ZERO
-var safe_timer: float = 0.0
+var _safe_candidate: Vector2 = Vector2.ZERO
+var _safe_candidate_age: float = 0.0
+const SAFE_POSITION_AGE_REQUIRED: float = 0.6
 var is_falling: bool = false
 
 @export_category("Node References")
@@ -32,6 +33,8 @@ var is_falling: bool = false
 @onready var sfx_success: AudioStreamPlayer2D = $SFXSuccess
 @onready var sfx_emote: AudioStreamPlayer2D = $SFXEmote
 @onready var dodge_particles: GPUParticles2D = $DodgeParticles
+@onready var run_dust: GPUParticles2D = $RunDust
+@onready var water_splash: GPUParticles2D = $WaterSplash
 @onready var handicap_chains: Sprite2D = $HandicapLock
 
 @export_category("UI References")
@@ -64,9 +67,12 @@ var is_invulnerable: bool = false
 var is_stunned: bool = false
 var last_facing_direction: Vector2 = Vector2.DOWN
 var current_room_center: Vector2 = Vector2.ZERO
-
 var spawn_lock_timer: float = 0.0
 var max_spawn_lock: float = 0.0
+
+var handicap_tween: Tween = null
+var stun_blink_tween: Tween = null
+var stun_wobble_tween: Tween = null
 
 func _enter_tree() -> void:
 	if name.to_int() != 0:
@@ -79,7 +85,6 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	last_safe_position = global_position
-	delayed_safe_position = global_position
 	
 	name_label.text = NetworkManager.players[int(name)].name
 	_update_hotbar_ui()
@@ -110,7 +115,11 @@ func _physics_process(delta: float) -> void:
 			if channel_bar: channel_bar.hide()
 			if is_multiplayer_authority():
 				_show_feedback("Lock released! GO!")
-				
+			
+			if handicap_tween:
+				handicap_tween.kill()
+				handicap_tween = null
+			
 			if handicap_chains and handicap_chains.visible:
 				var tween = create_tween().set_parallel(true)
 				tween.tween_property(handicap_chains, "scale", Vector2(2.0, 2.0), 0.2)
@@ -125,14 +134,14 @@ func _physics_process(delta: float) -> void:
 		if is_falling or is_stunned:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations()
+			handle_animations.rpc()
 			return
 		
 		# The Lock
 		if spawn_lock_timer > 0:
 			velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 			move_and_slide()
-			handle_animations()
+			handle_animations.rpc()
 			return # Skip all other state logic while locked!
 		
 		# Interactables
@@ -147,25 +156,26 @@ func _physics_process(delta: float) -> void:
 			State.LOOTING:
 				_handle_looting_state(delta)
 		
-		handle_animations()
+		handle_animations.rpc()
 	
 	# 3. HAZARD DETECTION
 	if is_multiplayer_authority() and not is_falling and not is_stunned:
 		var touching_void = void_detector.has_overlapping_bodies()
 		
 		if touching_void:
-			safe_timer = 0.0 
 			if current_state != State.ROLLING:
 				_trigger_fall.rpc()
+		elif not touching_void and current_state == State.NORMAL:
+				_safe_candidate_age += delta
+				if _safe_candidate_age < SAFE_POSITION_AGE_REQUIRED:
+					_safe_candidate = global_position  # Keep sampling the candidate
+				else:
+					# Candidate has been safe for long enough — promote it
+					last_safe_position = _safe_candidate
+					_safe_candidate = global_position
+					_safe_candidate_age = 0.0
 		else:
-			if current_state == State.NORMAL:
-				safe_timer += delta
-				if safe_timer >= 0.2:
-					last_safe_position = delayed_safe_position
-					delayed_safe_position = global_position
-					safe_timer = 0.0
-			else:
-				safe_timer = 0.0
+			_safe_candidate_age = 0.0
 
 func _apply_spawn_handicap() -> void:
 	if typeof(CreatureManager) == TYPE_NIL: return
@@ -201,9 +211,9 @@ func _apply_spawn_handicap() -> void:
 		if handicap_chains:
 			handicap_chains.show()
 			# Add a subtle pulse to the chains
-			var tween = create_tween().set_loops()
-			tween.tween_property(handicap_chains, "scale", Vector2(1.1, 1.1), 0.5)
-			tween.tween_property(handicap_chains, "scale", Vector2(1.0, 1.0), 0.5)
+			handicap_tween = create_tween().set_loops()
+			handicap_tween.tween_property(handicap_chains, "scale", Vector2(1.0, 1.0), 0.5)
+			handicap_tween.tween_property(handicap_chains, "scale", Vector2(1.1, 1.1), 0.5)
 		if sprite:
 			sprite.modulate = Color(0.4, 0.4, 0.4, 1.0) # Turn the player gray/dark
 	else:
@@ -270,6 +280,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if picked_emote != "":
 				rpc("client_show_emote", picked_emote)
 
+@rpc("authority","call_local","unreliable")
 func handle_animations() -> void:
 	if velocity.x != 0:
 		sprite.flip_h = velocity.x < 0
@@ -285,15 +296,12 @@ func handle_animations() -> void:
 	
 	# --- VFX Toggles ---
 	var in_water = false
-	if has_node("WaterDetector"):
-		in_water = $WaterDetector.has_overlapping_bodies()
+	if water_detector:
+		in_water = water_detector.has_overlapping_bodies()
 	
 	var is_running = (current_state == State.NORMAL and velocity.length() > 20.0 and not is_falling)
 	
-	if has_node("RunDust") and has_node("WaterSplash"):
-		var run_dust = $RunDust
-		var water_splash = $WaterSplash
-		
+	if run_dust and water_splash:
 		if is_running:
 			if in_water:
 				run_dust.emitting = false
@@ -305,7 +313,7 @@ func handle_animations() -> void:
 			run_dust.emitting = false
 			water_splash.emitting = false
 
-@rpc("any_peer","call_local","reliable")
+@rpc("authority","call_local","reliable")
 func _start_roll() -> void:
 	current_state = State.ROLLING
 	can_roll = false
@@ -333,7 +341,7 @@ func _end_roll() -> void:
 func _on_dodge_timer_timeout() -> void:
 	can_roll = true
 
-@rpc("any_peer","call_local","reliable")
+@rpc("authority","call_local","reliable")
 func _trigger_fall() -> void:
 	is_falling = true
 	current_state = State.NORMAL # Cancel any looting/interactions
@@ -349,29 +357,27 @@ func _trigger_fall() -> void:
 	
 	await get_tree().create_timer(0.6).timeout
 	
-	_respawn_from_fall()
+	if is_multiplayer_authority():
+		rpc("client_respawn_at", last_safe_position)
 
-func _respawn_from_fall() -> void:
-	# Teleport to the last known safe ground
-	global_position = last_safe_position
-	delayed_safe_position = last_safe_position
-	
-	# Reset visuals
+@rpc("authority", "call_local", "reliable")
+func client_respawn_at(safe_pos: Vector2) -> void:
+	global_position = safe_pos
 	sprite.scale = Vector2.ONE
 	sprite.modulate.a = 1.0
 	sprite.rotation_degrees = 0.0
 	is_falling = false
 	
-	# Apply Penalty (Using the screen shake RPC from the creature system!)
-	if typeof(StageManager) != TYPE_NIL:
-		StageManager.screen_shake_requested.emit(8.0)
-		
-	_show_feedback("Fell into the void!")
-	
+	if is_multiplayer_authority():
+		if typeof(StageManager) != TYPE_NIL:
+			StageManager.screen_shake_requested.emit(8.0)
+		_show_feedback("Fell into the void!")
 	apply_stun(0.4)
 
 func apply_stun(duration: float) -> void:
 	if is_invulnerable: return
+	if stun_blink_tween: stun_blink_tween.kill()
+	if stun_wobble_tween: stun_wobble_tween.kill()
 	
 	current_state = State.NORMAL
 	velocity = Vector2.ZERO
@@ -384,14 +390,14 @@ func apply_stun(duration: float) -> void:
 	# Calculate how many times to loop the animation based on duration
 	var loops = max(1, int(duration / 0.2))
 	
-	var blink_tween = create_tween().set_loops(loops)
-	blink_tween.tween_property(sprite, "modulate:a", 0.2, 0.1)
-	blink_tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
+	stun_blink_tween = create_tween().set_loops(loops)
+	stun_blink_tween.tween_property(sprite, "modulate:a", 0.2, 0.1)
+	stun_blink_tween.tween_property(sprite, "modulate:a", 1.0, 0.1)
 	
-	var wobble_tween = create_tween().set_loops(loops)
-	wobble_tween.tween_property(sprite, "rotation_degrees", 15.0, 0.05)
-	wobble_tween.tween_property(sprite, "rotation_degrees", -15.0, 0.1)
-	wobble_tween.tween_property(sprite, "rotation_degrees", 0.0, 0.05)
+	stun_wobble_tween = create_tween().set_loops(loops)
+	stun_wobble_tween.tween_property(sprite, "rotation_degrees", 15.0, 0.05)
+	stun_wobble_tween.tween_property(sprite, "rotation_degrees", -15.0, 0.1)
+	stun_wobble_tween.tween_property(sprite, "rotation_degrees", 0.0, 0.05)
 	
 	await get_tree().create_timer(duration).timeout
 	is_stunned = false
@@ -549,14 +555,13 @@ func client_remove_loot(loot_path: NodePath) -> void:
 		loot_node.queue_free()
 
 # Runs ONLY on the specific client who won the item
-@rpc("any_peer", "call_local", "reliable")
+@rpc("authority", "call_local", "reliable")
 func client_grant_loot() -> void:
 	if multiplayer.get_remote_sender_id() != 1: return
 	
 	if pending_loot_data == null: return
 	
 	current_state = State.NORMAL
-	_get_inventory()[pending_loot_data.slot].append(pending_loot_data)
 	pickup_history.append(pending_loot_data)
 	_show_feedback("Picked up: " + pending_loot_data.item_name)
 	pending_loot_data = null
@@ -672,7 +677,7 @@ func server_request_drop_item(resource_path: String, drop_pos: Vector2) -> void:
 	
 	rpc("client_spawn_dropped_item", resource_path, final_pos, unique_name)
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("authority", "call_local", "reliable")
 func client_spawn_dropped_item(resource_path: String, final_pos: Vector2, loot_name: String) -> void:
 	if multiplayer.get_remote_sender_id() != 1 and multiplayer.get_remote_sender_id() != 0:
 		return

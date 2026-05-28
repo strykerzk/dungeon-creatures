@@ -222,20 +222,7 @@ properties/6/path = NodePath(".:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[sub_resource type="GDScript" id="GDScript_tddeu"]
-resource_name = "hpbar"
-script/source = "extends ProgressBar
-
-func _ready() -> void:
-	max_value = get_parent().max_health
-	value = max_value
-
-func _physics_process(delta: float) -> void:
-	if value != get_parent().current_health:
-		value = get_parent().current_health
-"
-
-[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
+[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hurt", "sfx_attack", "sfx_dodge", "sfx_death") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
@@ -253,9 +240,10 @@ los_ray = NodePath("LOSRay")
 whisker_front = NodePath("Whiskers/Front")
 whisker_left = NodePath("Whiskers/Left")
 whisker_right = NodePath("Whiskers/Right")
-sfx_hit = NodePath("SFXHit")
+sfx_hurt = NodePath("SFXHurt")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
+sfx_death = NodePath("SFXDeath")
 dmg_number_scene = ExtResource("3_tddeu")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
@@ -342,7 +330,7 @@ target_position = Vector2(130, 0)
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1315334455]
 replication_config = SubResource("SceneReplicationConfig_6a5ah")
 
-[node name="SFXHit" type="AudioStreamPlayer2D" parent="." unique_id=12979756]
+[node name="SFXHurt" type="AudioStreamPlayer2D" parent="." unique_id=12979756]
 stream = ExtResource("6_rhggd")
 volume_db = -8.0
 
@@ -351,10 +339,7 @@ volume_db = -10.0
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1328682961]
 
-[node name="ProgressBar" type="ProgressBar" parent="." unique_id=121112240]
-offset_left = -58.0
-offset_top = 34.0
-offset_right = 62.0
-offset_bottom = 61.0
-show_percentage = false
-script = SubResource("GDScript_tddeu")
+[node name="SFXDeath" type="AudioStreamPlayer2D" parent="." unique_id=1302007691]
+
+[node name="CustomSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1123064654]
+unique_name_in_owner = true

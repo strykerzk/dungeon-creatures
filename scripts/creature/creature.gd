@@ -42,9 +42,11 @@ signal died()
 
 # --- SFX REFS ---
 @export_group("Sound Effects")
-@export var sfx_hit: AudioStreamPlayer2D
+@export var sfx_hurt: AudioStreamPlayer2D
 @export var sfx_attack: AudioStreamPlayer2D
 @export var sfx_dodge: AudioStreamPlayer2D
+@export var sfx_death: AudioStreamPlayer2D
+@onready var custom_sound_player: AudioStreamPlayer2D = %CustomSoundPlayer
 
 # --- VFX REFS ---
 @export_group("Visual Effects")
@@ -373,9 +375,8 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	health_changed.emit(current_health, max_health)
 	
 	rpc("client_spawn_damage_number", amount)
-	
-	sfx_hit.pitch_scale = randf_range(0.9, 1.1)
-	sfx_hit.play()
+	rpc("rpc_play_creature_sound", "hurt")
+	rpc("client_trigger_hit_flash")
 	
 	var shake_intensity: float = clamp(amount * 0.8, 3.0, 25.0)
 	rpc("client_trigger_shake", shake_intensity)
@@ -403,8 +404,8 @@ func client_spawn_damage_number(amount: float) -> void:
 	var jitter = Vector2(randf_range(-15, 15), randf_range(-15, 15))
 	dmg_num.global_position = global_position + jitter - Vector2(0, 40)
 
-func _trigger_hit_iframe() -> void:
-	is_invulnerable = true
+@rpc("authority","call_local","reliable")
+func client_trigger_hit_flash() -> void:
 	if paper_doll and paper_doll.material:
 		paper_doll.material.set_shader_parameter("flash_modifier", 1.0)
 		var tween = create_tween()
@@ -412,12 +413,15 @@ func _trigger_hit_iframe() -> void:
 			func(val): paper_doll.material.set_shader_parameter("flash_modifier", val),
 			1.0, 0.0, 0.2
 		)
-	
+
+func _trigger_hit_iframe() -> void:
+	is_invulnerable = true
 	await get_tree().create_timer(0.2).timeout
 	is_invulnerable = false
 
 func die(attacker_ref: Creature = null) -> void:
 	died.emit()
+	rpc("rpc_play_creature_sound", "death")
 	set_physics_process(false)
 	
 	var yeet_dir = Vector2(randf_range(-1, 1), -1).normalized() # Fallback
@@ -478,7 +482,7 @@ func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> v
 func dodge(attacker_node: Creature) -> void:
 	is_dodging = true 
 	is_dashing = true
-	sfx_dodge.play()
+	rpc("rpc_play_creature_sound", "dodge")
 	var attack_dir = attacker_node.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
 	var dodge_distance = (250.0 + (speed * 0.2) + (40.0 * dexterity)) / max(0.5, size)
@@ -795,8 +799,7 @@ func rpc_play_weapon_effects(dmg: float, _dir: Vector2) -> void:
 	elif body_hitbox:
 		_manual_hitbox_activate(body_hitbox, dmg)
 	
-	sfx_attack.pitch_scale = randf_range(0.9, 1.1)
-	sfx_attack.play()
+	_play_creature_sound("attack")
 
 func _manual_hitbox_activate(hb: Area2D, dmg: float) -> void:
 	if hb is Hitbox:
@@ -855,3 +858,24 @@ func _on_attack_cooldown_finished() -> void:
 func _on_nav_timer_timeout() -> void:
 	#if target: nav_agent.target_position = target.global_position
 	pass
+
+@rpc("authority","call_local","reliable")
+func rpc_play_creature_sound(sound_name: String) -> void:
+	_play_creature_sound(sound_name)
+
+func _play_creature_sound(sound_name: String) -> void:
+	if not is_multiplayer_authority():
+		return  # Only the authority plays sounds (avoids double-play)
+	
+	var profile = CreatureManager.get_profile(id)
+	if profile and profile.has_custom_sound(sound_name):
+		custom_sound_player.stream = profile.custom_sounds[sound_name]
+		custom_sound_player.pitch_scale = profile.sound_pitches.get(sound_name, 1.0)
+		custom_sound_player.play()
+	else:
+		# Fallback to existing default AudioStreamPlayers
+		match sound_name:
+			"hurt":   sfx_hurt.play()
+			"attack": sfx_attack.play()
+			"dodge":  sfx_dodge.play()
+			"death":  sfx_death.play()

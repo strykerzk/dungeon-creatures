@@ -8,6 +8,23 @@ class CreatureProfile:
 	var equipped_items: Dictionary = {} 
 	var stash: Array[EquipmentData] = [] 
 	var wins: int = 0 
+	var custom_sounds: Dictionary = {} # String -> AudioStreamWAV
+	var sound_pitches: Dictionary = { # String -> float (pitch_scale)
+		"hurt": 1.0,
+		"attack": 1.0,
+		"dodge": 1.0,
+		"death": 1.0
+	}
+	func has_custom_sound(sound_name: String) -> bool:
+		return custom_sounds.has(sound_name) and custom_sounds[sound_name] != null
+	
+	func set_custom_sound(sound_name: String, stream: AudioStreamWAV, pitch: float = 1.0) -> void:
+		custom_sounds[sound_name] = stream
+		sound_pitches[sound_name] = clamp(pitch, 0.5, 2.0)
+	
+	func clear_custom_sounds() -> void:
+		custom_sounds.clear()
+		sound_pitches = {"hurt": 1.0, "attack": 1.0, "dodge": 1.0, "death": 1.0}
 
 var profiles: Dictionary = {}
 
@@ -141,7 +158,22 @@ func client_receive_profiles(sync_data: Dictionary) -> void:
 		profile.wins = sync_data[p_id]["wins"]
 		print("[CreatureManager] Synced Player ", p_id, " | Species: ", profile.species, " | Wins: ", profile.wins)
 
+@rpc("any_peer", "call_local", "reliable")
+func rpc_receive_peer_sound(player_id: int, slot: String, 
+							 raw: PackedByteArray, pitch: float) -> void:
+	var profile = get_profile(player_id)
+	if not profile:
+		push_warning("[CreatureManager] No profile for player ", player_id,
+					 " when receiving sound.")
+		return
+	var stream = AudioRecorder.bytes_to_wav(raw, AudioRecorder.sample_rate)
+	profile.set_custom_sound(slot, stream, pitch)
+	print("[Audio] Received '", slot, "' for player ", player_id,
+		  " (", raw.size() / 1024, " KB)")
+
 func reset_session() -> void:
 	profiles.clear()
+	for id in profiles:
+		profiles[id].clear_custom_sounds()
 	update_round_limits(1)
 	print("[CreatureManager] Session data completely cleared.")

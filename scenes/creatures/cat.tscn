@@ -220,7 +220,7 @@ properties/6/path = NodePath(".:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hit", "sfx_attack", "sfx_dodge") groups=["creature"]]
+[node name="Cat" type="CharacterBody2D" unique_id=2142137073 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_attack", "sfx_dodge") groups=["creature"]]
 y_sort_enabled = true
 collision_layer = 4
 motion_mode = 1
@@ -240,7 +240,6 @@ los_ray = NodePath("LOSRay")
 whisker_front = NodePath("Whiskers/Front")
 whisker_left = NodePath("Whiskers/Left")
 whisker_right = NodePath("Whiskers/Right")
-sfx_hit = NodePath("SFXHit")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
 dmg_number_scene = ExtResource("3_34ith")
@@ -336,3 +335,6 @@ stream = ExtResource("7_34ith")
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=2090440747]
 
 [node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=94136689]
+
+[node name="CustomSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=711062265]
+unique_name_in_owner = true

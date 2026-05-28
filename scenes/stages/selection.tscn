@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://dr8vjx0h4f672" path="res://scripts/core/selection.gd" id="1_ylfnv"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_ylfnv"]
+font_size = 20
+
 [node name="Selection" type="Control" unique_id=454822603]
 layout_mode = 3
 anchors_preset = 15
@@ -11,32 +14,85 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ylfnv")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=185542521]
+[node name="StatusLabel" type="Label" parent="." unique_id=574288711]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.171
+anchor_right = 0.5
+anchor_bottom = 0.171
+offset_left = -36.0
+offset_top = 1.3199921
+offset_right = 36.0
+offset_bottom = 24.319992
+grow_horizontal = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1265477551]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
+offset_left = -40.0
+offset_top = -27.5
+offset_right = 40.0
+offset_bottom = 27.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=574288711]
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer" unique_id=157332328]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SpeciesSelectPanel" type="VBoxContainer" parent="HBoxContainer/MarginContainer" unique_id=185542521]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpeciesDropdown" type="OptionButton" parent="HBoxContainer/MarginContainer/SpeciesSelectPanel" unique_id=116300212]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="SpeciesDropdown" type="OptionButton" parent="VBoxContainer" unique_id=116300212]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="LockInButton" type="Button" parent="VBoxContainer" unique_id=2043255851]
+[node name="LockInButton" type="Button" parent="HBoxContainer/MarginContainer/SpeciesSelectPanel" unique_id=2043255851]
 unique_name_in_owner = true
 layout_mode = 2
 text = "LOCK IN"
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer" unique_id=1385465085]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="SoundRecordingPanel" type="VBoxContainer" parent="HBoxContainer/MarginContainer2" unique_id=1555061066]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HBoxContainer/MarginContainer2/SoundRecordingPanel" unique_id=344237176]
+layout_mode = 2
+text = "Record your creature sounds!"
+label_settings = SubResource("LabelSettings_ylfnv")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DurationBar" type="ProgressBar" parent="HBoxContainer/MarginContainer2/SoundRecordingPanel" unique_id=2077129763]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+
+[node name="SoundLabel" type="Label" parent="HBoxContainer/MarginContainer2/SoundRecordingPanel" unique_id=1266870188]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1558652043]
 autoplay = true
