@@ -1,0 +1,32 @@
+[gd_resource type="Theme" format=3 uid="uid://bw0eedcvh5tys"]
+
+[ext_resource type="FontFile" uid="uid://d2w13oesgmuq5" path="res://fonts/Sequel_Demo.ttf" id="1_p8vfu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8vfu"]
+bg_color = Color(0.46666667, 0.4392157, 0.84705883, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x4bae"]
+bg_color = Color(0.4392157, 0.6784314, 0.84705883, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p36e6"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[resource]
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/font_sizes/font_size = 85
+Button/fonts/font = ExtResource("1_p8vfu")
+Button/styles/hover = SubResource("StyleBoxFlat_p8vfu")
+Button/styles/normal = SubResource("StyleBoxFlat_x4bae")
+Button/styles/pressed = SubResource("StyleBoxFlat_p36e6")

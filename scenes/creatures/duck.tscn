@@ -14,7 +14,7 @@ shader = ExtResource("4_tddeu")
 shader_parameter/flash_modifier = 0.0
 shader_parameter/flash_color = Color(1, 1, 1, 1)
 shader_parameter/is_outlined = true
-shader_parameter/outline_width = 4.000000142499999
+shader_parameter/outline_width = 4.0
 shader_parameter/outline_color = Color(1, 1, 1, 1)
 shader_parameter/outline_threshold = 0.2
 shader_parameter/camera_zoom = 1.0
@@ -238,7 +238,6 @@ y_sort_enabled = true
 collision_layer = 4
 script = ExtResource("1_p7nrc")
 stat_config = ExtResource("2_6a5ah")
-dmg_number_scene = ExtResource("3_tddeu")
 doll_back = NodePath("FlipContainer/PaperDoll/BackSprite")
 doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
 doll_boots = NodePath("FlipContainer/PaperDoll/BootsSprite")
@@ -256,6 +255,7 @@ sfx_hurt = NodePath("SFXHurt")
 sfx_attack = NodePath("SFXAttack")
 sfx_dodge = NodePath("SFXDodge")
 sfx_death = NodePath("SFXDeath")
+dmg_number_scene = ExtResource("3_tddeu")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
 
