@@ -8,14 +8,26 @@ extends Control
 @onready var status_label: Label = %StatusLabel
 @onready var player_list: RichTextLabel = %PlayerList
 @onready var start_game_button: Button = %StartGameButton
+@onready var lobby_back_button: Button = %LobbyBackButton
+@onready var main_menu: Control = %MainMenu
+@onready var lobby_menu: Control = %LobbyMenu
+@onready var play_button: Button = %PlayButt
+@onready var settings_button: Button = %SettButt
+@onready var quit_button: Button = %QuitButt
 
 @export_category("Other references")
 @onready var timeout_timer: Timer = %TimeoutTimer
 
 func _ready() -> void:
+	# Main Menu Signals
+	play_button.pressed.connect(_on_play_button_pressed)
+	quit_button.pressed.connect(_on_quit_button_pressed)
+	
+	# Lobby Signals
 	host_button.pressed.connect(_on_host_pressed)
 	join_button.pressed.connect(_on_join_pressed)
 	start_game_button.pressed.connect(_on_start_game_pressed)
+	lobby_back_button.pressed.connect(_on_lobby_back_button_pressed)
 	
 	NetworkManager.connection_successful.connect(_on_connection_success)
 	NetworkManager.connection_failed.connect(_on_connection_fail)
@@ -120,3 +132,24 @@ func _on_name_input_text_changed(new_text: String) -> void:
 	else:
 		host_button.disabled = true
 		join_button.disabled = true
+
+func _on_play_button_pressed() -> void:
+	main_menu.hide()
+	lobby_menu.show()
+
+func _on_quit_button_pressed() -> void:
+	get_tree().quit()
+
+func _on_lobby_back_button_pressed() -> void:
+	NetworkManager.leave_game()
+	_reset_lobby_ui()
+	lobby_menu.hide()
+	main_menu.show()
+
+func _reset_lobby_ui() -> void:
+	name_input.text = ""
+	name_input.editable = true
+	ip_input.text = "127.0.0.1"
+	ip_input.editable = true
+	start_game_button.hide()
+	player_list.clear()
