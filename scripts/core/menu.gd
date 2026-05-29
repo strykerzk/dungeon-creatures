@@ -6,7 +6,6 @@ extends Control
 @onready var ip_input: LineEdit = %IPInput
 @onready var join_button: Button = %JoinButton
 @onready var status_label: Label = %StatusLabel
-@onready var timeout_label: Label = %TimeoutLabel
 @onready var player_list: RichTextLabel = %PlayerList
 @onready var start_game_button: Button = %StartGameButton
 

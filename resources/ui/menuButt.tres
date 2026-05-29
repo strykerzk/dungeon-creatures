@@ -1,6 +1,6 @@
 [gd_resource type="Theme" format=3 uid="uid://bw0eedcvh5tys"]
 
-[ext_resource type="FontFile" uid="uid://d2w13oesgmuq5" path="res://fonts/Sequel_Demo.ttf" id="1_p8vfu"]
+[ext_resource type="FontFile" uid="uid://5lar8fx5whv0" path="res://fonts/ADLaMDisplay-Regular.ttf" id="2_x4bae"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ck1k"]
 bg_color = Color(0.32544088, 0.3254409, 0.32544076, 1)
@@ -45,6 +45,7 @@ corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tmxyk"]
+bg_color = Color(0.3254902, 0.3254902, 0.3254902, 1)
 corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
@@ -52,16 +53,21 @@ corner_radius_bottom_left = 20
 
 [resource]
 Button/colors/font_color = Color(1, 1, 1, 1)
-Button/font_sizes/font_size = 85
-Button/fonts/font = ExtResource("1_p8vfu")
+Button/font_sizes/font_size = 78
+Button/fonts/font = ExtResource("2_x4bae")
 Button/styles/disabled = SubResource("StyleBoxFlat_7ck1k")
 Button/styles/hover = SubResource("StyleBoxFlat_p8vfu")
 Button/styles/normal = SubResource("StyleBoxFlat_x4bae")
 Button/styles/pressed = SubResource("StyleBoxFlat_p36e6")
+Label/colors/font_color = Color(0, 0, 0, 1)
+Label/font_sizes/font_size = 24
+Label/fonts/font = ExtResource("2_x4bae")
 LineEdit/colors/font_color = Color(1, 1, 1, 1)
 LineEdit/colors/font_placeholder_color = Color(0.8732979, 0.8732986, 0.87329817, 0.6)
 LineEdit/font_sizes/font_size = 50
-LineEdit/fonts/font = ExtResource("1_p8vfu")
+LineEdit/fonts/font = ExtResource("2_x4bae")
 LineEdit/styles/focus = SubResource("StyleBoxFlat_wwoy6")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_mkkej")
 LineEdit/styles/read_only = SubResource("StyleBoxFlat_tmxyk")
+RichTextLabel/font_sizes/normal_font_size = 20
+RichTextLabel/fonts/normal_font = ExtResource("2_x4bae")
