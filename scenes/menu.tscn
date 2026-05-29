@@ -40,19 +40,24 @@ grow_vertical = 2
 texture = ExtResource("2_mhnvy")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=908968190]
-visible = false
 custom_minimum_size = Vector2(250, 0)
-layout_mode = 0
-offset_left = 90.0
-offset_top = 388.0
-offset_right = 340.0
-offset_bottom = 555.0
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 62.0
+offset_top = -295.0
+offset_right = 827.0
+offset_bottom = 451.0
+grow_vertical = 2
 size_flags_horizontal = 0
-metadata/_edit_use_anchors_ = true
+theme_override_constants/separation = 16
 
 [node name="NameInput" type="LineEdit" parent="VBoxContainer" unique_id=1388523904]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
+theme = ExtResource("4_g3eks")
 placeholder_text = "Enter Your Name"
 alignment = 1
 expand_to_text_length = true
@@ -60,7 +65,8 @@ expand_to_text_length = true
 [node name="HostButton" type="Button" parent="VBoxContainer" unique_id=1296184235]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Host Game"
+theme = ExtResource("4_g3eks")
+text = "Host"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1407567636]
 layout_mode = 2
@@ -69,6 +75,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme = ExtResource("4_g3eks")
 text = "127.0.0.1"
 alignment = 1
 expand_to_text_length = true
@@ -77,7 +84,8 @@ expand_to_text_length = true
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Join Game"
+theme = ExtResource("4_g3eks")
+text = "Join"
 
 [node name="StatusContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1346752251]
 layout_mode = 2
@@ -97,15 +105,18 @@ horizontal_alignment = 1
 [node name="PlayerList" type="RichTextLabel" parent="VBoxContainer" unique_id=643502536]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
 bbcode_enabled = true
 fit_content = true
 
 [node name="StartGameButton" type="Button" parent="VBoxContainer" unique_id=752052072]
 unique_name_in_owner = true
 layout_mode = 2
+theme = ExtResource("4_g3eks")
 text = "START GAME"
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1989079596]
+[node name="MainContainer" type="MarginContainer" parent="." unique_id=1989079596]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -117,12 +128,12 @@ theme_override_constants/margin_top = 60
 theme_override_constants/margin_right = 60
 theme_override_constants/margin_bottom = 60
 
-[node name="MasterBox" type="VBoxContainer" parent="MarginContainer" unique_id=1590082317]
+[node name="MasterBox" type="VBoxContainer" parent="MainContainer" unique_id=1590082317]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 60
 
-[node name="Title" type="Label" parent="MarginContainer/MasterBox" unique_id=1808614546]
+[node name="Title" type="Label" parent="MainContainer/MasterBox" unique_id=1808614546]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_vertical = 1
@@ -132,24 +143,27 @@ label_settings = SubResource("LabelSettings_yqeox")
 vertical_alignment = 1
 autowrap_mode = 1
 
-[node name="ButtBox" type="VBoxContainer" parent="MarginContainer/MasterBox" unique_id=651709673]
+[node name="ButtBox" type="VBoxContainer" parent="MainContainer/MasterBox" unique_id=651709673]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 60
 
-[node name="PlayButt" type="Button" parent="MarginContainer/MasterBox/ButtBox" unique_id=1015620213]
+[node name="PlayButt" type="Button" parent="MainContainer/MasterBox/ButtBox" unique_id=1015620213]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(521, 141)
 layout_mode = 2
 theme = ExtResource("4_g3eks")
 text = "Play"
 
-[node name="SettButt" type="Button" parent="MarginContainer/MasterBox/ButtBox" unique_id=528567205]
+[node name="SettButt" type="Button" parent="MainContainer/MasterBox/ButtBox" unique_id=528567205]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(521, 141)
 layout_mode = 2
 theme = ExtResource("4_g3eks")
 text = "Settings"
 
-[node name="QuitButt" type="Button" parent="MarginContainer/MasterBox/ButtBox" unique_id=1565946540]
+[node name="QuitButt" type="Button" parent="MainContainer/MasterBox/ButtBox" unique_id=1565946540]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(521, 141)
 layout_mode = 2
 theme = ExtResource("4_g3eks")
