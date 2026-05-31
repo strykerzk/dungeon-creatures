@@ -8,32 +8,32 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 
 # --- PAPER DOLL ---
 @export_group("Paper Doll Sprites")
-@onready var paper_doll: CanvasGroup = %PaperDoll
+@onready var paper_doll: CanvasGroup = $FlipContainer/PaperDoll
 @onready var flip_container: Node2D = $FlipContainer
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var doll_back: Sprite2D = %BackSprite
-@onready var doll_base: Sprite2D = %BaseSprite
-@onready var doll_boots: Sprite2D = %BootsSprite
-@onready var doll_armor: Sprite2D = %ArmorSprite
-@onready var doll_head: Sprite2D = %HeadSprite
-@onready var weapon_marker: Marker2D = %WeaponMarker
+@onready var doll_back: Sprite2D = $FlipContainer/PaperDoll/BackSprite
+@onready var doll_base: Sprite2D = $FlipContainer/PaperDoll/BaseSprite
+@onready var doll_boots: Sprite2D = $FlipContainer/PaperDoll/BootsSprite
+@onready var doll_armor: Sprite2D = $FlipContainer/PaperDoll/ArmorSprite
+@onready var doll_head: Sprite2D = $FlipContainer/PaperDoll/HeadSprite
+@onready var weapon_marker: Marker2D = $WeaponMarker
 var player_color: Color = Color.WHITE
 
 # --- Equipment ---
 @export_group("Equipment Settings")
 @export var current_attack_style: AttackStyle = AttackStyle.TACKLE
-@onready var body_hitbox: Area2D = %BodyHitbox
+@onready var body_hitbox: Area2D = $BodyHitbox
 @export var projectile_scene: PackedScene 
 
 # --- AI & INTERNAL LOGIC ---
 @export_group("AI & Logic")
 @export var target: Creature 
-@onready var nav_agent: NavigationAgent2D = %NavAgent
-@onready var nav_timer: Timer = %NavTimer
-@onready var los_ray: RayCast2D = %LOSRay
-@onready var whisker_front: RayCast2D = %WhiskerFront
-@onready var whisker_left: RayCast2D = %WhiskerLeft
-@onready var whisker_right: RayCast2D = %WhiskerRight
+@onready var nav_agent: NavigationAgent2D = $NavAgent
+@onready var nav_timer: Timer = $NavTimer
+@onready var los_ray: RayCast2D = $LOSRay
+@onready var whisker_front: RayCast2D = $Whiskers/WhiskerFront
+@onready var whisker_left: RayCast2D = $Whiskers/WhiskerLeft
+@onready var whisker_right: RayCast2D = $Whiskers/WhiskerRight
 var is_combat_locked: bool = false
 var is_dead: bool = false
 
@@ -44,11 +44,11 @@ signal died()
 
 # --- SFX REFS ---
 @export_group("Sound Effects")
-@onready var sfx_hurt: AudioStreamPlayer2D = %SFXHurt
-@onready var sfx_attack: AudioStreamPlayer2D = %SFXAttack
-@onready var sfx_dodge: AudioStreamPlayer2D = %SFXDodge
-@onready var sfx_death: AudioStreamPlayer2D = %SFXDeath
-@onready var custom_sound_player: AudioStreamPlayer2D = %CustomSoundPlayer
+@onready var sfx_hurt: AudioStreamPlayer2D = $SFXHurt
+@onready var sfx_attack: AudioStreamPlayer2D = $SFXAttack
+@onready var sfx_dodge: AudioStreamPlayer2D = $SFXDodge
+@onready var sfx_death: AudioStreamPlayer2D = $SFXDeath
+@onready var custom_sound_player: AudioStreamPlayer2D = $CustomSoundPlayer
 
 # --- VFX REFS ---
 @export_group("Visual Effects")

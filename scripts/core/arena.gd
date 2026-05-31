@@ -3,10 +3,11 @@ extends Node2D
 @export_category("Creature Roster")
 @export var creature_roster: Dictionary
 
-@onready var spawn_points: Node2D = $SpawnPoints
-@onready var creatures_container: Node2D = $Creatures
+@onready var spawn_points: Node2D = %SpawnPoints
+@onready var creatures_container: Node2D = %Creatures
 @onready var countdown_label: Label = %CountdownLabel
-@onready var camera: Camera2D = $ArenaCamera
+@onready var camera: Camera2D = %ArenaCamera
+@onready var spawner: MultiplayerSpawner = %MultiplayerSpawner
 
 var alive_creatures_count: int = 0
 
@@ -15,6 +16,11 @@ func _ready() -> void:
 	if multiplayer.is_server():
 		call_deferred("_spawn_creatures")
 		call_deferred("_start_countdown_sequence")
+
+func set_up_multiplayer_spawner() -> void:
+	var path: String = "res://scenes/creatures/"
+	for file in DirAccess.get_files_at(path):
+		spawner.add_spawnable_scene(path + file)
 
 func _spawn_creatures() -> void:
 	var peer_ids = CreatureManager.profiles.keys()

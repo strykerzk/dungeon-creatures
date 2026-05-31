@@ -555,7 +555,7 @@ func client_remove_loot(loot_path: NodePath) -> void:
 		loot_node.queue_free()
 
 # Runs ONLY on the specific client who won the item
-@rpc("authority", "call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func client_grant_loot() -> void:
 	if multiplayer.get_remote_sender_id() != 1: return
 	

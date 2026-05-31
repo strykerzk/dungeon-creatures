@@ -19,7 +19,7 @@ shader_parameter/camera_zoom = 1.0
 radius = 6.0
 height = 12.0
 
-[sub_resource type="Animation" id="Animation_rhggd"]
+[sub_resource type="Animation" id="Animation_8p14s"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -58,7 +58,7 @@ tracks/2/keys = {
 "values": [Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_tg834"]
+[sub_resource type="Animation" id="Animation_vl1l6"]
 resource_name = "dodge_back"
 length = 0.35
 tracks/0/type = "value"
@@ -74,7 +74,7 @@ tracks/0/keys = {
 "values": [0.0, -6.2831855]
 }
 
-[sub_resource type="Animation" id="Animation_i1lxh"]
+[sub_resource type="Animation" id="Animation_sji8x"]
 resource_name = "dodge_forward"
 length = 0.35
 tracks/0/type = "value"
@@ -90,7 +90,7 @@ tracks/0/keys = {
 "values": [0.0, 6.2831855]
 }
 
-[sub_resource type="Animation" id="Animation_tddeu"]
+[sub_resource type="Animation" id="Animation_ufn3w"]
 resource_name = "idle"
 length = 2.0
 loop_mode = 1
@@ -119,7 +119,7 @@ tracks/1/keys = {
 "values": [0.0]
 }
 
-[sub_resource type="Animation" id="Animation_1bhmw"]
+[sub_resource type="Animation" id="Animation_rfrem"]
 resource_name = "run"
 length = 0.8
 loop_mode = 1
@@ -160,7 +160,7 @@ tracks/2/keys = {
 "values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_gpwts"]
+[sub_resource type="Animation" id="Animation_uiebq"]
 resource_name = "telegraph"
 length = 0.2
 tracks/0/type = "value"
@@ -190,12 +190,12 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vpxc5"]
 _data = {
-&"RESET": SubResource("Animation_rhggd"),
-&"dodge_back": SubResource("Animation_tg834"),
-&"dodge_forward": SubResource("Animation_i1lxh"),
-&"idle": SubResource("Animation_tddeu"),
-&"run": SubResource("Animation_1bhmw"),
-&"telegraph": SubResource("Animation_gpwts")
+&"RESET": SubResource("Animation_8p14s"),
+&"dodge_back": SubResource("Animation_vl1l6"),
+&"dodge_forward": SubResource("Animation_sji8x"),
+&"idle": SubResource("Animation_ufn3w"),
+&"run": SubResource("Animation_rfrem"),
+&"telegraph": SubResource("Animation_uiebq")
 }
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qn62h"]
@@ -221,7 +221,7 @@ properties/6/path = NodePath(".:scale")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[node name="Creature" type="CharacterBody2D" unique_id=1600477882]
+[node name="Creature" type="CharacterBody2D" unique_id=1600477882 groups=["creature"]]
 script = ExtResource("1_2j263")
 
 [node name="SkillContainer" type="Node2D" parent="." unique_id=599268116]
@@ -229,31 +229,25 @@ script = ExtResource("1_2j263")
 [node name="FlipContainer" type="Node2D" parent="." unique_id=496588251]
 
 [node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=183875622]
-unique_name_in_owner = true
 material = SubResource("ShaderMaterial_8yuf2")
 
 [node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1350006877]
-unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
 [node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1204713756]
-unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
 [node name="BootsSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=145549756]
-unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
 [node name="ArmorSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=107295815]
-unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
 [node name="HeadSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1310360724]
-unique_name_in_owner = true
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
@@ -270,58 +264,44 @@ collision_mask = 0
 debug_color = Color(0.9933968, 0, 0.24498847, 0.41960785)
 
 [node name="BodyHitbox" type="Area2D" parent="." unique_id=1323109998]
-unique_name_in_owner = true
 script = ExtResource("3_p4gj7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BodyHitbox" unique_id=1898607245]
 
 [node name="WeaponMarker" type="Marker2D" parent="." unique_id=1871964673]
-unique_name_in_owner = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1864105397]
-unique_name_in_owner = true
 libraries/ = SubResource("AnimationLibrary_vpxc5")
 
 [node name="NavAgent" type="NavigationAgent2D" parent="." unique_id=1008266258]
-unique_name_in_owner = true
 path_postprocessing = 1
 
 [node name="NavTimer" type="Timer" parent="." unique_id=1517926375]
-unique_name_in_owner = true
 wait_time = 0.1
 autostart = true
 
 [node name="Whiskers" type="Node2D" parent="." unique_id=2032473112]
 
 [node name="WhiskerFront" type="RayCast2D" parent="Whiskers" unique_id=1516630732]
-unique_name_in_owner = true
 target_position = Vector2(130, 0)
 
 [node name="WhiskerLeft" type="RayCast2D" parent="Whiskers" unique_id=301250208]
-unique_name_in_owner = true
 target_position = Vector2(130, 0)
 
 [node name="WhiskerRight" type="RayCast2D" parent="Whiskers" unique_id=1175555804]
-unique_name_in_owner = true
 target_position = Vector2(130, 0)
 
 [node name="LOSRay" type="RayCast2D" parent="." unique_id=2088124765]
-unique_name_in_owner = true
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1757125403]
 replication_config = SubResource("SceneReplicationConfig_qn62h")
 
 [node name="SFXHurt" type="AudioStreamPlayer2D" parent="." unique_id=484081222]
-unique_name_in_owner = true
 
 [node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=1494571275]
-unique_name_in_owner = true
 
 [node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1546435888]
-unique_name_in_owner = true
 
 [node name="SFXDeath" type="AudioStreamPlayer2D" parent="." unique_id=1386811742]
-unique_name_in_owner = true
 
 [node name="CustomSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=2121349424]
-unique_name_in_owner = true

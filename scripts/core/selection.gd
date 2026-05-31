@@ -8,7 +8,6 @@ extends Control
 @onready var sound_panel: VBoxContainer = %SoundRecordingPanel
 @onready var duration_bar: ProgressBar = %DurationBar
 @onready var record_status: Label = %SoundLabel
-@onready var ready_button: Button = %ReadyButton
 
 # Tracks which players have locked in (Host only)
 var ready_players: Array[int] = []
