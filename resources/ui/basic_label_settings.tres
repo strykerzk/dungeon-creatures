@@ -1,6 +1,9 @@
 [gd_resource type="LabelSettings" format=3 uid="uid://ciys2ubebfy1j"]
 
+[ext_resource type="FontFile" uid="uid://b05wajsooj5ko" path="res://fonts/HirukoBlackAlternate.ttf" id="1_nbtik"]
+
 [resource]
+font = ExtResource("1_nbtik")
 font_size = 24
-outline_size = 4
-outline_color = Color(0, 0, 0, 1)
+outline_size = 8
+outline_color = Color(1, 0, 0, 1)

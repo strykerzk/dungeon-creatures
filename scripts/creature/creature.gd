@@ -399,7 +399,7 @@ func take_damage(amount: float, attacker_id: int = -1) -> void:
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
 	
-	rpc("client_spawn_damage_number", amount)
+	rpc("client_spawn_damage_number", amount, attacker_id)
 	rpc("rpc_play_creature_sound", "hurt")
 	rpc("client_trigger_hit_flash")
 	
@@ -414,20 +414,23 @@ func take_damage(amount: float, attacker_id: int = -1) -> void:
 		search_for_target(CreatureManager.get_node_path(attacker_id))
 
 @rpc("authority", "call_local", "unreliable")
-func client_spawn_damage_number(amount: float) -> void:
+func client_spawn_damage_number(amount: float, attacker_id: int) -> void:
 	if not dmg_number_scene: return
 	
 	var dmg_num = dmg_number_scene.instantiate()
 	dmg_num.amount = amount
-	
-	# Add it to the Arena/Dungeon, NOT the Creature. 
-	# If we add it to the creature, it will move with them while they run!
-	get_tree().current_scene.add_child(dmg_num)
+	if attacker_id != -1:
+		dmg_num.player_color = CreatureManager.get_color(attacker_id)
 	
 	# Spawn it slightly above their head, with a tiny bit of random jitter 
 	# so multiple hits don't stack perfectly on top of each other
 	var jitter = Vector2(randf_range(-15, 15), randf_range(-15, 15))
 	dmg_num.global_position = global_position + jitter - Vector2(0, 40)
+	
+	# Add it to the Arena/Dungeon, NOT the Creature. 
+	# If we add it to the creature, it will move with them while they run!
+	get_tree().current_scene.add_child(dmg_num)
+	
 
 @rpc("authority","call_local","reliable")
 func client_trigger_hit_flash() -> void:

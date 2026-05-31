@@ -191,6 +191,12 @@ func claim_color(player_id: int, color_index: int, color: Color) -> void:
 	if profile:
 		profile.player_color = color
 
+func get_color(player_id: int) -> Color:
+	var profile = get_profile(player_id)
+	if profile:
+		return profile.player_color
+	return Color.WHITE
+
 func release_color(player_id: int) -> void:
 	claimed_colors.erase(player_id)
 
