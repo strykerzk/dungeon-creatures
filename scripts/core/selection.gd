@@ -37,8 +37,10 @@ var local_color_index: int = -1  # -1 = no selection yet
 var _color_buttons: Array[Button] = []
 
 func _ready() -> void:
-	species_dropdown.add_item("Duck")
-	species_dropdown.add_item("Cat")
+	for file_name in DirAccess.get_files_at("res://scenes/creatures/"):
+		if file_name == "creature.tscn": continue
+		var species_name = file_name.get_basename().split("_")[0].capitalize()
+		species_dropdown.add_item(species_name)
 	
 	lock_in_button.pressed.connect(_on_lock_in_pressed)
 	

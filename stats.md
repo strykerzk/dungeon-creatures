@@ -7,9 +7,9 @@ These are the foundational values defined in CreatureData and modified by creatu
 A. Vitality and Mobility
 
 Stat			Baseline	Range		Description
-Max Health		100.0		1 - 500+	Total hit points. Recalculated on equip.
-Speed			200.0		50 - 600	Base movement speed (pixels/sec). Influences dash distances.
-Base Damage		10.0		1 - 100		Raw power before weapon multipliers are applied.
+Max Health		100.0		50 - 300	Total hit points. Recalculated on equip.
+Speed			200.0		80 - 400	Base movement speed (pixels/sec). Influences dash distances.
+Base Damage		10.0		1 - 40		Raw power before weapon multipliers are applied.
 
 B. AI & Behavioral Stats
 
@@ -18,9 +18,9 @@ IQ				5			1 - 10		Dodge Chance: 0.15 + (IQ * 0.07).
 										Persistence: High IQ makes behaviors change slower
 Aggression		0.5			0.0 - 1.0	Low (0.0): Cowardly. Stays far away, retreats often.
 										High (1.0): Relentless. Stays close, never retreats.
-Dexterity		1.0			0.1 - 3.0	Wind-up: 0.3 / dexterity
+Dexterity		1.0			0.5 - 2.5	Wind-up: 0.3 / dexterity
 										Cooldown: Divides the base attack cooldown by max(0.1, (1.0 + (dexterity * 0.5)))
-Precision		0.3			0.0 - 1.0	Accuracy: 1.0 is perfect aim. 0.0 has ±30° jitter.
+Precision		0.3			0.1 - 1.0	Accuracy: 1.0 is perfect aim. 0.0 has ±30° jitter.
 Size			1.0			0.5 - 5.0	Physics: Scale and Acceleration (10.0 / size).
 
 ## 2. Equipment Resource Stats
@@ -71,3 +71,26 @@ Timings
 
 Damage Handshake
 - Final Hit Value: (Creature.damage + Equipment.flat_damage_bonus) * Weapon.damage_mult
+
+## 5. Stat Balancing
+
+Points should add up to roughly 100 to 110 Points.
+
+Formula:
+	Health: Value / 10
+	Speed: Value / 10
+	Base Damage: Value * 2
+	IQ: Value * 5
+	Aggression: Value * 10
+	Dexterity: Value * 20
+	Precision: Value * 20
+
+E.G. Baseline:
+	Health: 100 -> 10 points
+	Speed: 150 -> 15 points
+	Damage: 10 -> 20 points
+	IQ: 5 -> 25 points
+	Aggro: 0.5 -> 5 points
+	Dex: 1.0 -> 20 points
+	Precision: 0.5 -> 10 points
+	[TOTAL] -> 105 points

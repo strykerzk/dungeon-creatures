@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CreatureData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/creature_data.gd" id="1_l3hav"]
+
+[resource]
+script = ExtResource("1_l3hav")
+name = "dog"
+base_health = 110.0
+damage = 11.0
+speed = 270.0
+IQ = 6
+aggression = 0.4
+dexterity = 0.9
+precision = 0.2

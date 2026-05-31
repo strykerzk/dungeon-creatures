@@ -13,18 +13,18 @@ class_name CreatureData extends Resource
 
 # Min and Max used for clamping
 @export_group("Stat Mininum and Maximums")
-@export var min_health: float = 1.0
-@export var min_speed: float = 50.0
-@export var max_speed: float = 800.0
+@export var min_health: float = 50.0
+@export var min_speed: float = 80.0
+@export var max_speed: float = 400.0
 @export var min_damage: float = 1.0
-@export var max_damage: float = 100.0
+@export var max_damage: float = 40.0
 @export var min_IQ: int = 1
 @export var max_IQ: int = 10
-@export var min_aggression: float = 0.0
+@export var min_aggression: float = 0.1
 @export var max_aggression: float = 1.0
-@export var min_dexterity: float = 0.1
-@export var max_dexterity: float = 3.0
-@export var min_precision: float = 0.0
+@export var min_dexterity: float = 0.5
+@export var max_dexterity: float = 2.5
+@export var min_precision: float = 0.1
 @export var max_precision: float = 1.0
 @export var min_size: float = 0.5
 @export var max_size: float = 5.0

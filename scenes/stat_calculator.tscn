@@ -1,0 +1,345 @@
+[gd_scene format=3 uid="uid://b0dndo0w5lt1e"]
+
+[ext_resource type="Script" uid="uid://cgo8b02ussip1" path="res://scripts/ui/stat_calculator.gd" id="1_rnln8"]
+[ext_resource type="FontFile" uid="uid://d2xmcph5s0hn3" path="res://fonts/POSTERABLE.ttf" id="1_uhyav"]
+[ext_resource type="LabelSettings" uid="uid://dcneg7xttfwyf" path="res://resources/ui/calculator_label.tres" id="2_2srvu"]
+[ext_resource type="FontFile" uid="uid://5lar8fx5whv0" path="res://fonts/ADLaMDisplay-Regular.ttf" id="3_2srvu"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_rnln8"]
+font = ExtResource("1_uhyav")
+font_size = 64
+outline_size = 16
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_06ftt"]
+font = ExtResource("1_uhyav")
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[node name="StatCalculator" type="Control" unique_id=925637276]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rnln8")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1305822480]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 500
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 500
+theme_override_constants/margin_bottom = 100
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=177966341]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1574457094]
+layout_mode = 2
+text = "Creature Stat Calculator"
+label_settings = SubResource("LabelSettings_rnln8")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=382785585]
+unique_name_in_owner = true
+layout_mode = 2
+label_settings = SubResource("LabelSettings_06ftt")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MainContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=2107217575]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Heading" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=2127857887]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Heading" unique_id=1559284865]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Stat"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Input" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Heading" unique_id=1846402103]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Input Number"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Heading" unique_id=647303726]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Health" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=2135124012]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Health" unique_id=1934072200]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Health"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Health" unique_id=188243114]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "100"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Health" unique_id=406238213]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Speed" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=1428003418]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Speed" unique_id=1206840154]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Speed"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Speed" unique_id=969209134]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "150"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Speed" unique_id=1293764729]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Damage" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=1100514468]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Damage" unique_id=355090693]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Damage"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Damage" unique_id=1720593758]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "10"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Damage" unique_id=1136459952]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="IQ" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=556971218]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/IQ" unique_id=99270991]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "IQ"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/IQ" unique_id=440686721]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "5"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/IQ" unique_id=1751193837]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Aggression" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=1085653289]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Aggression" unique_id=300778885]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Aggression"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Aggression" unique_id=294251883]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "0.5"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Aggression" unique_id=1214593864]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Dexterity" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=1293932203]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Dexterity" unique_id=1894374963]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Dexterity"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Dexterity" unique_id=1149228217]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "1.0"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Dexterity" unique_id=1487662808]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Precision" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=520234373]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Precision" unique_id=1773430861]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Precision"
+label_settings = ExtResource("2_2srvu")
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/MainContainer/Precision" unique_id=1600973833]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 24
+placeholder_text = "0.5"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Precision" unique_id=520658259]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Total" type="HBoxContainer" parent="MarginContainer/VBoxContainer/MainContainer" unique_id=2009313067]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 40
+
+[node name="Name" type="Control" parent="MarginContainer/VBoxContainer/MainContainer/Total" unique_id=176691271]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Total" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Total" unique_id=1461577995]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Total:"
+label_settings = ExtResource("2_2srvu")
+
+[node name="Points" type="Label" parent="MarginContainer/VBoxContainer/MainContainer/Total" unique_id=287746324]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Points"
+label_settings = ExtResource("2_2srvu")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1789133170]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 40
+
+[node name="CreatureName" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=272954055]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 32
+placeholder_text = "Creature name"
+alignment = 1
+expand_to_text_length = true
+
+[node name="Calculate" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=523853217]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 32
+text = "Calculate"
+
+[node name="Create" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1964190912]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_fonts/font = ExtResource("3_2srvu")
+theme_override_font_sizes/font_size = 32
+text = "Create .tres File"
+
+[node name="MessageTimer" type="Timer" parent="." unique_id=134278391]
+unique_name_in_owner = true
+one_shot = true
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/Calculate" to="." method="_on_calculate_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/Create" to="." method="_on_create_pressed"]
+[connection signal="timeout" from="MessageTimer" to="." method="_on_message_timer_timeout"]

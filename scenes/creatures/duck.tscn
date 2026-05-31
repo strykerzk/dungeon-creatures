@@ -1,14 +1,12 @@
 [gd_scene format=3 uid="uid://b0j644l7vr1qc"]
 
-[ext_resource type="Script" uid="uid://5v58krf65cy2" path="res://scripts/creature/duck.gd" id="1_p7nrc"]
+[ext_resource type="PackedScene" uid="uid://ds34fj5wpxbls" path="res://scenes/creatures/creature.tscn" id="1_601gp"]
 [ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
 [ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
-[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_601gp"]
 [ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="3_tddeu"]
 [ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="4_tddeu"]
-[ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="6_rhggd"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_tddeu"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ygove"]
 resource_local_to_scene = true
 shader = ExtResource("4_tddeu")
 shader_parameter/flash_modifier = 0.0
@@ -19,336 +17,45 @@ shader_parameter/outline_color = Color(1, 1, 1, 1)
 shader_parameter/outline_threshold = 0.2
 shader_parameter/camera_zoom = 1.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
-radius = 6.0
-height = 12.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_601gp"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ygove"]
 radius = 57.0
 height = 114.0
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6a5ah"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rhggd"]
 radius = 57.0
 height = 114.0
 
-[sub_resource type="Animation" id="Animation_rhggd"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.0]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_tg834"]
-resource_name = "dodge_back"
-length = 0.35
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.35),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [0.0, -6.2831855]
-}
-
-[sub_resource type="Animation" id="Animation_i1lxh"]
-resource_name = "dodge_forward"
-length = 0.35
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.35),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [0.0, 6.2831855]
-}
-
-[sub_resource type="Animation" id="Animation_tddeu"]
-resource_name = "idle"
-length = 2.0
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1, 2),
-"transitions": PackedFloat32Array(-2, -2, -2),
-"update": 0,
-"values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.0]
-}
-
-[sub_resource type="Animation" id="Animation_1bhmw"]
-resource_name = "run"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FlipContainer/PaperDoll:scale")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1, 1)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_gpwts"]
-resource_name = "telegraph"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.10000001),
-"transitions": PackedFloat32Array(0.5, 2),
-"update": 0,
-"values": [Vector2(1, 1), Vector2(1.15, 0.8)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.10000001),
-"transitions": PackedFloat32Array(0.5, 2),
-"update": 0,
-"values": [0.0, -0.08726646]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_i1lxh"]
-_data = {
-&"RESET": SubResource("Animation_rhggd"),
-&"dodge_back": SubResource("Animation_tg834"),
-&"dodge_forward": SubResource("Animation_i1lxh"),
-&"idle": SubResource("Animation_tddeu"),
-&"run": SubResource("Animation_1bhmw"),
-&"telegraph": SubResource("Animation_gpwts")
-}
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6a5ah"]
-properties/0/path = NodePath(".:global_position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:look_direction")
-properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:current_health")
-properties/2/spawn = true
-properties/2/replication_mode = 1
-properties/3/path = NodePath(".:velocity")
-properties/3/spawn = true
-properties/3/replication_mode = 1
-properties/4/path = NodePath(".:is_dodging")
-properties/4/spawn = true
-properties/4/replication_mode = 1
-properties/5/path = NodePath(".:is_telegraphing")
-properties/5/spawn = true
-properties/5/replication_mode = 1
-properties/6/path = NodePath(".:scale")
-properties/6/spawn = true
-properties/6/replication_mode = 1
-
-[node name="Duck" type="CharacterBody2D" unique_id=1414514615 node_paths=PackedStringArray("doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hurt", "sfx_attack", "sfx_dodge", "sfx_death") groups=["creature"]]
-y_sort_enabled = true
-collision_layer = 4
-script = ExtResource("1_p7nrc")
+[node name="Duck" unique_id=1600477882 instance=ExtResource("1_601gp")]
 stat_config = ExtResource("2_6a5ah")
-doll_back = NodePath("FlipContainer/PaperDoll/BackSprite")
-doll_base = NodePath("FlipContainer/PaperDoll/BaseSprite")
-doll_boots = NodePath("FlipContainer/PaperDoll/BootsSprite")
-doll_armor = NodePath("FlipContainer/PaperDoll/ArmorSprite")
-doll_head = NodePath("FlipContainer/PaperDoll/HeadSprite")
-weapon_marker = NodePath("WeaponMarker")
-body_hitbox = NodePath("Hitbox")
-nav_agent = NodePath("NavigationAgent2D")
-nav_timer = NodePath("NavTimer")
-los_ray = NodePath("LOSRay")
-whisker_front = NodePath("Whiskers/Front")
-whisker_left = NodePath("Whiskers/Left")
-whisker_right = NodePath("Whiskers/Right")
-sfx_hurt = NodePath("SFXHurt")
-sfx_attack = NodePath("SFXAttack")
-sfx_dodge = NodePath("SFXDodge")
-sfx_death = NodePath("SFXDeath")
 dmg_number_scene = ExtResource("3_tddeu")
 
-[node name="SkillContainer" type="Node2D" parent="." unique_id=1090873578]
+[node name="PaperDoll" parent="FlipContainer" parent_id_path=PackedInt32Array(496588251) index="0" unique_id=183875622]
+material = SubResource("ShaderMaterial_ygove")
 
-[node name="FlipContainer" type="Node2D" parent="." unique_id=520853665]
-
-[node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=200071240]
-unique_name_in_owner = true
-material = SubResource("ShaderMaterial_tddeu")
-
-[node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1436436277]
+[node name="BackSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1350006877]
 position = Vector2(0, -41.25)
-offset = Vector2(0, -43)
 
-[node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1402462917]
+[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1204713756]
 position = Vector2(0, -41.25)
-scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_sqg2a")
-offset = Vector2(0, -43)
 
-[node name="BootsSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=658788089]
+[node name="BootsSprite" parent="FlipContainer/PaperDoll" index="2" unique_id=145549756]
 position = Vector2(0, -41.25)
-offset = Vector2(0, -43)
 
-[node name="ArmorSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=741559932]
+[node name="ArmorSprite" parent="FlipContainer/PaperDoll" index="3" unique_id=107295815]
 position = Vector2(0, -41.25)
-offset = Vector2(0, -43)
 
-[node name="HeadSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=623093540]
+[node name="HeadSprite" parent="FlipContainer/PaperDoll" index="4" unique_id=1310360724]
 position = Vector2(0, -41.25)
-offset = Vector2(0, -43)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1247753892]
-rotation = 1.5707964
-shape = SubResource("CapsuleShape2D_p7nrc")
-debug_color = Color(0.24286017, 0.09666201, 0, 0.41960785)
+[node name="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(23655753) index="0" unique_id=270596967]
+position = Vector2(3, -54)
+shape = SubResource("CapsuleShape2D_ygove")
 
-[node name="Hurtbox" type="Area2D" parent="." unique_id=78693573]
-position = Vector2(3, -48)
-collision_layer = 8
-collision_mask = 0
+[node name="CollisionShape2D" parent="BodyHitbox" parent_id_path=PackedInt32Array(1323109998) index="0" unique_id=1898607245]
+position = Vector2(3, -54)
+shape = SubResource("CapsuleShape2D_rhggd")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1339448640]
-shape = SubResource("CapsuleShape2D_601gp")
-
-[node name="Hitbox" type="Area2D" parent="." unique_id=2074689619]
-position = Vector2(3, -48)
-script = ExtResource("3_601gp")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1655568817]
-shape = SubResource("CapsuleShape2D_6a5ah")
-debug_color = Color(1, 0.003921569, 0, 0.41960785)
-
-[node name="WeaponMarker" type="Marker2D" parent="." unique_id=321023839]
+[node name="WeaponMarker" parent="." index="5" unique_id=1871964673]
 position = Vector2(-3, -35)
 rotation = 0.4223697
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=688169428]
-libraries/ = SubResource("AnimationLibrary_i1lxh")
-
-[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=77776087]
-path_postprocessing = 1
-debug_path_custom_color = Color(4.5724214e-06, 0.63863575, 0.23768821, 1)
-
-[node name="NavTimer" type="Timer" parent="." unique_id=421130563]
-wait_time = 0.1
-autostart = true
-
-[node name="Whiskers" type="Node2D" parent="." unique_id=1123665604]
-
-[node name="Front" type="RayCast2D" parent="Whiskers" unique_id=1102665283]
-target_position = Vector2(130, 0)
-
-[node name="Left" type="RayCast2D" parent="Whiskers" unique_id=1588111548]
-target_position = Vector2(130, 0)
-
-[node name="Right" type="RayCast2D" parent="Whiskers" unique_id=500808500]
-target_position = Vector2(130, 0)
-
-[node name="LOSRay" type="RayCast2D" parent="." unique_id=28601178]
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1315334455]
-replication_config = SubResource("SceneReplicationConfig_6a5ah")
-
-[node name="SFXHurt" type="AudioStreamPlayer2D" parent="." unique_id=12979756]
-stream = ExtResource("6_rhggd")
-volume_db = -8.0
-
-[node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=269836624]
-volume_db = -10.0
-
-[node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1328682961]
-
-[node name="SFXDeath" type="AudioStreamPlayer2D" parent="." unique_id=1302007691]
-
-[node name="CustomSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1123064654]
-unique_name_in_owner = true

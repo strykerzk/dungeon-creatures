@@ -11,29 +11,29 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @onready var paper_doll: CanvasGroup = %PaperDoll
 @onready var flip_container: Node2D = $FlipContainer
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@export var doll_back: Sprite2D
-@export var doll_base: Sprite2D
-@export var doll_boots: Sprite2D
-@export var doll_armor: Sprite2D
-@export var doll_head: Sprite2D
-@export var weapon_marker: Marker2D
+@onready var doll_back: Sprite2D = %BackSprite
+@onready var doll_base: Sprite2D = %BaseSprite
+@onready var doll_boots: Sprite2D = %BootsSprite
+@onready var doll_armor: Sprite2D = %ArmorSprite
+@onready var doll_head: Sprite2D = %HeadSprite
+@onready var weapon_marker: Marker2D = %WeaponMarker
 var player_color: Color = Color.WHITE
 
 # --- Equipment ---
 @export_group("Equipment Settings")
 @export var current_attack_style: AttackStyle = AttackStyle.TACKLE
-@export var body_hitbox: Area2D 
+@onready var body_hitbox: Area2D = %BodyHitbox
 @export var projectile_scene: PackedScene 
 
 # --- AI & INTERNAL LOGIC ---
 @export_group("AI & Logic")
 @export var target: Creature 
-@export var nav_agent: NavigationAgent2D
-@export var nav_timer: Timer
-@export var los_ray: RayCast2D
-@export var whisker_front: RayCast2D
-@export var whisker_left: RayCast2D
-@export var whisker_right: RayCast2D
+@onready var nav_agent: NavigationAgent2D = %NavAgent
+@onready var nav_timer: Timer = %NavTimer
+@onready var los_ray: RayCast2D = %LOSRay
+@onready var whisker_front: RayCast2D = %WhiskerFront
+@onready var whisker_left: RayCast2D = %WhiskerLeft
+@onready var whisker_right: RayCast2D = %WhiskerRight
 var is_combat_locked: bool = false
 var is_dead: bool = false
 
@@ -44,10 +44,10 @@ signal died()
 
 # --- SFX REFS ---
 @export_group("Sound Effects")
-@export var sfx_hurt: AudioStreamPlayer2D
-@export var sfx_attack: AudioStreamPlayer2D
-@export var sfx_dodge: AudioStreamPlayer2D
-@export var sfx_death: AudioStreamPlayer2D
+@onready var sfx_hurt: AudioStreamPlayer2D = %SFXHurt
+@onready var sfx_attack: AudioStreamPlayer2D = %SFXAttack
+@onready var sfx_dodge: AudioStreamPlayer2D = %SFXDodge
+@onready var sfx_death: AudioStreamPlayer2D = %SFXDeath
 @onready var custom_sound_player: AudioStreamPlayer2D = %CustomSoundPlayer
 
 # --- VFX REFS ---

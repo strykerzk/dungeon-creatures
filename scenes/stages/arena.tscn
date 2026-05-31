@@ -1,11 +1,498 @@
 [gd_scene format=4 uid="uid://b0jpdhkkh8n0y"]
 
 [ext_resource type="Script" uid="uid://b2ju2wca6x7e5" path="res://scripts/core/arena.gd" id="1_68i0p"]
-[ext_resource type="PackedScene" uid="uid://b0j644l7vr1qc" path="res://scenes/creatures/duck.tscn" id="2_bgr3s"]
-[ext_resource type="PackedScene" uid="uid://b7h2lf0hml4cd" path="res://scenes/creatures/cat.tscn" id="3_yh1cl"]
+[ext_resource type="Script" uid="uid://cjb30sdx53qjh" path="res://scripts/creature/cat.gd" id="2_xo260"]
+[ext_resource type="Resource" uid="uid://cc6ecguht7jk2" path="res://resources/creature_data/cat_data.tres" id="3_wcg4t"]
 [ext_resource type="Script" uid="uid://bs50iyoqb0nm0" path="res://scripts/misc/arena_camera.gd" id="4_cio23"]
+[ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="4_lf7dq"]
 [ext_resource type="TileSet" uid="uid://ccay3ghkw52da" path="res://resources/tilesets/kenney_tiny_dungeon_64x64.tres" id="4_yh1cl"]
+[ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="5_7wg5b"]
+[ext_resource type="Texture2D" uid="uid://di74o1n4sstgs" path="res://art/creature_sprites/cat/cat_base.png" id="6_0rye4"]
 [ext_resource type="AudioStream" uid="uid://b4ehwilrcs44j" path="res://sounds/music/pkm_bnw_battle_wild.wav" id="6_pf2by"]
+[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="7_00p2w"]
+[ext_resource type="AudioStream" uid="uid://cjp1c7yly2j3o" path="res://sounds/sfx/cat_meow.wav" id="8_5vrym"]
+[ext_resource type="Script" uid="uid://5v58krf65cy2" path="res://scripts/creature/duck.gd" id="9_gtfyv"]
+[ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="10_u7aob"]
+[ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="11_64c31"]
+[ext_resource type="AudioStream" uid="uid://sgvtpo14afp1" path="res://sounds/sfx/duck_quack.wav" id="12_5mvl4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_yb44o"]
+resource_local_to_scene = true
+shader = ExtResource("5_7wg5b")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/is_outlined = true
+shader_parameter/outline_width = 4.0
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_threshold = 0.2
+shader_parameter/camera_zoom = 1.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_52fj1"]
+radius = 6.0
+height = 12.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rt1jr"]
+size = Vector2(101, 103)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3j7ha"]
+size = Vector2(101, 103)
+
+[sub_resource type="Animation" id="Animation_rhggd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_tg834"]
+resource_name = "dodge_back"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_i1lxh"]
+resource_name = "dodge_forward"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_tddeu"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_1bhmw"]
+resource_name = "run"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_gpwts"]
+resource_name = "telegraph"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 0.8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [0.0, -0.08726646]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_34ith"]
+_data = {
+&"RESET": SubResource("Animation_rhggd"),
+&"dodge_back": SubResource("Animation_tg834"),
+&"dodge_forward": SubResource("Animation_i1lxh"),
+&"idle": SubResource("Animation_tddeu"),
+&"run": SubResource("Animation_1bhmw"),
+&"telegraph": SubResource("Animation_gpwts")
+}
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fkb2k"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:current_health")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:is_telegraphing")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:is_dodging")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:velocity")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:look_direction")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:scale")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+
+[sub_resource type="PackedScene" id="PackedScene_vv60f"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"id_paths": [PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array(), PackedInt32Array()],
+"names": PackedStringArray("Cat", "CharacterBody2D", "creature", "y_sort_enabled", "collision_layer", "motion_mode", "wall_min_slide_angle", "script", "stat_config", "doll_back", "doll_base", "doll_boots", "doll_armor", "doll_head", "weapon_marker", "body_hitbox", "nav_agent", "nav_timer", "los_ray", "whisker_front", "whisker_left", "whisker_right", "sfx_hurt", "sfx_attack", "sfx_dodge", "sfx_death", "dmg_number_scene", "SkillContainer", "Node2D", "FlipContainer", "Node2D", "y_sort_enabled", "PaperDoll", "CanvasGroup", "unique_name_in_owner", "material", "BackSprite", "Sprite2D", "position", "BaseSprite", "Sprite2D", "position", "scale", "texture", "BootsSprite", "Sprite2D", "position", "ArmorSprite", "Sprite2D", "position", "HeadSprite", "Sprite2D", "position", "CollisionShape2D", "CollisionShape2D", "rotation", "shape", "Hurtbox", "Area2D", "position", "collision_layer", "collision_mask", "CollisionShape2D", "CollisionShape2D", "position", "rotation", "shape", "debug_color", "Hitbox", "Area2D", "position", "collision_layer", "collision_mask", "script", "CollisionShape2D", "CollisionShape2D", "position", "rotation", "shape", "debug_color", "WeaponMarker", "Marker2D", "position", "rotation", "AnimationPlayer", "AnimationPlayer", "libraries/", "NavTimer", "Timer", "wait_time", "autostart", "NavigationAgent2D", "NavigationAgent2D", "path_desired_distance", "target_desired_distance", "Whiskers", "Node2D", "Front", "RayCast2D", "target_position", "Left", "RayCast2D", "target_position", "Right", "RayCast2D", "target_position", "LOSRay", "RayCast2D", "MultiplayerSynchronizer", "MultiplayerSynchronizer", "replication_config", "SFXHurt", "AudioStreamPlayer2D", "stream", "SFXDodge", "AudioStreamPlayer2D", "SFXAttack", "AudioStreamPlayer2D", "SFXDeath", "AudioStreamPlayer2D", "CustomSoundPlayer", "AudioStreamPlayer2D", "unique_name_in_owner"),
+"node_count": 29,
+"node_ids": PackedInt32Array(2142137073, 265705832, 419443522, 1379841005, 888726358, 1760680003, 17690099, 144327291, 998181589, 1607564269, 595703484, 439714809, 267291814, 686162303, 1331011333, 1720695310, 1058623270, 669523980, 1399885524, 342387014, 1418464618, 181162159, 503088827, 1227116962, 117175611, 2090440747, 94136689, 1648432864, 711062265),
+"node_paths": [NodePath("."), NodePath("."), NodePath("./FlipContainer"), NodePath("./FlipContainer/PaperDoll"), NodePath("./FlipContainer/PaperDoll"), NodePath("./FlipContainer/PaperDoll"), NodePath("./FlipContainer/PaperDoll"), NodePath("./FlipContainer/PaperDoll"), NodePath("."), NodePath("."), NodePath("./Hurtbox"), NodePath("."), NodePath("./Hitbox"), NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath("./Whiskers"), NodePath("./Whiskers"), NodePath("./Whiskers"), NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath("."), NodePath(".")],
+"nodes": PackedInt32Array(-1, -1, 1, 0, -1, 24, 3, 0, 4, 1, 5, 2, 6, 3, 7, 4, 8, 5, 1073741833, 6, 1073741834, 7, 1073741835, 8, 1073741836, 9, 1073741837, 10, 1073741838, 11, 1073741839, 12, 1073741840, 13, 1073741841, 14, 1073741842, 15, 1073741843, 16, 1073741844, 17, 1073741845, 18, 1073741846, 19, 1073741847, 20, 1073741848, 21, 1073741849, 22, 26, 23, 1, 2, 1073741824, 0, 28, 27, -1, 0, 0, 1073741825, 0, 30, 29, -1, 1, 31, 24, 0, 1073741826, 0, 33, 32, -1, 2, 34, 25, 35, 26, 0, 1073741827, 0, 37, 36, -1, 1, 38, 27, 0, 1073741828, 0, 40, 39, -1, 3, 41, 28, 42, 29, 43, 30, 0, 1073741829, 0, 45, 44, -1, 1, 46, 31, 0, 1073741830, 0, 48, 47, -1, 1, 49, 32, 0, 1073741831, 0, 51, 50, -1, 1, 52, 33, 0, 1073741832, 0, 54, 53, -1, 2, 55, 34, 56, 35, 0, 1073741833, 0, 58, 57, -1, 3, 59, 36, 60, 37, 61, 38, 0, 1073741834, 0, 63, 62, -1, 4, 64, 39, 65, 40, 66, 41, 67, 42, 0, 1073741835, 0, 69, 68, -1, 4, 70, 43, 71, 44, 72, 45, 73, 46, 0, 1073741836, 0, 75, 74, -1, 4, 76, 47, 77, 48, 78, 49, 79, 50, 0, 1073741837, 0, 81, 80, -1, 2, 82, 51, 83, 52, 0, 1073741838, 0, 85, 84, -1, 1, 86, 53, 0, 1073741839, 0, 88, 87, -1, 2, 89, 54, 90, 55, 0, 1073741840, 0, 92, 91, -1, 2, 93, 56, 94, 57, 0, 1073741841, 0, 96, 95, -1, 0, 0, 1073741842, 0, 98, 97, -1, 1, 99, 58, 0, 1073741843, 0, 101, 100, -1, 1, 102, 59, 0, 1073741844, 0, 104, 103, -1, 1, 105, 60, 0, 1073741845, 0, 107, 106, -1, 0, 0, 1073741846, 0, 109, 108, -1, 1, 110, 61, 0, 1073741847, 0, 112, 111, -1, 1, 113, 62, 0, 1073741848, 0, 115, 114, -1, 0, 0, 1073741849, 0, 117, 116, -1, 0, 0, 1073741850, 0, 119, 118, -1, 0, 0, 1073741851, 0, 121, 120, -1, 1, 122, 63, 0),
+"variants": [true, 4, 1, 0.0, ExtResource("2_xo260"), ExtResource("3_wcg4t"), NodePath("FlipContainer/PaperDoll/BackSprite"), NodePath("FlipContainer/PaperDoll/BaseSprite"), NodePath("FlipContainer/PaperDoll/BootsSprite"), NodePath("FlipContainer/PaperDoll/ArmorSprite"), NodePath("FlipContainer/PaperDoll/HeadSprite"), NodePath("WeaponMarker"), NodePath("Hitbox"), NodePath("NavigationAgent2D"), NodePath("NavTimer"), NodePath("LOSRay"), NodePath("Whiskers/Front"), NodePath("Whiskers/Left"), NodePath("Whiskers/Right"), NodePath("SFXHurt"), NodePath("SFXAttack"), NodePath("SFXDodge"), NodePath("SFXDeath"), ExtResource("4_lf7dq"), true, true, SubResource("ShaderMaterial_yb44o"), Vector2(0, -58), Vector2(0, -58), Vector2(0.25, 0.25), ExtResource("6_0rye4"), Vector2(0, -58), Vector2(0, -58), Vector2(0, -58), 1.5707964, SubResource("CapsuleShape2D_52fj1"), Vector2(0, -48), 8, 0, Vector2(3.5, 1.5), 1.5707964, SubResource("RectangleShape2D_rt1jr"), Color(0, 0.64612925, 0.2515669, 0.41960785), Vector2(0, -48), 16, 8, ExtResource("7_00p2w"), Vector2(3.5, 1.5), 1.5707964, SubResource("RectangleShape2D_3j7ha"), Color(0.99793094, 0, 0.16522166, 0.41960785), Vector2(12.000001, 1), 0.4223697, SubResource("AnimationLibrary_34ith"), 0.1, true, 5.0, 60.0, Vector2(130, 0), Vector2(130, 0), Vector2(130, 0), SubResource("SceneReplicationConfig_fkb2k"), ExtResource("8_5vrym"), true],
+"version": 3
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tddeu"]
+resource_local_to_scene = true
+shader = ExtResource("5_7wg5b")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/is_outlined = true
+shader_parameter/outline_width = 4.0
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_threshold = 0.2
+shader_parameter/camera_zoom = 1.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_p7nrc"]
+radius = 6.0
+height = 12.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_601gp"]
+radius = 57.0
+height = 114.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_6a5ah"]
+radius = 57.0
+height = 114.0
+
+[sub_resource type="Animation" id="Animation_8p14s"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_vl1l6"]
+resource_name = "dodge_back"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_sji8x"]
+resource_name = "dodge_forward"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_ufn3w"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_rfrem"]
+resource_name = "run"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_uiebq"]
+resource_name = "telegraph"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 0.8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [0.0, -0.08726646]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_i1lxh"]
+_data = {
+&"RESET": SubResource("Animation_8p14s"),
+&"dodge_back": SubResource("Animation_vl1l6"),
+&"dodge_forward": SubResource("Animation_sji8x"),
+&"idle": SubResource("Animation_ufn3w"),
+&"run": SubResource("Animation_rfrem"),
+&"telegraph": SubResource("Animation_uiebq")
+}
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6a5ah"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:look_direction")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:current_health")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:is_dodging")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:is_telegraphing")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:scale")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+
+[sub_resource type="PackedScene" id="PackedScene_3qfpp"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"id_paths": [],
+"names": PackedStringArray("Duck", "y_sort_enabled", "collision_layer", "script", "stat_config", "dmg_number_scene", "creature", "CharacterBody2D", "SkillContainer", "Node2D", "FlipContainer", "PaperDoll", "unique_name_in_owner", "material", "CanvasGroup", "BackSprite", "position", "scale", "offset", "Sprite2D", "BaseSprite", "texture", "BootsSprite", "ArmorSprite", "HeadSprite", "CollisionShape2D", "rotation", "shape", "debug_color", "Hurtbox", "collision_mask", "Area2D", "Hitbox", "WeaponMarker", "Marker2D", "AnimationPlayer", "libraries/", "NavigationAgent2D", "path_postprocessing", "debug_path_custom_color", "NavTimer", "wait_time", "autostart", "Timer", "Whiskers", "Front", "target_position", "RayCast2D", "Left", "Right", "LOSRay", "MultiplayerSynchronizer", "replication_config", "SFXHurt", "stream", "volume_db", "AudioStreamPlayer2D", "SFXAttack", "SFXDodge", "SFXDeath", "CustomSoundPlayer"),
+"node_count": 29,
+"node_ids": PackedInt32Array(1414514615, 1090873578, 520853665, 200071240, 1436436277, 1402462917, 658788089, 741559932, 623093540, 1247753892, 78693573, 1339448640, 2074689619, 1655568817, 321023839, 688169428, 77776087, 421130563, 1123665604, 1102665283, 1588111548, 500808500, 28601178, 1315334455, 12979756, 269836624, 1328682961, 1302007691, 1123064654),
+"node_paths": [],
+"nodes": PackedInt32Array(-1, -1, 7, 0, -1, 5, 1, 0, 2, 1, 3, 2, 4, 3, 5, 4, 1, 6, 0, 0, 9, 8, -1, 0, 0, 0, 0, 9, 10, -1, 0, 0, 2, 0, 14, 11, -1, 2, 12, 0, 13, 5, 0, 3, 0, 19, 15, -1, 3, 16, 6, 17, 7, 18, 8, 0, 3, 0, 19, 20, -1, 4, 16, 6, 17, 7, 21, 9, 18, 8, 0, 3, 0, 19, 22, -1, 3, 16, 6, 17, 7, 18, 8, 0, 3, 0, 19, 23, -1, 3, 16, 6, 17, 7, 18, 8, 0, 3, 0, 19, 24, -1, 3, 16, 6, 17, 7, 18, 8, 0, 0, 0, 25, 25, -1, 3, 26, 10, 27, 11, 28, 12, 0, 0, 0, 31, 29, -1, 3, 16, 13, 2, 14, 30, 15, 0, 10, 0, 25, 25, -1, 1, 27, 16, 0, 0, 0, 31, 32, -1, 2, 16, 13, 3, 17, 0, 12, 0, 25, 25, -1, 2, 27, 18, 28, 19, 0, 0, 0, 34, 33, -1, 2, 16, 20, 26, 21, 0, 0, 0, 35, 35, -1, 1, 36, 22, 0, 0, 0, 37, 37, -1, 2, 38, 23, 39, 24, 0, 0, 0, 43, 40, -1, 2, 41, 25, 42, 0, 0, 0, 0, 9, 44, -1, 0, 0, 18, 0, 47, 45, -1, 1, 46, 26, 0, 18, 0, 47, 48, -1, 1, 46, 26, 0, 18, 0, 47, 49, -1, 1, 46, 26, 0, 0, 0, 47, 50, -1, 0, 0, 0, 0, 51, 51, -1, 1, 52, 27, 0, 0, 0, 56, 53, -1, 2, 54, 28, 55, 29, 0, 0, 0, 56, 57, -1, 1, 55, 30, 0, 0, 0, 56, 58, -1, 0, 0, 0, 0, 56, 59, -1, 0, 0, 0, 0, 56, 60, -1, 1, 12, 0, 0),
+"variants": [true, 4, ExtResource("9_gtfyv"), ExtResource("10_u7aob"), ExtResource("4_lf7dq"), SubResource("ShaderMaterial_tddeu"), Vector2(0, -41.25), Vector2(0.25, 0.25), Vector2(0, -43), ExtResource("11_64c31"), 1.5707964, SubResource("CapsuleShape2D_p7nrc"), Color(0.24286017, 0.09666201, 0, 0.41960785), Vector2(3, -48), 8, 0, SubResource("CapsuleShape2D_601gp"), ExtResource("7_00p2w"), SubResource("CapsuleShape2D_6a5ah"), Color(1, 0.003921569, 0, 0.41960785), Vector2(-3, -35), 0.4223697, SubResource("AnimationLibrary_i1lxh"), 1, Color(4.5724214e-06, 0.63863575, 0.23768821, 1), 0.1, Vector2(130, 0), SubResource("SceneReplicationConfig_6a5ah"), ExtResource("12_5mvl4"), -8.0, -10.0],
+"version": 3
+}
 
 [sub_resource type="LabelSettings" id="LabelSettings_yh1cl"]
 font_size = 120
@@ -16,8 +503,8 @@ outline_color = Color(0, 0, 0, 1)
 y_sort_enabled = true
 script = ExtResource("1_68i0p")
 creature_roster = {
-"cat": ExtResource("3_yh1cl"),
-"duck": ExtResource("2_bgr3s")
+"cat": SubResource("PackedScene_vv60f"),
+"duck": SubResource("PackedScene_3qfpp")
 }
 
 [node name="Background" type="TileMapLayer" parent="." unique_id=1733349845]
@@ -67,7 +554,7 @@ position = Vector2(1150, -1000)
 y_sort_enabled = true
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=53697418]
-_spawnable_scenes = PackedStringArray("uid://b0j644l7vr1qc", "uid://b7h2lf0hml4cd")
+_spawnable_scenes = PackedStringArray("uid://b0j644l7vr1qc", "uid://bs2nnk5f7d5bp")
 spawn_path = NodePath("../Creatures")
 
 [node name="ArenaCamera" type="Camera2D" parent="." unique_id=1225431198 node_paths=PackedStringArray("creatures_container")]

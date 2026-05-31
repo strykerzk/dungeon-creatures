@@ -1,0 +1,327 @@
+[gd_scene format=3 uid="uid://ds34fj5wpxbls"]
+
+[ext_resource type="Script" uid="uid://lxwcvesgao7l" path="res://scripts/creature/creature.gd" id="1_2j263"]
+[ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="2_j87y4"]
+[ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_p4gj7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8yuf2"]
+resource_local_to_scene = true
+shader = ExtResource("2_j87y4")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/is_outlined = true
+shader_parameter/outline_width = 4.0
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_threshold = 0.2
+shader_parameter/camera_zoom = 1.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_32syg"]
+radius = 6.0
+height = 12.0
+
+[sub_resource type="Animation" id="Animation_rhggd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_tg834"]
+resource_name = "dodge_back"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_i1lxh"]
+resource_name = "dodge_forward"
+length = 0.35
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.35),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 6.2831855]
+}
+
+[sub_resource type="Animation" id="Animation_tddeu"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.02, 0.95), Vector2(1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_1bhmw"]
+resource_name = "run"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.08726646, 0.0, -0.08726646, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("FlipContainer/PaperDoll:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.20000002, 0.40000004, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, -10), Vector2(0, 0), Vector2(0, -10), Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_gpwts"]
+resource_name = "telegraph"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlipContainer/PaperDoll:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.15, 0.8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("FlipContainer/PaperDoll:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.10000001),
+"transitions": PackedFloat32Array(0.5, 2),
+"update": 0,
+"values": [0.0, -0.08726646]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vpxc5"]
+_data = {
+&"RESET": SubResource("Animation_rhggd"),
+&"dodge_back": SubResource("Animation_tg834"),
+&"dodge_forward": SubResource("Animation_i1lxh"),
+&"idle": SubResource("Animation_tddeu"),
+&"run": SubResource("Animation_1bhmw"),
+&"telegraph": SubResource("Animation_gpwts")
+}
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qn62h"]
+properties/0/path = NodePath(".:global_position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:look_direction")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:current_health")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:is_dodging")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:is_telegraphing")
+properties/5/spawn = true
+properties/5/replication_mode = 1
+properties/6/path = NodePath(".:scale")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+
+[node name="Creature" type="CharacterBody2D" unique_id=1600477882]
+script = ExtResource("1_2j263")
+
+[node name="SkillContainer" type="Node2D" parent="." unique_id=599268116]
+
+[node name="FlipContainer" type="Node2D" parent="." unique_id=496588251]
+
+[node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=183875622]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_8yuf2")
+
+[node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1350006877]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -43)
+
+[node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1204713756]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -43)
+
+[node name="BootsSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=145549756]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -43)
+
+[node name="ArmorSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=107295815]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -43)
+
+[node name="HeadSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1310360724]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
+offset = Vector2(0, -43)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1662520539]
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_32syg")
+debug_color = Color(0.24286017, 0.09666201, 0, 0.41960785)
+
+[node name="Hurtbox" type="Area2D" parent="." unique_id=23655753]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=270596967]
+debug_color = Color(0.9933968, 0, 0.24498847, 0.41960785)
+
+[node name="BodyHitbox" type="Area2D" parent="." unique_id=1323109998]
+unique_name_in_owner = true
+script = ExtResource("3_p4gj7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BodyHitbox" unique_id=1898607245]
+
+[node name="WeaponMarker" type="Marker2D" parent="." unique_id=1871964673]
+unique_name_in_owner = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1864105397]
+unique_name_in_owner = true
+libraries/ = SubResource("AnimationLibrary_vpxc5")
+
+[node name="NavAgent" type="NavigationAgent2D" parent="." unique_id=1008266258]
+unique_name_in_owner = true
+path_postprocessing = 1
+
+[node name="NavTimer" type="Timer" parent="." unique_id=1517926375]
+unique_name_in_owner = true
+wait_time = 0.1
+autostart = true
+
+[node name="Whiskers" type="Node2D" parent="." unique_id=2032473112]
+
+[node name="WhiskerFront" type="RayCast2D" parent="Whiskers" unique_id=1516630732]
+unique_name_in_owner = true
+target_position = Vector2(130, 0)
+
+[node name="WhiskerLeft" type="RayCast2D" parent="Whiskers" unique_id=301250208]
+unique_name_in_owner = true
+target_position = Vector2(130, 0)
+
+[node name="WhiskerRight" type="RayCast2D" parent="Whiskers" unique_id=1175555804]
+unique_name_in_owner = true
+target_position = Vector2(130, 0)
+
+[node name="LOSRay" type="RayCast2D" parent="." unique_id=2088124765]
+unique_name_in_owner = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1757125403]
+replication_config = SubResource("SceneReplicationConfig_qn62h")
+
+[node name="SFXHurt" type="AudioStreamPlayer2D" parent="." unique_id=484081222]
+unique_name_in_owner = true
+
+[node name="SFXAttack" type="AudioStreamPlayer2D" parent="." unique_id=1494571275]
+unique_name_in_owner = true
+
+[node name="SFXDodge" type="AudioStreamPlayer2D" parent="." unique_id=1546435888]
+unique_name_in_owner = true
+
+[node name="SFXDeath" type="AudioStreamPlayer2D" parent="." unique_id=1386811742]
+unique_name_in_owner = true
+
+[node name="CustomSoundPlayer" type="AudioStreamPlayer2D" parent="." unique_id=2121349424]
+unique_name_in_owner = true

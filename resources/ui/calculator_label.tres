@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://dcneg7xttfwyf"]
+
+[ext_resource type="FontFile" uid="uid://5lar8fx5whv0" path="res://fonts/ADLaMDisplay-Regular.ttf" id="1_fp41m"]
+
+[resource]
+font = ExtResource("1_fp41m")
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
