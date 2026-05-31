@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhfywxchy6a1w"
-path="res://.godot/imported/duck_base.png-fcbd874364b898f3e1157742f95bd06c.ctex"
+uid="uid://jl4taqsspujr"
+path="res://.godot/imported/pigeon_base.png-9409427fe8aa8f3beb8622397f1b5258.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/creature_sprites/duck/duck_base.png"
-dest_files=["res://.godot/imported/duck_base.png-fcbd874364b898f3e1157742f95bd06c.ctex"]
+source_file="res://art/creature_sprites/pigeon/pigeon_base.png"
+dest_files=["res://.godot/imported/pigeon_base.png-9409427fe8aa8f3beb8622397f1b5258.ctex"]
 
 [params]
 

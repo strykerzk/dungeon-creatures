@@ -2,13 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://cqjjqkyqpbsif" path="res://scenes/skills/leap_crash_skill.tscn" id="1_2bcfc"]
 [ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_wmftd"]
-[ext_resource type="Texture2D" uid="uid://cfydcyhhd2kki" path="res://art/creature_sprites/sprite-64x64.png" id="3_7wjjl"]
+[ext_resource type="Texture2D" uid="uid://cdpob46rdqlsb" path="res://art/equipment/back/sprites/temp_wings.png" id="3_2bcfc"]
 
 [resource]
 script = ExtResource("1_wmftd")
 item_name = "Temp Wings"
 slot = "back"
 visual_id = "temp_wings"
-sprite_texture = ExtResource("3_7wjjl")
+sprite_texture = ExtResource("3_2bcfc")
 provided_skill = ExtResource("1_2bcfc")
 metadata/_custom_type_script = "uid://cne6whdroxgp7"

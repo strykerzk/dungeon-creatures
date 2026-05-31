@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cs3jrh6jb8ltx" path="res://art/creature_sprites/dog/dog_base.png" id="3_umns1"]
 [ext_resource type="AudioStream" uid="uid://c4gqwkjk4gcq5" path="res://sounds/sfx/hit2.wav" id="4_r8hg0"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_r8hg0"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kik0f"]
 resource_local_to_scene = true
 shader = ExtResource("2_umns1")
 shader_parameter/flash_modifier = 0.0
@@ -31,14 +31,14 @@ stat_config = ExtResource("2_kik0f")
 dmg_number_scene = ExtResource("2_jafwv")
 
 [node name="PaperDoll" parent="FlipContainer" parent_id_path=PackedInt32Array(496588251) index="0" unique_id=183875622]
-material = SubResource("ShaderMaterial_r8hg0")
+material = SubResource("ShaderMaterial_kik0f")
 
-[node name="BackSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1350006877]
-position = Vector2(0, -21.25)
-
-[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1204713756]
+[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1204713756]
 position = Vector2(0, -21.25)
 texture = ExtResource("3_umns1")
+
+[node name="BackSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1350006877]
+position = Vector2(0, -21.25)
 
 [node name="BootsSprite" parent="FlipContainer/PaperDoll" index="2" unique_id=145549756]
 position = Vector2(0, -21.25)
@@ -53,6 +53,7 @@ position = Vector2(0, -21.25)
 position = Vector2(0, -31)
 
 [node name="CollisionShape2D" parent="Hurtbox" index="0" unique_id=270596967]
+position = Vector2(2, 2)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_r8hg0")
 
@@ -60,6 +61,7 @@ shape = SubResource("CapsuleShape2D_r8hg0")
 position = Vector2(0, -31)
 
 [node name="CollisionShape2D" parent="BodyHitbox" index="0" unique_id=1898607245]
+position = Vector2(2, 2)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_umns1")
 

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://tdpgen1mq3h0"]
 
 [ext_resource type="Script" uid="uid://cfw1xt4l25ktr" path="res://scripts/ui/dungeon_event_ui.gd" id="1_bneod"]
+[ext_resource type="FontFile" uid="uid://5lar8fx5whv0" path="res://fonts/ADLaMDisplay-Regular.ttf" id="2_60cu5"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_hcdaj"]
 font_size = 80
@@ -9,6 +10,7 @@ font_size = 80
 font_size = 50
 
 [sub_resource type="LabelSettings" id="LabelSettings_bneod"]
+font = ExtResource("2_60cu5")
 font_size = 50
 outline_size = 8
 outline_color = Color(0, 0, 0, 1)

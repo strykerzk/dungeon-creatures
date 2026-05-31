@@ -231,11 +231,11 @@ script = ExtResource("1_2j263")
 [node name="PaperDoll" type="CanvasGroup" parent="FlipContainer" unique_id=183875622]
 material = SubResource("ShaderMaterial_8yuf2")
 
-[node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1350006877]
+[node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1204713756]
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
-[node name="BaseSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1204713756]
+[node name="BackSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=1350006877]
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 

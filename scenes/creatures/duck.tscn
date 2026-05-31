@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b0j644l7vr1qc"]
 
 [ext_resource type="PackedScene" uid="uid://ds34fj5wpxbls" path="res://scenes/creatures/creature.tscn" id="1_601gp"]
-[ext_resource type="Texture2D" uid="uid://bn8uyjmwn7rsg" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
+[ext_resource type="Texture2D" uid="uid://dhfywxchy6a1w" path="res://art/creature_sprites/duck/duck_base.png" id="1_sqg2a"]
 [ext_resource type="Resource" uid="uid://b7p7xj6wjrymb" path="res://resources/creature_data/duck_data.tres" id="2_6a5ah"]
 [ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="3_tddeu"]
 [ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="4_tddeu"]
@@ -18,12 +18,12 @@ shader_parameter/outline_threshold = 0.2
 shader_parameter/camera_zoom = 1.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ygove"]
-radius = 57.0
-height = 114.0
+radius = 49.0
+height = 98.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_rhggd"]
-radius = 57.0
-height = 114.0
+radius = 49.0
+height = 98.0
 
 [node name="Duck" unique_id=1600477882 instance=ExtResource("1_601gp")]
 stat_config = ExtResource("2_6a5ah")
@@ -32,28 +32,28 @@ dmg_number_scene = ExtResource("3_tddeu")
 [node name="PaperDoll" parent="FlipContainer" parent_id_path=PackedInt32Array(496588251) index="0" unique_id=183875622]
 material = SubResource("ShaderMaterial_ygove")
 
-[node name="BackSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1350006877]
-position = Vector2(0, -41.25)
-
-[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1204713756]
-position = Vector2(0, -41.25)
+[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1204713756]
+position = Vector2(0, -35.25)
 texture = ExtResource("1_sqg2a")
 
+[node name="BackSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1350006877]
+position = Vector2(0, -35.25)
+
 [node name="BootsSprite" parent="FlipContainer/PaperDoll" index="2" unique_id=145549756]
-position = Vector2(0, -41.25)
+position = Vector2(0, -35.25)
 
 [node name="ArmorSprite" parent="FlipContainer/PaperDoll" index="3" unique_id=107295815]
-position = Vector2(0, -41.25)
+position = Vector2(0, -35.25)
 
 [node name="HeadSprite" parent="FlipContainer/PaperDoll" index="4" unique_id=1310360724]
-position = Vector2(0, -41.25)
+position = Vector2(0, -35.25)
 
 [node name="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(23655753) index="0" unique_id=270596967]
-position = Vector2(3, -54)
+position = Vector2(3, -50)
 shape = SubResource("CapsuleShape2D_ygove")
 
 [node name="CollisionShape2D" parent="BodyHitbox" parent_id_path=PackedInt32Array(1323109998) index="0" unique_id=1898607245]
-position = Vector2(3, -54)
+position = Vector2(3, -50)
 shape = SubResource("CapsuleShape2D_rhggd")
 
 [node name="WeaponMarker" parent="." index="5" unique_id=1871964673]

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhfywxchy6a1w"
-path="res://.godot/imported/duck_base.png-fcbd874364b898f3e1157742f95bd06c.ctex"
+uid="uid://d2upm28qfjols"
+path="res://.godot/imported/temp_wings_dog.png-b0473c41443b0a5bb5856f5259c2b197.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/creature_sprites/duck/duck_base.png"
-dest_files=["res://.godot/imported/duck_base.png-fcbd874364b898f3e1157742f95bd06c.ctex"]
+source_file="res://art/equipment/back/temp_wings_dog.png"
+dest_files=["res://.godot/imported/temp_wings_dog.png-b0473c41443b0a5bb5856f5259c2b197.ctex"]
 
 [params]
 
