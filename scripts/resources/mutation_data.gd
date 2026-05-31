@@ -5,6 +5,8 @@ class_name MutationData extends Resource
 @export_enum("major", "minor") var mutation_type: String = "major"
 @export var icon: Texture2D
 @export var provided_skill: PackedScene
+@export var ranged_projectile: PackedScene
+@export var projectile_speed: float = 1000.0
 
 # Major Mutations have all mults plus choice of additive mods
 @export_group("Major Mutations")

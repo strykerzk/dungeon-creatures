@@ -2,6 +2,7 @@ extends Node
 
 class CreatureProfile:
 	var player_id: int
+	var node_path: NodePath
 	var species: String = "duck" 
 	var major_mutation: MutationData = null
 	var minor_mutations: Array[MutationData] = []
@@ -135,6 +136,11 @@ func get_profile(id: int) -> CreatureProfile:
 	if not profiles.has(id):
 		register_player(id)
 	return profiles.get(id)
+
+func get_node_path(id: int) -> NodePath:
+	if profiles.has(id):
+		return profiles.get(id).node_path
+	return "."
 
 # --- NEW: ROBUST NETWORK SYNCING ---
 

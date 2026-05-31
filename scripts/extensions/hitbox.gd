@@ -1,8 +1,7 @@
 extends Area2D
 class_name Hitbox
 
-var damage_value: float = 0.0
-var attacker: Creature = null
+var combat_data: CombatData = null
 
 func _enter_tree() -> void:
 	area_entered.connect(_on_area_entered)
@@ -17,12 +16,8 @@ func _init():
 	monitoring = false # Controlled by weapon/creature
 
 func _on_area_entered(area: Area2D) -> void:
-	if not multiplayer.is_server(): return
-	
-	if area.name == "Hurtbox":
-		var entity = area.get_parent()
-		if entity == attacker: return
-		
-		if entity.has_method("take_damage"):
-			entity.take_damage(damage_value, attacker)
-			print("Damage dealt!")
+	if area.name != "Hurtbox" or not multiplayer.is_server(): return
+	var entity = area.get_parent()
+	if not combat_data.is_enemy(entity): return
+	if entity.has_method("take_damage"):
+		entity.take_damage(combat_data.damage, combat_data.attacker_id)

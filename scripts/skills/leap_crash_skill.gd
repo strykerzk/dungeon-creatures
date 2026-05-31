@@ -48,7 +48,7 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 		for c in all_creatures:
 			if c != creature and is_instance_valid(c) and c.current_health > 0:
 				if c.global_position.distance_to(creature.global_position) <= impact_radius:
-					c.take_damage(final_dmg, creature)
+					c.take_damage(final_dmg, creature.player_id)
 
 	# Tiny recovery delay before the AI resumes
 	await get_tree().create_timer(0.2).timeout

@@ -1,10 +1,7 @@
 class_name Projectile extends Area2D
 
-var damage_value: float = 0.0
-var attacker: Creature = null
-
+var combat_data: CombatData = null
 var velocity: Vector2 = Vector2.ZERO
-var speed: float = 4000.0
 
 func _enter_tree() -> void:
 	body_entered.connect(_on_body_entered)
@@ -23,19 +20,14 @@ func _on_body_entered(body: Node2D) -> void:
 	queue_free()
 
 func _on_area_entered(area: Area2D) -> void:
-	if area.name == "Hurtbox" and multiplayer.is_server():
-		var entity = area.get_parent()
-		if entity == attacker: return
-		
-		if entity.has_method("take_damage"):
-			entity.take_damage(damage_value, attacker)
-			print("Projectile hit!")
-		queue_free()
+	if area.name != "Hurtbox" or not multiplayer.is_server(): return
+	var entity = area.get_parent()
+	if not combat_data.is_enemy(entity): return
+	if entity.has_method("take_damage"):
+		entity.take_damage(combat_data.damage, combat_data.attacker_id)
+	queue_free()
 
-func launch(direction: Vector2, p_damage: float, p_attacker: Creature, p_speed: float) -> void:
-	damage_value = p_damage
-	attacker = p_attacker
-	speed = p_speed
-	
-	velocity = direction.normalized() * speed
+func launch(direction: Vector2, data: CombatData, p_speed: float = 1000.0) -> void:
+	combat_data = data
+	velocity = direction.normalized() * p_speed
 	rotation = velocity.angle()

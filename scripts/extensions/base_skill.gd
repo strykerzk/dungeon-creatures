@@ -33,6 +33,13 @@ func can_use(_target: Creature) -> bool:
 func activate_passive() -> void:
 	pass
 
+func build_combat_data(damage: float) -> CombatData:
+	var data = CombatData.new()
+	data.attacker_id = creature.player_id
+	#data.team_id = creature.team_id
+	data.damage = damage
+	return data
+
 ## IMPORTANT: In creature.gd, this is called with 'await'.
 ## If your skill takes time (dashes, animations), use 'await get_tree().create_timer().timeout' inside.
 func execute(target: Creature, attack_dir: Vector2) -> void:

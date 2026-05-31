@@ -4,6 +4,7 @@ class_name FireballSkill
 @export_group("Fireball Settings")
 @export var projectile_scene: PackedScene
 @export var spell_damage: float = 15.0
+@export var projectile_speed: float = 1200.0
 
 func execute(target: Creature, attack_dir: Vector2) -> void:
 	current_cooldown = cooldown_time
@@ -14,14 +15,15 @@ func execute(target: Creature, attack_dir: Vector2) -> void:
 
 	# Spawn the projectile (Only Host handles physical spawns)
 	if multiplayer.is_server():
-		var proj = projectile_scene.instantiate()
+		var proj = projectile_scene.instantiate() as Projectile
 		creature.get_parent().add_child(proj)
 		
 		# Spawn it slightly above their feet
 		proj.global_position = creature.global_position + Vector2(0, -30)
 		
 		if proj.has_method("launch"):
-			proj.launch(attack_dir, spell_damage + creature.damage, creature)
+			var data = build_combat_data(spell_damage + creature.damage)
+			proj.launch(attack_dir, data, projectile_speed)
 
 	# Brief pause so they don't instantly start running
 	await get_tree().create_timer(0.3).timeout

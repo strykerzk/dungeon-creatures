@@ -12,20 +12,19 @@ class_name MeleeWeapon extends Weapon
 var is_swinging: bool = false
 
 
-func activate(base_damage: float, p_attacker: Creature) -> void:
-	super(base_damage,p_attacker)
+func activate(p_combat_data: CombatData) -> void:
+	super(p_combat_data) # combat_data = p_combat_data
 	
 	is_swinging = true
-	var target_hb = hitbox
+	var target_hb: Hitbox = hitbox
 	
 	# If this weapon is a Tackle Modifier (like Spikes), use the creature's body hitbox
-	if is_tackle_modifier and attacker.get("body_hitbox"):
-		target_hb = attacker.get("body_hitbox")
+	if is_tackle_modifier and owner_creature and owner_creature.get("body_hitbox"):
+		target_hb = owner_creature.body_hitbox
 	
 	if not target_hb: return
 	
-	target_hb.damage_value = base_damage
-	target_hb.attacker = attacker
+	target_hb.combat_data = combat_data
 	
 	if animation_player:
 		animation_player.play("attack")

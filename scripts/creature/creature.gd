@@ -2,7 +2,7 @@ class_name Creature extends CharacterBody2D
 
 @export var stat_config: CreatureData
 var species: String = "duck" # Default species
-var id: int = 1
+var player_id: int = 1
 
 enum AttackStyle { TACKLE, MELEE, RANGED }
 
@@ -38,7 +38,7 @@ var is_combat_locked: bool = false
 var is_dead: bool = false
 
 # --- SIGNALS ---
-signal attack_started(attacker: Creature, defender: Creature)
+signal attack_started(attacker_id: int, defender_id: int)
 signal health_changed(current: float, total: float)
 signal died()
 
@@ -97,6 +97,7 @@ var is_circling: bool = true
 var behavior_timer: float = 0.0
 var next_behavior_change: float = 2.0
 var speed_mult: float = 1.0 
+var projectile_speed: float = 1000.0
 
 var can_attack: bool = true
 var is_attacking: bool = false
@@ -105,6 +106,7 @@ var is_telegraphing: bool = false
 var is_recovering: bool = false 
 var is_invulnerable: bool = false
 var is_dodging: bool = false
+var is_stunned: bool = false
 
 # --- STUCK DETECTION ---
 var _stuck_timer: float = 0.0
@@ -144,7 +146,9 @@ func _ready() -> void:
 	_randomize_behavior()
 
 func setup() -> void:
-	id = int(name)
+	player_id = int(name)
+	var profile = CreatureManager.get_profile(player_id)
+	profile.node_path = get_path()
 
 func prepare_visuals() -> void:
 	set_player_color()
@@ -248,6 +252,7 @@ func equip(data: EquipmentData) -> void:
 		weapon_node.global_position = weapon_marker.global_position
 		if weapon_node.has_method("reposition_visual"):
 			weapon_node.reposition_visual(weapon_marker)
+		if "owner_creature" in weapon_node: weapon_node.owner_creature = self
 		if weapon_node.has_method("setup"): weapon_node.setup(data)
 		base_cooldown = weapon_node.attack_cd
 		current_attack_style = weapon_node.attack_style
@@ -275,6 +280,10 @@ func _get_sprite_for_slot(slot: String) -> Node2D:
 func recalculate_stats() -> void:
 	var stored_health = current_health
 	_initialize_base_stats()
+	
+	current_attack_style = AttackStyle.TACKLE
+	projectile_scene = null
+	projectile_speed = 1000.0
 	
 	if skill_container:
 		for child in skill_container.get_children():
@@ -335,11 +344,12 @@ func recalculate_stats() -> void:
 				skill_directory.utility.append(skill_node)
 		
 		if "ranged_projectile" in data and data.ranged_projectile:
-			if projectile_scene: projectile_scene = null
 			projectile_scene = data.ranged_projectile
+			if "projectile_speed" in data:
+				projectile_speed = data.projectile_speed
 			
-			if "attack_style" in data and data.attack_style:
-				current_attack_style = data.attack_style # Ranged
+			if "attack_style" in data and data.attack_style == AttackStyle.RANGED:
+				current_attack_style = AttackStyle.RANGED
 	
 	# 3. Finalize math
 	var modded_speed = speed * speed_variance * (1.0 + speed_mod)
@@ -366,6 +376,10 @@ func recalculate_stats() -> void:
 	retreat_threshold = attack_range * (1.1 - aggression)
 	current_health = min(stored_health, max_health)
 	health_changed.emit(current_health, max_health)
+	
+	if weapon_node:
+		current_attack_style = weapon_node.attack_style
+		projectile_scene = null
 
 func _update_attack_range_by_style() -> void:
 	match current_attack_style:
@@ -373,10 +387,14 @@ func _update_attack_range_by_style() -> void:
 		AttackStyle.MELEE: attack_range = weapon_node.attack_range if weapon_node else 650.0 * size
 		AttackStyle.RANGED: attack_range = weapon_node.attack_range if weapon_node else 1200.0
 
-func take_damage(amount: float, attacker_ref: Creature = null) -> void:
+func take_damage(amount: float, attacker_id: int = -1) -> void:
 	if not multiplayer.is_server(): return
 	
 	if is_invulnerable or current_health <= 0 or is_dead: return
+	
+	# If you need the attacker node for kill credit or knockback:
+	# var attacker_node = get_tree().get_nodes_in_group("creatures").filter(
+	#     func(c): return c.player_id == attacker_id).front()
 	
 	current_health -= amount
 	health_changed.emit(current_health, max_health)
@@ -390,10 +408,10 @@ func take_damage(amount: float, attacker_ref: Creature = null) -> void:
 	
 	if current_health <= 0:
 		is_dead = true
-		die(attacker_ref)
+		die(CreatureManager.get_node_path(attacker_id))
 	else:
 		_trigger_hit_iframe()
-		search_for_target(attacker_ref)
+		search_for_target(CreatureManager.get_node_path(attacker_id))
 
 @rpc("authority", "call_local", "unreliable")
 func client_spawn_damage_number(amount: float) -> void:
@@ -426,12 +444,14 @@ func _trigger_hit_iframe() -> void:
 	await get_tree().create_timer(0.2).timeout
 	is_invulnerable = false
 
-func die(attacker_ref: Creature = null) -> void:
+func die(attacker_path: NodePath = ".") -> void:
 	died.emit()
 	rpc("rpc_play_creature_sound", "death")
 	set_physics_process(false)
 	
 	var yeet_dir = Vector2(randf_range(-1, 1), -1).normalized() # Fallback
+	var attacker_ref = get_node_or_null(attacker_path)
+	
 	if attacker_ref and is_instance_valid(attacker_ref):
 		yeet_dir = attacker_ref.global_position.direction_to(global_position)
 		yeet_dir = (yeet_dir + Vector2(0, -0.8)).normalized() # Arc it upwards
@@ -446,10 +466,11 @@ func client_trigger_shake(intensity: float) -> void:
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.screen_shake_requested.emit(intensity)
 
-func search_for_target(attacker_ref: Creature = null) -> void:
+func search_for_target(attacker_path: NodePath = ".") -> void:
 	var creatures = get_tree().get_nodes_in_group("creature")
 	var best_score = INF
 	var best_node = null
+	var attacker_ref = get_node_or_null(attacker_path)
 	
 	for c in creatures:
 		if c == self or not is_instance_valid(c) or c.current_health <= 0: continue
@@ -479,17 +500,20 @@ func has_line_of_sight() -> bool:
 	#los_ray.force_raycast_update()
 	return not los_ray.is_colliding() or los_ray.get_collider() == target
 
-func _on_target_attack_started(attacker_node: Creature, defender: Creature) -> void:
-	if defender != self or is_attacking or is_dodging: return
+func _on_target_attack_started(attacker_id: int, defender_id: int) -> void:
+	if defender_id != player_id: return
+	if is_dead or is_dodging or is_attacking or is_stunned: return
 	var dodge_chance = 0.15 + (IQ * 0.07)
 	if (current_health / max_health) < 0.3 and aggression > 0.5: dodge_chance *= 0.2 
-	if randf() < dodge_chance: dodge(attacker_node)
-	else: print("Dodge Failed!")
+	if randf() < dodge_chance: dodge(attacker_id)
 
-func dodge(attacker_node: Creature) -> void:
+func dodge(attacker_id: int) -> void:
+	if is_dodging or is_dead: return
 	is_dodging = true 
 	is_dashing = true
 	rpc("rpc_play_creature_sound", "dodge")
+	var attacker_path = CreatureManager.get_node_path(attacker_id)
+	var attacker_node = get_node_or_null(attacker_path)
 	var attack_dir = attacker_node.global_position.direction_to(global_position)
 	var dodge_dir = Vector2(-attack_dir.y, attack_dir.x) * (1 if randf() > 0.5 else -1)
 	var dodge_distance = (250.0 + (speed * 0.2) + (40.0 * dexterity)) / max(0.5, size)
@@ -516,9 +540,22 @@ func _randomize_behavior() -> void:
 func _pick_intended_action() -> void:
 	var choices = [] # Array of { "action": node/string, "weight": float, "range": float, "requires_los": bool }
 	
-	# Fallback Weapon Attack (Base Weight influenced by Aggression)
-	var weapon_range = attack_range # Uses the cached _update_attack_range_by_style value
-	choices.append({"action": "weapon", "weight": 100.0 * (1.0 + aggression), "range": weapon_range, "requires_los": true})
+	var base_action: String
+	match current_attack_style:
+		AttackStyle.RANGED:
+			base_action = "ranged"
+		AttackStyle.MELEE:
+			base_action = "melee"
+		_:
+			base_action = "tackle"
+	
+	# Fallback action
+	choices.append({
+		"action": base_action,
+		"weight": 100.0 * (1.0 + aggression),
+		"range": attack_range,
+		"requires_los": true
+	})
 	
 	if is_instance_valid(target) and target.current_health > 0:
 		# Check Major Skill
@@ -765,14 +802,14 @@ func attack() -> void:
 		current_intended_action = {}
 		_on_attack_cooldown_finished()
 		return
-	attack_started.emit(self, target)
+	attack_started.emit(player_id, target.player_id)
 	
 	var base_dir = look_direction
 	var jitter = PI/9 if current_attack_style == AttackStyle.RANGED else PI/12
 	var attack_dir = base_dir.rotated(randf_range(-jitter, jitter) * (1.0 - precision))
 	
 	# EXECUTION PHASE
-	if current_intended_action.action is String and current_intended_action.action == "weapon":
+	if current_intended_action.action is String:
 		_execute_weapon_attack(attack_dir)
 	elif current_intended_action.action is Node and current_intended_action.action.has_method("execute"):
 		await current_intended_action.action.execute(target, attack_dir)
@@ -799,29 +836,32 @@ func _execute_weapon_attack(dir: Vector2) -> void:
 
 @rpc("authority", "call_local", "reliable")
 func rpc_play_weapon_effects(dmg: float, _dir: Vector2) -> void:
+	var data = _build_combat_data(dmg)
+	
 	if weapon_node: 
-		weapon_node.activate(dmg, self)
+		weapon_node.activate(data)
 	elif current_attack_style == AttackStyle.RANGED:
-		_fire_projectile(_dir)
+		if projectile_scene:
+			_fire_projectile(_dir, data)
 	elif body_hitbox:
-		_manual_hitbox_activate(body_hitbox, dmg)
+		_manual_hitbox_activate(body_hitbox, data)
 	
 	_play_creature_sound("attack")
 
-func _manual_hitbox_activate(hb: Area2D, dmg: float) -> void:
+func _manual_hitbox_activate(hb: Area2D, data: CombatData) -> void:
 	if hb is Hitbox:
-		hb.damage_value = dmg
-		hb.attacker = self
-	hb.monitoring = true
-	await get_tree().create_timer(0.2).timeout
-	hb.monitoring = false
+		hb.combat_data = data
+		hb.monitoring = true
+		await get_tree().create_timer(0.2).timeout
+		hb.monitoring = false
 
-func _fire_projectile(direction: Vector2) -> void:
+func _fire_projectile(direction: Vector2, data: CombatData) -> void:
 	if not projectile_scene: return
-	var proj = projectile_scene.instantiate()
-	get_parent().add_child(proj)
+	var proj = projectile_scene.instantiate() as Projectile
 	proj.global_position = global_position
-	if proj.has_method("launch"): proj.launch(direction, damage, self)
+	#get_parent().add_child(proj)
+	get_tree().current_scene.add_child(proj)
+	if proj.has_method("launch"): proj.launch(direction, data, projectile_speed)
 
 @rpc("authority", "call_local", "reliable")
 func client_play_death_animation(yeet_dir: Vector2) -> void:
@@ -855,6 +895,13 @@ func client_play_death_animation(yeet_dir: Vector2) -> void:
 	# Fade Out
 	tween.tween_property(self, "modulate:a", 0.0, 1.0).set_delay(0.5)
 
+func _build_combat_data(damage_override: float = -1.0) -> CombatData:
+	var data = CombatData.new()
+	data.attacker_id = player_id
+	#data.team_id = team_id
+	data.damage = damage_override if damage_override >= 0.0 else damage
+	return data
+
 func _on_attack_cooldown_finished() -> void:
 	if not is_inside_tree(): return
 	var cooldown = base_cooldown / max(0.1, (1.0 + (dexterity * 0.5)))
@@ -874,7 +921,7 @@ func _play_creature_sound(sound_name: String) -> void:
 	if not is_multiplayer_authority():
 		return  # Only the authority plays sounds (avoids double-play)
 	
-	var profile = CreatureManager.get_profile(id)
+	var profile = CreatureManager.get_profile(player_id)
 	if profile and profile.has_custom_sound(sound_name):
 		custom_sound_player.stream = profile.custom_sounds[sound_name]
 		custom_sound_player.pitch_scale = profile.sound_pitches.get(sound_name, 1.0)
@@ -888,7 +935,7 @@ func _play_creature_sound(sound_name: String) -> void:
 			"death":  sfx_death.play()
 
 func set_player_color() -> void:
-	var profile = CreatureManager.get_profile(id)
+	var profile = CreatureManager.get_profile(player_id)
 	if not profile: return
 	
 	player_color = profile.player_color
