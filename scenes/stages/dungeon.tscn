@@ -11,14 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://cq1qudu6yitb5" path="res://scenes/dungeon_rooms/altar_room.tscn" id="5_cvwnr"]
 [ext_resource type="PackedScene" uid="uid://cmptdiwndoq1c" path="res://scenes/equipment/loot_item.tscn" id="6_06edt"]
 [ext_resource type="PackedScene" uid="uid://c8ox0q7w7bcms" path="res://scenes/dungeon_rooms/spike_room_1.tscn" id="6_6obk2"]
-[ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="7_6qlut"]
-[ext_resource type="Resource" uid="uid://b441uhmj6si00" path="res://resources/equipment_data/weapons/melee/sword.tres" id="8_g3byy"]
-[ext_resource type="Resource" uid="uid://bpgdogjqoy37x" path="res://resources/equipment_data/weapons/ranged/pistol.tres" id="9_2vmh0"]
 [ext_resource type="PackedScene" uid="uid://cnylqc7fh3yp5" path="res://scenes/dungeon_rooms/minor_mutation/minor_altar_1.tscn" id="10_fh0r1"]
-[ext_resource type="Resource" uid="uid://bih5j1yep2t4j" path="res://resources/equipment_data/head/helmet.tres" id="10_g3byy"]
 [ext_resource type="PackedScene" uid="uid://b6c3fkkgojbcj" path="res://scenes/dungeon_rooms/misc/escape_portal.tscn" id="11_6qlut"]
 [ext_resource type="PackedScene" uid="uid://8hgkacvek725" path="res://scenes/dungeon_rooms/minor_mutation/minor_altar_2.tscn" id="11_aujxp"]
-[ext_resource type="Resource" uid="uid://c8aoccjdxyvgc" path="res://resources/equipment_data/back/temp_wings.tres" id="15_ct7uw"]
 [ext_resource type="Script" uid="uid://dul3p1sllf3q8" path="res://scripts/misc/dungeon_camera.gd" id="15_sq7w3"]
 [ext_resource type="AudioStream" uid="uid://b2sfbg3uqcs1v" path="res://sounds/music/pmk_bnw_ancient_castle.wav" id="18_nwgp8"]
 
@@ -26,7 +21,6 @@
 y_sort_enabled = true
 
 [node name="DungeonInstantiator" type="Node2D" parent="." unique_id=38123396]
-y_sort_enabled = true
 script = ExtResource("1_y2qtf")
 minimap_scene = ExtResource("2_oeyy7")
 event_ui_scene = ExtResource("2_gvcxd")
@@ -36,7 +30,6 @@ outer_room_scenes = Array[PackedScene]([ExtResource("4_3dlxy"), ExtResource("6_6
 major_altar_scenes = Array[PackedScene]([ExtResource("5_cvwnr")])
 minor_altar_scenes = Array[PackedScene]([ExtResource("10_fh0r1"), ExtResource("11_aujxp")])
 loot_item_scene = ExtResource("6_06edt")
-loot_pool = Array[ExtResource("7_6qlut")]([ExtResource("8_g3byy"), ExtResource("9_2vmh0"), ExtResource("10_g3byy"), ExtResource("15_ct7uw")])
 player_scene = ExtResource("5_1o2ik")
 escape_portal_scene = ExtResource("11_6qlut")
 
@@ -44,7 +37,6 @@ escape_portal_scene = ExtResource("11_6qlut")
 script = ExtResource("15_sq7w3")
 
 [node name="Players" type="Node2D" parent="." unique_id=518991168]
-y_sort_enabled = true
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Players" unique_id=808602944]
 _spawnable_scenes = PackedStringArray("uid://bngysj73nr5nf")

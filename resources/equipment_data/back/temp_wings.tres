@@ -11,4 +11,5 @@ slot = "back"
 visual_id = "temp_wings"
 sprite_texture = ExtResource("3_2bcfc")
 provided_skill = ExtResource("1_2bcfc")
+speed_mod = 50.0
 metadata/_custom_type_script = "uid://cne6whdroxgp7"

@@ -7,7 +7,7 @@
 resource_local_to_scene = true
 font = ExtResource("2_p7ulp")
 font_size = 32
-outline_size = 8
+outline_size = 16
 outline_color = Color(1, 0, 0, 1)
 
 [node name="DamageNumber" type="Node2D" unique_id=652840954]

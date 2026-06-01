@@ -22,10 +22,10 @@ func _ready() -> void:
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_delay(0.15)
 	
 	# 2. FLOAT AWAY: Drift upwards smoothly
-	tween.tween_property(self, "position:y", position.y - 5.0, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "position:y", position.y - 5.0, 1.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	
 	# 3. FADE OUT: Wait 0.2s so the player can read it, then fade to invisible
-	tween.tween_property(self, "modulate:a", 0.0, 0.4).set_delay(0.2)
+	tween.tween_property(self, "modulate:a", 0.0, 1.0).set_delay(0.2)
 	
 	# 4. CLEANUP: Once all animations finish, delete the node!
 	tween.chain().tween_callback(queue_free)

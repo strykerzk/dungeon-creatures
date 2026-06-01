@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EquipmentData" format=3 uid="uid://camaigwc0gsff"]
+
+[ext_resource type="Script" uid="uid://cne6whdroxgp7" path="res://scripts/resources/equipment_data.gd" id="1_j1pl8"]
+[ext_resource type="Texture2D" uid="uid://c0bumkbeuau5r" path="res://art/equipment/body/sprites/chestplate.png" id="2_wrmqk"]
+
+[resource]
+script = ExtResource("1_j1pl8")
+item_name = "Chestplate"
+visual_id = "chestplate"
+sprite_texture = ExtResource("2_wrmqk")
+health_bonus = 60.0
+speed_mod = -20.0
+metadata/_custom_type_script = "uid://cne6whdroxgp7"

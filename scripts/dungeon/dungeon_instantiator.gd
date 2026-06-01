@@ -52,6 +52,8 @@ func _ready() -> void:
 		if res is MutationData:
 			major_mutation_pool.append(res)
 	
+	setup_loot_pool()
+	
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.escape_portal_opened.connect(_on_escape_portal_opened)
 		grid_size = StageManager.get_round_settings()["size"]
@@ -70,7 +72,31 @@ func _ready() -> void:
 	if event_ui_scene:
 		var ui_inst = event_ui_scene.instantiate()
 		add_child(ui_inst)
+
+func setup_loot_pool() -> void:
+	var base_path = "res://resources/equipment_data/"
+	for path in get_all_resource_paths(base_path):
+		var resource = ResourceLoader.load(path)
+		loot_pool.append(resource)
 	
+
+func get_all_resource_paths(path: String) -> Array[String]:
+	if not path.ends_with("/"):
+		path += "/"
+	
+	var all_paths: Array[String] = []
+	
+	for file in DirAccess.get_files_at(path):
+		if file.ends_with(".tres") or file.ends_with(".tres.remap"):
+			file = file.trim_suffix(".remap")
+			all_paths.append(path + file)
+	
+	for dir in DirAccess.get_directories_at(path):
+		var subfolder_files = get_all_resource_paths(path + dir)
+		all_paths.append_array(subfolder_files)
+	
+	return all_paths
+
 @rpc("authority", "call_local", "reliable")
 func rpc_build_synced_dungeon(dungeon_seed: int) -> void:
 	print("[Dungeon] Generating map with synced seed: ", dungeon_seed)
