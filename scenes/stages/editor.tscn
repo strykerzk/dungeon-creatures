@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c7pw8aun7ugea"]
 
 [ext_resource type="Script" uid="uid://clpagxfdel4bk" path="res://scripts/core/editor.gd" id="1_f210w"]
+[ext_resource type="Theme" uid="uid://4hpxrmmec3jg" path="res://resources/ui/equipment_ui.tres" id="2_gp261"]
 
 [node name="Editor" type="Control" unique_id=416042701]
 layout_mode = 3
@@ -11,7 +12,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f210w")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=854556557]
+[node name="BG" type="ColorRect" parent="." unique_id=641664485]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.707719, 0.788847, 0.8862809, 1)
+
+[node name="MainContainer" type="MarginContainer" parent="." unique_id=1890012146]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,62 +29,271 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="LoadoutContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=327205899]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer" unique_id=854556557]
+layout_mode = 2
+
+[node name="LoadoutContainer" type="HBoxContainer" parent="MainContainer/VBoxContainer" unique_id=327205899]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MutationContainer" type="VBoxContainer" parent="VBoxContainer/LoadoutContainer" unique_id=1331738248]
+[node name="SpriteContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=554641912]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
 
-[node name="EquipmentContainer" type="VBoxContainer" parent="VBoxContainer/LoadoutContainer" unique_id=1564014224]
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer" unique_id=1107394763]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.8
+theme_override_constants/margin_left = 100
+theme_override_constants/margin_right = 100
+
+[node name="Control" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer" unique_id=1737427313]
+layout_mode = 2
+
+[node name="BaseTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=1916228105]
 unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="BackTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=1355719619]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="BootsTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=1340333673]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="BodyTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=682306499]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="HeadTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=474071143]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Control" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer" unique_id=1600141393]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.2
+
+[node name="MutationContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=1331738248]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+size_flags_stretch_ratio = 0.2
 
-[node name="HeadSlot" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=796143091]
-unique_name_in_owner = true
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=313411736]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.4
 
-[node name="BodySlot" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=1956680574]
+[node name="EquipmentContainer" type="GridContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer" unique_id=1050976820]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 3
+columns = 3
 
-[node name="WeaponSlot" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=463153528]
+[node name="Empty" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=327793118]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1270297046]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HeadSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer" unique_id=796143091]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_gp261")
+icon_alignment = 1
+expand_icon = true
 
-[node name="BootsSlot" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=232582110]
+[node name="Empty2" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=790779806]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1305217438]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="WeaponSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer2" unique_id=463153528]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_gp261")
+icon_alignment = 1
+expand_icon = true
 
-[node name="BackSlot" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=809891215]
+[node name="MarginContainer3" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=311982470]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BodySlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer3" unique_id=1956680574]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_gp261")
+icon_alignment = 1
+expand_icon = true
 
-[node name="ReadyButton" type="Button" parent="VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=1332539762]
+[node name="MarginContainer4" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1638698703]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BackSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer4" unique_id=809891215]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_gp261")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Empty3" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1353706697]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer5" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1573036039]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BootsSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer5" unique_id=232582110]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_gp261")
+icon_alignment = 1
+expand_icon = true
+
+[node name="Empty4" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1790105291]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ReadyContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer" unique_id=1529888768]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_constants/margin_left = 250
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 250
+theme_override_constants/margin_bottom = 10
+
+[node name="ReadyButton" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/ReadyContainer" unique_id=1332539762]
 unique_name_in_owner = true
 layout_mode = 2
 text = "LOCK IN & READY"
 
-[node name="StashContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=804054207]
+[node name="StashContainer" type="HBoxContainer" parent="MainContainer/VBoxContainer" unique_id=804054207]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/StashContainer" unique_id=407897890]
+[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=407897890]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="StashPanel" type="PanelContainer" parent="VBoxContainer/StashContainer" unique_id=1951070989]
+[node name="StashPanel" type="PanelContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=1951070989]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/StashContainer/StashPanel" unique_id=1620208289]
+[node name="ScrollContainer" type="ScrollContainer" parent="MainContainer/VBoxContainer/StashContainer/StashPanel" unique_id=1620208289]
 layout_mode = 2
 
-[node name="StashList" type="VBoxContainer" parent="VBoxContainer/StashContainer/StashPanel/ScrollContainer" unique_id=198379627]
+[node name="StashList" type="VBoxContainer" parent="MainContainer/VBoxContainer/StashContainer/StashPanel/ScrollContainer" unique_id=198379627]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

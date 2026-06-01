@@ -4,15 +4,23 @@ extends Control
 @onready var stash_container: VBoxContainer = %StashList
 @onready var status_label: Label = %StatusLabel
 
-@onready var equip_panel: VBoxContainer = %EquipPanel
+@onready var equip_panel: VBoxContainer = %EquipContainer
 @onready var ready_button: Button = %ReadyButton
 
+@onready var sprite_textures: Dictionary = {
+	"base": %BaseTexture,
+	"back": %BackTexture,
+	"boots": %BootsTexture,
+	"body": %BodyTexture,
+	"head": %HeadTexture
+}
+
 @onready var slot_buttons: Dictionary = {
-	"weapon": %WeaponSlot,
-	"head": %HeadSlot,
-	"body": %BodySlot,
-	"boots": %BootsSlot,
-	"back": %BackSlot
+	"weapon": [%WeaponSlot,"res://art/equipment/ui/weapon_empty.png"],
+	"head": [%HeadSlot,"res://art/equipment/ui/head_empty.png"],
+	"body": [%BodySlot,"res://art/equipment/ui/body_empty.png"],
+	"boots": [%BootsSlot,"res://art/equipment/ui/boots_empty.png"],
+	"back": [%BackSlot,"res://art/equipment/ui/back_empty.png"]
 }
 
 var ready_players: Array[int] = []
@@ -29,11 +37,12 @@ func _ready() -> void:
 		
 	if local_profile:
 		_populate_stash_ui()
+		_dress_up_sprite()
 	else:
 		status_label.text = "Error: Could not load profile data!"
 	
 	for slot_name in slot_buttons.keys():
-		slot_buttons[slot_name].pressed.connect(_on_equip_slot_clicked.bind(slot_name))
+		slot_buttons[slot_name][0].pressed.connect(_on_equip_slot_clicked.bind(slot_name))
 	
 	ready_button.pressed.connect(_on_ready_pressed)
 	
@@ -43,8 +52,25 @@ func _ready() -> void:
 		status_label.text = "ERROR: Could not load profile data!"
 
 func _refresh_ui() -> void:
+	_dress_up_sprite()
 	_populate_stash_ui()
 	_populate_equip_ui()
+
+func _dress_up_sprite() -> void:
+	var file_path: String = ""
+	for key in sprite_textures.keys():
+		if key == "base":
+			file_path = "res://art/creature_sprites/"+ local_profile.species \
+			+ "/" + local_profile.species + "_base.png"
+			sprite_textures[key].texture = load(file_path )
+		else:
+			if local_profile.equipped_items.has(key):
+				var item: EquipmentData = local_profile.equipped_items[key]
+				file_path = "res://art/equipment/" + key + "/" + item.visual_id \
+				+ "_" + local_profile.species + ".png"
+				sprite_textures[key].texture = load(file_path)
+			else:
+				sprite_textures[key].texture = null
 
 ## Reads the stash array and creates a simple UI button for each item
 func _populate_stash_ui() -> void:
@@ -92,12 +118,14 @@ func _on_stash_item_clicked(item_data: EquipmentData) -> void:
 
 func _populate_equip_ui() -> void:
 	for slot_name in slot_buttons.keys():
-		var btn: Button = slot_buttons[slot_name]
+		var btn: Button = slot_buttons[slot_name][0]
 		if local_profile.equipped_items.has(slot_name):
 			var item = local_profile.equipped_items[slot_name]
-			btn.text = slot_name.capitalize() + ": " + item.item_name
+			#btn.text = slot_name.capitalize() + ": " + item.item_name
+			btn.icon = item.sprite_texture
 		else:
-			btn.text = slot_name.capitalize() + ": [Empty]"
+			#btn.text = slot_name.capitalize() + ": [Empty]"
+			btn.icon = load(slot_buttons[slot_name][1].trim_prefix(".remap"))
 
 func _on_equip_slot_clicked(slot_name: String) -> void:
 	if not local_profile.equipped_items.has(slot_name):
