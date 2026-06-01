@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CreatureData" format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/creature_data.gd" id="1_s0mbp"]
+
+[resource]
+script = ExtResource("1_s0mbp")
+name = "pigeon"
+base_health = 65.0
+damage = 5.0
+speed = 320.0
+IQ = 3
+aggression = 0.7
+dexterity = 1.5
+precision = 0.6

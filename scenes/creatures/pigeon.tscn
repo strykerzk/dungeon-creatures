@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://bnkwe7hg8ialu"]
+
+[ext_resource type="PackedScene" uid="uid://ds34fj5wpxbls" path="res://scenes/creatures/creature.tscn" id="1_ow6n8"]
+[ext_resource type="Resource" path="res://resources/creature_data/pigeon_data.tres" id="2_krp4l"]
+[ext_resource type="PackedScene" uid="uid://euoky4itmbtp" path="res://scenes/misc/damage_number.tscn" id="2_lu8x4"]
+[ext_resource type="Shader" uid="uid://nkrluiqjjxn0" path="res://shaders/hit_flash.gdshader" id="2_pt05g"]
+[ext_resource type="Texture2D" uid="uid://jl4taqsspujr" path="res://art/creature_sprites/pigeon/pigeon_base.png" id="3_pt05g"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lu8x4"]
+resource_local_to_scene = true
+shader = ExtResource("2_pt05g")
+shader_parameter/flash_modifier = 0.0
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/is_outlined = true
+shader_parameter/outline_width = 4.0
+shader_parameter/outline_color = Color(1, 1, 1, 1)
+shader_parameter/outline_threshold = 0.2
+shader_parameter/camera_zoom = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_lu8x4"]
+radius = 47.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_krp4l"]
+radius = 47.0
+
+[node name="Pigeon" unique_id=1600477882 instance=ExtResource("1_ow6n8")]
+stat_config = ExtResource("2_krp4l")
+dmg_number_scene = ExtResource("2_lu8x4")
+
+[node name="PaperDoll" parent="FlipContainer" parent_id_path=PackedInt32Array(496588251) index="0" unique_id=183875622]
+material = SubResource("ShaderMaterial_lu8x4")
+
+[node name="BaseSprite" parent="FlipContainer/PaperDoll" index="0" unique_id=1204713756]
+position = Vector2(0, -41.25)
+texture = ExtResource("3_pt05g")
+
+[node name="BackSprite" parent="FlipContainer/PaperDoll" index="1" unique_id=1350006877]
+position = Vector2(0, -41.25)
+
+[node name="BootsSprite" parent="FlipContainer/PaperDoll" index="2" unique_id=145549756]
+position = Vector2(0, -41.25)
+
+[node name="ArmorSprite" parent="FlipContainer/PaperDoll" index="3" unique_id=107295815]
+position = Vector2(0, -41.25)
+
+[node name="HeadSprite" parent="FlipContainer/PaperDoll" index="4" unique_id=1310360724]
+position = Vector2(0, -41.25)
+
+[node name="CollisionShape2D" parent="Hurtbox" parent_id_path=PackedInt32Array(23655753) index="0" unique_id=270596967]
+position = Vector2(0, -47)
+shape = SubResource("CircleShape2D_lu8x4")
+
+[node name="CollisionShape2D" parent="BodyHitbox" parent_id_path=PackedInt32Array(1323109998) index="0" unique_id=1898607245]
+position = Vector2(0, -47)
+shape = SubResource("CircleShape2D_krp4l")
+
+[node name="WeaponMarker" parent="." index="5" unique_id=1871964673]
+position = Vector2(-4, -41)
+rotation = 0.35380772

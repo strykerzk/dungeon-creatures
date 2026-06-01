@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bs50iyoqb0nm0" path="res://scripts/misc/arena_camera.gd" id="4_cio23"]
 [ext_resource type="PackedScene" uid="uid://by0f3g50kmkl7" path="res://scenes/creatures/dog.tscn" id="4_wr8fq"]
 [ext_resource type="TileSet" uid="uid://ccay3ghkw52da" path="res://resources/tilesets/kenney_tiny_dungeon_64x64.tres" id="4_yh1cl"]
+[ext_resource type="PackedScene" uid="uid://bnkwe7hg8ialu" path="res://scenes/creatures/pigeon.tscn" id="5_2adlx"]
 [ext_resource type="AudioStream" uid="uid://b4ehwilrcs44j" path="res://sounds/music/pkm_bnw_battle_wild.wav" id="6_pf2by"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_yh1cl"]
@@ -19,7 +20,8 @@ script = ExtResource("1_68i0p")
 creature_roster = {
 "cat": ExtResource("3_yh1cl"),
 "dog": ExtResource("4_wr8fq"),
-"duck": ExtResource("2_bgr3s")
+"duck": ExtResource("2_bgr3s"),
+"pigeon": ExtResource("5_2adlx")
 }
 
 [node name="Background" type="TileMapLayer" parent="." unique_id=1733349845]
