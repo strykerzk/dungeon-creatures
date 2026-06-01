@@ -36,10 +36,7 @@ var local_color_index: int = -1  # -1 = no selection yet
 var _color_buttons: Array[Button] = []
 
 func _ready() -> void:
-	for file_name in DirAccess.get_files_at("res://scenes/creatures/"):
-		if file_name == "creature.tscn": continue
-		var species_name = file_name.get_basename().split("_")[0].capitalize()
-		species_dropdown.add_item(species_name)
+	populate_species_dropdown()
 	
 	lock_in_button.pressed.connect(_on_lock_in_pressed)
 	
@@ -53,6 +50,15 @@ func _ready() -> void:
 	
 	_build_sound_slot_ui()
 	_build_color_picker()
+
+func populate_species_dropdown() -> void:
+	for file_name in DirAccess.get_files_at("res://scenes/creatures/"):
+		file_name = file_name.trim_suffix(".remap")
+		
+		if file_name == "creature.tscn": continue
+		
+		var species_name = file_name.get_basename().split("_")[0].capitalize()
+		species_dropdown.add_item(species_name)
 
 func _on_lock_in_pressed() -> void:
 	if not locked_in:

@@ -340,6 +340,17 @@ text = "Create .tres File"
 unique_name_in_owner = true
 one_shot = true
 
+[node name="QuitButton" type="Button" parent="." unique_id=715999648]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 0
+offset_left = 1435.0
+offset_top = 34.0
+offset_right = 1475.0
+offset_bottom = 76.0
+theme_override_font_sizes/font_size = 24
+text = "X"
+
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/Calculate" to="." method="_on_calculate_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/HBoxContainer/Create" to="." method="_on_create_pressed"]
 [connection signal="timeout" from="MessageTimer" to="." method="_on_message_timer_timeout"]
+[connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]

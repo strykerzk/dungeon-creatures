@@ -130,3 +130,7 @@ func show_message(text: String, duration: float = 0.0) -> void:
 
 func _on_message_timer_timeout() -> void:
 	status_label.text = ""
+
+
+func _on_quit_button_pressed() -> void:
+	get_tree().quit()

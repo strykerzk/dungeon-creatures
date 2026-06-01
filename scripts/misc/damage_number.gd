@@ -18,7 +18,7 @@ func _ready() -> void:
 	var tween = create_tween().set_parallel(true)
 	
 	# 1. PUNCHY ENTRY: Pop to 1.5x scale using a "bouncy" transition, then settle to 1.0x
-	tween.tween_property(self, "scale", Vector2(1.5, 1.5), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector2(2.0, 2.0), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_delay(0.15)
 	
 	# 2. FLOAT AWAY: Drift upwards smoothly

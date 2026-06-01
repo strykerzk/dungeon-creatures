@@ -12,15 +12,29 @@ extends Node2D
 var alive_creatures_count: int = 0
 
 func _ready() -> void:
+	setup()
 	# Only the Host handles the spawning of fighters
 	if multiplayer.is_server():
 		call_deferred("_spawn_creatures")
 		call_deferred("_start_countdown_sequence")
 
-func set_up_multiplayer_spawner() -> void:
+func setup() -> void:
 	var path: String = "res://scenes/creatures/"
-	for file in DirAccess.get_files_at(path):
-		spawner.add_spawnable_scene(path + file)
+	for file_name in DirAccess.get_files_at(path):
+		file_name = file_name.trim_suffix(".remap")
+		
+		if file_name.ends_with(".tscn") or file_name.ends_with("scn"):
+			if file_name == "creature.tscn": continue
+			var dict_key = file_name.get_basename()
+			var full_path = path + file_name
+			var loaded_scene = ResourceLoader.load(full_path) as PackedScene
+			
+			if loaded_scene:
+				creature_roster[dict_key] = loaded_scene
+			else:
+				printerr("Failed to load PackedScene at: ", full_path)
+			
+			spawner.add_spawnable_scene(full_path)
 
 func _spawn_creatures() -> void:
 	var peer_ids = CreatureManager.profiles.keys()
