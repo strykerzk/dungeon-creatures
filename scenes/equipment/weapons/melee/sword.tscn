@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://8veymti2eff3" path="res://scripts/extensions/melee_weapon.gd" id="1_cq01h"]
 [ext_resource type="Texture2D" uid="uid://bykqmgo0jqt33" path="res://art/equipment/weapon/sprites/sword.png" id="2_ch5i5"]
-[ext_resource type="Texture2D" uid="uid://dqav7tvv6cisp" path="res://art/equipment/weapon/effects/sword-swing.png" id="3_1jfg0"]
 [ext_resource type="Script" uid="uid://qxroa3fbi54c" path="res://scripts/extensions/hitbox.gd" id="3_ch5i5"]
+[ext_resource type="Texture2D" uid="uid://d1g1rbjggutcn" path="res://art/equipment/weapon/effects/sword_swing.png" id="4_83ono"]
 [ext_resource type="AudioStream" uid="uid://b4cgn623yv2fj" path="res://sounds/sfx/sword_swing.wav" id="5_ch5i5"]
 
 [sub_resource type="Animation" id="Animation_ch5i5"]
@@ -71,7 +71,7 @@ tracks/4/keys = {
 
 [sub_resource type="Animation" id="Animation_wfft3"]
 resource_name = "attack"
-length = 0.001
+length = 0.25
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -106,7 +106,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.25),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [Vector2(0, 16), Vector2(0, -8)]
+"values": [Vector2(0, 61), Vector2(0, -8)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -140,7 +140,7 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wfft3"]
-size = Vector2(28, 68)
+size = Vector2(92, 182)
 
 [node name="Sword" type="Node2D" unique_id=982423695 node_paths=PackedStringArray("hitbox", "visual_sprite", "attack_sprite", "animation_player", "sprite", "audio")]
 z_index = 3
@@ -164,9 +164,7 @@ offset = Vector2(0, -16)
 
 [node name="AttackSprite" type="Sprite2D" parent="." unique_id=1476148435]
 visible = false
-scale = Vector2(2, 2.4)
-texture = ExtResource("3_1jfg0")
-flip_h = true
+texture = ExtResource("4_83ono")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1681061666]
 libraries/ = SubResource("AnimationLibrary_ch5i5")
@@ -180,7 +178,7 @@ monitoring = false
 script = ExtResource("3_ch5i5")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1755945850]
-position = Vector2(14, 0)
+position = Vector2(46, 0)
 shape = SubResource("RectangleShape2D_wfft3")
 debug_color = Color(0.9999555, 0, 0.111179434, 0.41960785)
 

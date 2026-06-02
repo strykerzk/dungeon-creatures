@@ -76,7 +76,7 @@ func _spawn_creatures() -> void:
 		var serialized_loadout = {}
 		for slot in profile.equipped_items:
 			var item_data = profile.equipped_items[slot]
-			creature_inst.equip(item_data)
+			creature_inst.call_deferred("equip", item_data)
 			serialized_loadout[slot] = item_data.resource_path
 			
 		all_loadouts[str(p_id)] = serialized_loadout
