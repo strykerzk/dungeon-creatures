@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://clpagxfdel4bk" path="res://scripts/core/editor.gd" id="1_f210w"]
 [ext_resource type="Theme" uid="uid://4hpxrmmec3jg" path="res://resources/ui/equipment_ui.tres" id="2_gp261"]
+[ext_resource type="Theme" uid="uid://c6da02h073a32" path="res://resources/ui/stash_tabs.tres" id="4_upaha"]
 
 [node name="Editor" type="Control" unique_id=416042701]
 layout_mode = 3
@@ -146,6 +147,23 @@ size_flags_vertical = 4
 expand_mode = 1
 stretch_mode = 4
 
+[node name="WeaponTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer/MarginContainer/Control" unique_id=1543991276]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -192.0
+offset_top = -192.0
+offset_right = 192.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 4
+
 [node name="Control" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/SpriteContainer" unique_id=1600141393]
 layout_mode = 2
 size_flags_vertical = 3
@@ -156,12 +174,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=313411736]
+[node name="EquipmentContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=313411736]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
 
-[node name="EquipmentContainer" type="GridContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer" unique_id=1050976820]
+[node name="EquipGrid" type="GridContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=1050976820]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
@@ -169,17 +187,17 @@ size_flags_horizontal = 6
 size_flags_vertical = 3
 columns = 3
 
-[node name="Empty" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=327793118]
+[node name="Empty" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=327793118]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1270297046]
+[node name="MarginContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1270297046]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HeadSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer" unique_id=796143091]
+[node name="HeadSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid/MarginContainer" unique_id=796143091]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
@@ -189,17 +207,17 @@ theme = ExtResource("2_gp261")
 icon_alignment = 1
 expand_icon = true
 
-[node name="Empty2" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=790779806]
+[node name="Empty2" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=790779806]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MarginContainer2" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1305217438]
+[node name="MarginContainer2" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1305217438]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="WeaponSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer2" unique_id=463153528]
+[node name="WeaponSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid/MarginContainer2" unique_id=463153528]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
@@ -209,12 +227,12 @@ theme = ExtResource("2_gp261")
 icon_alignment = 1
 expand_icon = true
 
-[node name="MarginContainer3" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=311982470]
+[node name="MarginContainer3" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=311982470]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="BodySlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer3" unique_id=1956680574]
+[node name="BodySlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid/MarginContainer3" unique_id=1956680574]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
@@ -224,12 +242,12 @@ theme = ExtResource("2_gp261")
 icon_alignment = 1
 expand_icon = true
 
-[node name="MarginContainer4" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1638698703]
+[node name="MarginContainer4" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1638698703]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="BackSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer4" unique_id=809891215]
+[node name="BackSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid/MarginContainer4" unique_id=809891215]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
@@ -239,17 +257,17 @@ theme = ExtResource("2_gp261")
 icon_alignment = 1
 expand_icon = true
 
-[node name="Empty3" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1353706697]
+[node name="Empty3" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1353706697]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MarginContainer5" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1573036039]
+[node name="MarginContainer5" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1573036039]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="BootsSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer/MarginContainer5" unique_id=232582110]
+[node name="BootsSlot" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid/MarginContainer5" unique_id=232582110]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(128, 128)
 layout_mode = 2
@@ -259,12 +277,12 @@ theme = ExtResource("2_gp261")
 icon_alignment = 1
 expand_icon = true
 
-[node name="Empty4" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/EquipmentContainer" unique_id=1790105291]
+[node name="Empty4" type="Control" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/EquipGrid" unique_id=1790105291]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ReadyContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer" unique_id=1529888768]
+[node name="ReadyContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer" unique_id=1529888768]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_constants/margin_left = 250
@@ -272,7 +290,7 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 250
 theme_override_constants/margin_bottom = 10
 
-[node name="ReadyButton" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/VBoxContainer/ReadyContainer" unique_id=1332539762]
+[node name="ReadyButton" type="Button" parent="MainContainer/VBoxContainer/LoadoutContainer/EquipmentContainer/ReadyContainer" unique_id=1332539762]
 unique_name_in_owner = true
 layout_mode = 2
 text = "LOCK IN & READY"
@@ -281,10 +299,46 @@ text = "LOCK IN & READY"
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=407897890]
+[node name="TabsContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=407897890]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
+
+[node name="Button" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=571380884]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
+
+[node name="Button2" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=909406201]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
+
+[node name="Button3" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=2107465519]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
+
+[node name="Button4" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1359292276]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
+
+[node name="Button5" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1461138222]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
+
+[node name="Button6" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1395193537]
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("4_upaha")
+text = "All"
 
 [node name="StashPanel" type="PanelContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=1951070989]
 layout_mode = 2
@@ -293,12 +347,15 @@ size_flags_horizontal = 3
 [node name="ScrollContainer" type="ScrollContainer" parent="MainContainer/VBoxContainer/StashContainer/StashPanel" unique_id=1620208289]
 layout_mode = 2
 
-[node name="StashList" type="VBoxContainer" parent="MainContainer/VBoxContainer/StashContainer/StashPanel/ScrollContainer" unique_id=198379627]
+[node name="StashGrid" type="GridContainer" parent="MainContainer/VBoxContainer/StashContainer/StashPanel/ScrollContainer" unique_id=1430507816]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.9
+theme_override_constants/h_separation = 15
+theme_override_constants/v_separation = 15
+columns = 5
 
 [node name="StatusLabel" type="Label" parent="." unique_id=1023291322]
 unique_name_in_owner = true

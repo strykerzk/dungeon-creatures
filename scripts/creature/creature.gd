@@ -14,7 +14,7 @@ enum AttackStyle { TACKLE, MELEE, RANGED }
 @onready var doll_back: Sprite2D = $FlipContainer/PaperDoll/BackSprite
 @onready var doll_base: Sprite2D = $FlipContainer/PaperDoll/BaseSprite
 @onready var doll_boots: Sprite2D = $FlipContainer/PaperDoll/BootsSprite
-@onready var doll_armor: Sprite2D = $FlipContainer/PaperDoll/ArmorSprite
+@onready var doll_body: Sprite2D = $FlipContainer/PaperDoll/BodySprite
 @onready var doll_head: Sprite2D = $FlipContainer/PaperDoll/HeadSprite
 @onready var weapon_marker: Marker2D = $WeaponMarker
 var player_color: Color = Color.WHITE
@@ -271,7 +271,7 @@ func equip(data: EquipmentData) -> void:
 func _get_sprite_for_slot(slot: String) -> Node2D:
 	match slot:
 		"head": return doll_head
-		"body": return doll_armor
+		"body": return doll_body
 		"weapon": return null
 		"boots": return doll_boots
 		"back": return doll_back

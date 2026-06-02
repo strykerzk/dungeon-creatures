@@ -1,10 +1,10 @@
 extends Control
 
 @export_category("UI References")
-@onready var stash_container: VBoxContainer = %StashList
+@onready var stash_grid: GridContainer = %StashGrid
 @onready var status_label: Label = %StatusLabel
 
-@onready var equip_panel: VBoxContainer = %EquipContainer
+@onready var equip_grid: GridContainer = %EquipGrid
 @onready var ready_button: Button = %ReadyButton
 
 @onready var sprite_textures: Dictionary = {
@@ -12,7 +12,8 @@ extends Control
 	"back": %BackTexture,
 	"boots": %BootsTexture,
 	"body": %BodyTexture,
-	"head": %HeadTexture
+	"head": %HeadTexture,
+	"weapon": %WeaponTexture
 }
 
 @onready var slot_buttons: Dictionary = {
@@ -59,23 +60,25 @@ func _refresh_ui() -> void:
 func _dress_up_sprite() -> void:
 	var file_path: String = ""
 	for key in sprite_textures.keys():
-		if key == "base":
-			file_path = "res://art/creature_sprites/"+ local_profile.species \
-			+ "/" + local_profile.species + "_base.png"
-			sprite_textures[key].texture = load(file_path )
-		else:
-			if local_profile.equipped_items.has(key):
+		if sprite_textures[key].texture == null:
+			if key == "base":
+				file_path = "res://art/creature_sprites/"+ local_profile.species \
+				+ "/" + local_profile.species + "_base.png"
+				sprite_textures[key].texture = load(file_path )
+			elif local_profile.equipped_items.has(key):
 				var item: EquipmentData = local_profile.equipped_items[key]
 				file_path = "res://art/equipment/" + key + "/" + item.visual_id \
 				+ "_" + local_profile.species + ".png"
-				sprite_textures[key].texture = load(file_path)
-			else:
+				if FileAccess.file_exists(file_path):
+					sprite_textures[key].texture = load(file_path)
+		elif not local_profile.equipped_items.has(key):
+			if key != "base":
 				sprite_textures[key].texture = null
 
 ## Reads the stash array and creates a simple UI button for each item
 func _populate_stash_ui() -> void:
 	# Clear out any placeholder UI elements
-	for child in stash_container.get_children():
+	for child in stash_grid.get_children():
 		child.queue_free()
 		
 	var stash_items = local_profile.stash
@@ -89,18 +92,29 @@ func _populate_stash_ui() -> void:
 	for i in range(stash_items.size()):
 		var item: EquipmentData = stash_items[i]
 		
-		# Create a button for the item
+		var m_container = MarginContainer.new()
+		
+		m_container.custom_minimum_size = Vector2(128,128)
+		m_container.add_theme_constant_override("margin_left", 10)
+		m_container.add_theme_constant_override("margin_top", 10)
+		m_container.add_theme_constant_override("margin_right", 10)
+		m_container.add_theme_constant_override("margin_bottom", 10)
+		
+		
 		var btn = Button.new()
-		btn.text = item.item_name + " (" + item.slot + ")"
-		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		#btn.text = item.item_name + " (" + item.slot + ")"
+		#btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		
 		# Optional: If your EquipmentData has an icon, add it here!
-		# btn.icon = item.icon
+		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		btn.icon = item.sprite_texture
+		btn.theme = load("res://resources/ui/stash_ui.tres")
 		
 		# We bind the item data to the button's pressed signal so we know WHICH item was clicked later
 		btn.pressed.connect(_on_stash_item_clicked.bind(item))
 		
-		stash_container.add_child(btn)
+		stash_grid.add_child(m_container)
+		m_container.add_child(btn)
 
 func _on_stash_item_clicked(item_data: EquipmentData) -> void:
 	print("[Editor] Equipping: ", item_data.item_name)

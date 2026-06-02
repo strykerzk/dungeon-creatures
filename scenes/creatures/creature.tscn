@@ -243,7 +243,7 @@ offset = Vector2(0, -43)
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 
-[node name="ArmorSprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=107295815]
+[node name="BodySprite" type="Sprite2D" parent="FlipContainer/PaperDoll" unique_id=107295815]
 scale = Vector2(0.25, 0.25)
 offset = Vector2(0, -43)
 

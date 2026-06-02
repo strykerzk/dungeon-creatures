@@ -1,0 +1,23 @@
+[gd_resource type="Theme" format=3 uid="uid://byxfe0m6cmnq6"]
+
+[ext_resource type="Texture2D" uid="uid://cbn8paasx7g2o" path="res://art/equipment/ui/stash_slot.png" id="1_j675q"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l7pg7"]
+texture = ExtResource("1_j675q")
+modulate_color = Color(0.12591085, 0.12591085, 0.12591082, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7viu4"]
+texture = ExtResource("1_j675q")
+modulate_color = Color(1.177704, 1.177704, 1.177704, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cldqt"]
+texture = ExtResource("1_j675q")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_iofx2"]
+texture = ExtResource("1_j675q")
+
+[resource]
+Button/styles/disabled = SubResource("StyleBoxTexture_l7pg7")
+Button/styles/hover = SubResource("StyleBoxTexture_7viu4")
+Button/styles/normal = SubResource("StyleBoxTexture_cldqt")
+Button/styles/pressed = SubResource("StyleBoxTexture_iofx2")
