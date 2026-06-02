@@ -3,7 +3,7 @@ extends Node
 class CreatureProfile:
 	var player_id: int
 	var node_path: NodePath
-	var species: String = "duck" 
+	var species: String = "pigeon" 
 	var major_mutation: MutationData = null
 	var minor_mutations: Array[MutationData] = []
 	var equipped_items: Dictionary = {} 
@@ -32,7 +32,7 @@ class CreatureProfile:
 var profiles: Dictionary = {}
 var claimed_colors: Dictionary = {}
 
-var default_species: String = "duck"
+var default_species: String = "pigeon"
 
 var current_round: int = 0
 var inv_total_limit: int = 3
