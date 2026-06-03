@@ -23,6 +23,7 @@ tile_map_data = PackedByteArray("AAD6//f/AQABAAQAAAD6/wcAAQABAAMAAADy/wQAAQABAAM
 tile_set = ExtResource("2_p6ifc")
 
 [node name="DoorBlockers" parent="." unique_id=1934263565 instance=ExtResource("3_qnrdd")]
+visible = false
 
 [node name="CameraTrigger" type="Area2D" parent="." unique_id=19924113]
 collision_layer = 0

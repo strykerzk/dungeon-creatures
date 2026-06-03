@@ -1,15 +1,12 @@
-[gd_scene format=3 uid="uid://dtmot3i6q8o8m"]
+[gd_scene format=4 uid="uid://dtmot3i6q8o8m"]
 
-[ext_resource type="Texture2D" uid="uid://dmqx8anfg3y0d" path="res://art/dungeon_sprites/kenny_wall_north.png" id="1_sxbtj"]
-[ext_resource type="Texture2D" uid="uid://duxxt56ovvgac" path="res://art/dungeon_sprites/kenny_wall_south.png" id="2_locwa"]
-[ext_resource type="Texture2D" uid="uid://5rgko213o4uo" path="res://art/dungeon_sprites/kenny_wall_east.png" id="3_3rtgo"]
-[ext_resource type="Texture2D" uid="uid://clbnka83367nr" path="res://art/dungeon_sprites/kenny_wall_west.png" id="4_ku3jn"]
+[ext_resource type="TileSet" uid="uid://ccay3ghkw52da" path="res://resources/tilesets/kenney_tiny_dungeon_64x64.tres" id="1_qs3mh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_upsnv"]
 size = Vector2(768, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4op3r"]
-size = Vector2(768.0005, 64)
+size = Vector2(768.0005, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qnfy4"]
 size = Vector2(128, 768)
@@ -24,9 +21,9 @@ y_sort_enabled = true
 position = Vector2(0, -448)
 collision_mask = 38
 
-[node name="Sprite2D" type="Sprite2D" parent="NorthBlocker" unique_id=1573386634]
-position = Vector2(0, -64)
-texture = ExtResource("1_sxbtj")
+[node name="TileMapLayer" type="TileMapLayer" parent="NorthBlocker" unique_id=25869762]
+tile_map_data = PackedByteArray("AAD6//7/AQACAAEAAAD7//7/AQACAAEAAAD8//7/AQACAAEAAAD9//7/AQACAAEAAAD+//7/AQACAAEAAAD///7/AQACAAEAAAAAAP7/AQACAAEAAAABAP7/AQACAAEAAAACAP7/AQACAAEAAAADAP7/AQACAAEAAAAEAP7/AQACAAEAAAAFAP7/AQACAAEAAAD6////AQACAAEAAAD7////AQACAAEAAAD8////AQACAAEAAAD9////AQACAAEAAAD+////AQACAAEAAAD/////AQACAAEAAAAAAP//AQACAAEAAAABAP//AQACAAEAAAACAP//AQACAAEAAAADAP//AQACAAEAAAAEAP//AQACAAEAAAAFAP//AQACAAEAAAA=")
+tile_set = ExtResource("1_qs3mh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NorthBlocker" unique_id=1206276446]
 position = Vector2(0, -64)
@@ -37,12 +34,12 @@ y_sort_enabled = true
 position = Vector2(0, 576)
 collision_mask = 38
 
-[node name="Sprite2D" type="Sprite2D" parent="SouthBlocker" unique_id=647343668]
-position = Vector2(0, -64)
-texture = ExtResource("2_locwa")
+[node name="TileMapLayer" type="TileMapLayer" parent="SouthBlocker" unique_id=924735046]
+tile_map_data = PackedByteArray("AAAFAP//AQACAAEAADAEAP//AQACAAEAADADAP//AQACAAEAADACAP//AQACAAEAADABAP//AQACAAEAADAAAP//AQACAAEAADD/////AQACAAEAADD+////AQACAAEAADD9////AQACAAEAADD8////AQACAAEAADD7////AQACAAEAADD6////AQACAAEAADD6//7/AQACAAEAADD7//7/AQACAAEAADD8//7/AQACAAEAADD9//7/AQACAAEAADD+//7/AQACAAEAADD///7/AQACAAEAADAAAP7/AQACAAEAADABAP7/AQACAAEAADACAP7/AQACAAEAADADAP7/AQACAAEAADAEAP7/AQACAAEAADAFAP7/AQACAAEAADA=")
+tile_set = ExtResource("1_qs3mh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SouthBlocker" unique_id=1581294493]
-position = Vector2(0, -32)
+position = Vector2(0, -64)
 shape = SubResource("RectangleShape2D_4op3r")
 
 [node name="EastBlocker" type="StaticBody2D" parent="." unique_id=831514806]
@@ -50,12 +47,11 @@ z_index = 2
 position = Vector2(896, 0)
 collision_mask = 38
 
-[node name="Sprite2D" type="Sprite2D" parent="EastBlocker" unique_id=131931450]
-position = Vector2(0, -64)
-texture = ExtResource("3_3rtgo")
+[node name="TileMapLayer" type="TileMapLayer" parent="EastBlocker" unique_id=1599064285]
+tile_map_data = PackedByteArray("AAAAAAQAAQACAAEAAFAAAAMAAQACAAEAAFAAAAIAAQACAAEAAFAAAAEAAQACAAEAAFAAAAAAAQACAAEAAFAAAP//AQACAAEAAFAAAP7/AQACAAEAAFAAAP3/AQACAAEAAFAAAPz/AQACAAEAAFAAAPv/AQACAAEAAFAAAPr/AQACAAEAAFD///r/AQACAAEAAFD///v/AQACAAEAAFD///z/AQACAAEAAFD///3/AQACAAEAAFD///7/AQACAAEAAFD/////AQACAAEAAFD//wAAAQACAAEAAFD//wEAAQACAAEAAFD//wIAAQACAAEAAFD//wMAAQACAAEAAFD//wQAAQACAAEAAFAAAAUAAQACAAEAAFD//wUAAQACAAEAAFA=")
+tile_set = ExtResource("1_qs3mh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EastBlocker" unique_id=333488667]
-position = Vector2(0, -64)
 shape = SubResource("RectangleShape2D_qnfy4")
 
 [node name="WestBlocker" type="StaticBody2D" parent="." unique_id=1529130407]
@@ -63,10 +59,9 @@ z_index = 2
 position = Vector2(-896, 0)
 collision_mask = 38
 
-[node name="Sprite2D" type="Sprite2D" parent="WestBlocker" unique_id=891831384]
-position = Vector2(0, -64)
-texture = ExtResource("4_ku3jn")
+[node name="TileMapLayer" type="TileMapLayer" parent="WestBlocker" unique_id=1347528875]
+tile_map_data = PackedByteArray("AAAAAAQAAQACAAEAAGAAAAMAAQACAAEAAGAAAAIAAQACAAEAAGAAAAEAAQACAAEAAGAAAAAAAQACAAEAAGAAAP//AQACAAEAAGAAAP7/AQACAAEAAGAAAP3/AQACAAEAAGAAAPz/AQACAAEAAGAAAPv/AQACAAEAAGAAAPr/AQACAAEAAGD///r/AQACAAEAAGD///v/AQACAAEAAGD///z/AQACAAEAAGD///3/AQACAAEAAGD///7/AQACAAEAAGD/////AQACAAEAAGD//wAAAQACAAEAAGD//wEAAQACAAEAAGD//wIAAQACAAEAAGD//wMAAQACAAEAAGD//wQAAQACAAEAAGAAAAUAAQACAAEAAGD//wUAAQACAAEAAGA=")
+tile_set = ExtResource("1_qs3mh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WestBlocker" unique_id=1271687848]
-position = Vector2(0, -64)
 shape = SubResource("RectangleShape2D_sr47u")

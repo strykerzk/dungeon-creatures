@@ -100,9 +100,9 @@ animations = [{
 "speed": 9.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_onrkg"]
-radius = 1.0
-height = 60.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nvl01"]
+radius = 8.0
+height = 52.0
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_i3pqv"]
 
@@ -212,11 +212,13 @@ loot_item_scene = ExtResource("2_2hs0m")
 y_sort_enabled = true
 sprite_frames = SubResource("SpriteFrames_urp6f")
 animation = &"idle"
+frame = 4
+frame_progress = 0.36646208
 offset = Vector2(0, -38)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=248887133]
 rotation = 1.5707964
-shape = SubResource("CapsuleShape2D_onrkg")
+shape = SubResource("CapsuleShape2D_nvl01")
 debug_color = Color(0.9021759, 0.30977157, 0, 0.41960785)
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=745080250]

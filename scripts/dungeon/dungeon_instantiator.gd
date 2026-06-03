@@ -42,6 +42,8 @@ var camera_tween: Tween
 
 func _ready() -> void:
 	# Ref setup
+	setup_room_scenes()
+	
 	var raw_minor = FileUtils.load_resources_from_folder("res://resources/mutations/minor/")
 	for res in raw_minor:
 		if res is MutationData:
@@ -72,6 +74,30 @@ func _ready() -> void:
 	if event_ui_scene:
 		var ui_inst = event_ui_scene.instantiate()
 		add_child(ui_inst)
+
+func setup_room_scenes() -> void:
+	var path: String = "res://scenes/dungeon_rooms/"
+	
+	var inner_path: String = path + "inner/"
+	for file in DirAccess.get_files_at(inner_path):
+		if file.ends_with(".remap"): file = file.trim_suffix(".remap")
+		inner_room_scenes.append(load(inner_path + file))
+	
+	var outer_path: String = path + "outer/"
+	for file in DirAccess.get_files_at(outer_path):
+		if file.ends_with(".remap"): file = file.trim_suffix(".remap")
+		outer_room_scenes.append(load(outer_path + file))
+	
+	var major_mut_path: String = path + "major_mutaion/"
+	for file in DirAccess.get_files_at(major_mut_path):
+		if file.ends_with(".remap"): file = file.trim_suffix(".remap")
+		major_altar_scenes.append(load(major_mut_path + file))
+	
+	var minor_mut_path: String = path + "minor_mutation/"
+	for file in DirAccess.get_files_at(minor_mut_path):
+		if file.ends_with(".remap"): file = file.trim_suffix(".remap")
+		minor_altar_scenes.append(load(minor_mut_path + file))
+	
 
 func setup_loot_pool() -> void:
 	var base_path = "res://resources/equipment_data/"
@@ -303,7 +329,7 @@ func _on_room_entered(target_pos: Vector2) -> void:
 		camera_tween.kill()
 	
 	camera_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	camera_tween.tween_property(dungeon_camera, "global_position", target_pos, 0.4)
+	camera_tween.tween_property(dungeon_camera, "global_position", target_pos, 0.3)
 
 func _on_escape_portal_opened() -> void:
 	if not escape_portal_scene:

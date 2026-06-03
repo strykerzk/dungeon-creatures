@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://bet0k527xfbov"]
+
+[ext_resource type="PackedScene" uid="uid://b5twkxn7x87tc" path="res://scenes/dungeon_rooms/room.tscn" id="1_fef38"]
+[ext_resource type="PackedScene" uid="uid://ddr32fdaruefs" path="res://scenes/dungeon_rooms/misc/spike_trap.tscn" id="2_uvcdu"]
+
+[node name="OuterSpikeRoomA" unique_id=2127579472 instance=ExtResource("1_fef38")]
+
+[node name="Marker2D" parent="LootSpawns" parent_id_path=PackedInt32Array(1412618190) index="0" unique_id=2052055994]
+position = Vector2(-123, -74)
+
+[node name="Marker2D2" parent="LootSpawns" parent_id_path=PackedInt32Array(1412618190) index="1" unique_id=470761926]
+position = Vector2(115, 78)
+
+[node name="Marker2D3" parent="LootSpawns" parent_id_path=PackedInt32Array(1412618190) index="2" unique_id=1274948331]
+position = Vector2(-127, 77)
+
+[node name="Marker2D4" parent="LootSpawns" parent_id_path=PackedInt32Array(1412618190) index="3" unique_id=15092436]
+position = Vector2(108, -75)
+
+[node name="Traps" type="Node2D" parent="." index="6" unique_id=19037489]
+
+[node name="SpikeTrap" parent="Traps" index="0" unique_id=1886411889 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, -160)
+
+[node name="SpikeTrap2" parent="Traps" index="1" unique_id=1998645819 instance=ExtResource("2_uvcdu")]
+position = Vector2(-160, -160)
+
+[node name="SpikeTrap3" parent="Traps" index="2" unique_id=555524748 instance=ExtResource("2_uvcdu")]
+position = Vector2(-96, -160)
+
+[node name="SpikeTrap4" parent="Traps" index="3" unique_id=1704775483 instance=ExtResource("2_uvcdu")]
+position = Vector2(-32, -160)
+
+[node name="SpikeTrap5" parent="Traps" index="4" unique_id=1019211664 instance=ExtResource("2_uvcdu")]
+position = Vector2(32, -160)
+
+[node name="SpikeTrap6" parent="Traps" index="5" unique_id=1795204847 instance=ExtResource("2_uvcdu")]
+position = Vector2(96, -160)
+
+[node name="SpikeTrap7" parent="Traps" index="6" unique_id=1738740592 instance=ExtResource("2_uvcdu")]
+position = Vector2(160, -160)
+
+[node name="SpikeTrap8" parent="Traps" index="7" unique_id=320665926 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, -160)
+
+[node name="SpikeTrap9" parent="Traps" index="8" unique_id=1619822770 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, 160)
+
+[node name="SpikeTrap10" parent="Traps" index="9" unique_id=2039120831 instance=ExtResource("2_uvcdu")]
+position = Vector2(-160, 160)
+
+[node name="SpikeTrap11" parent="Traps" index="10" unique_id=1380052900 instance=ExtResource("2_uvcdu")]
+position = Vector2(-96, 160)
+
+[node name="SpikeTrap12" parent="Traps" index="11" unique_id=1505968078 instance=ExtResource("2_uvcdu")]
+position = Vector2(-32, 160)
+
+[node name="SpikeTrap13" parent="Traps" index="12" unique_id=1075906065 instance=ExtResource("2_uvcdu")]
+position = Vector2(32, 160)
+
+[node name="SpikeTrap14" parent="Traps" index="13" unique_id=1918152497 instance=ExtResource("2_uvcdu")]
+position = Vector2(96, 160)
+
+[node name="SpikeTrap15" parent="Traps" index="14" unique_id=734910244 instance=ExtResource("2_uvcdu")]
+position = Vector2(160, 160)
+
+[node name="SpikeTrap16" parent="Traps" index="15" unique_id=900028860 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, 160)
+
+[node name="SpikeTrap17" parent="Traps" index="16" unique_id=1281576995 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, 96)
+
+[node name="SpikeTrap18" parent="Traps" index="17" unique_id=1039304934 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, 32)
+
+[node name="SpikeTrap19" parent="Traps" index="18" unique_id=1069978339 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, -32)
+
+[node name="SpikeTrap20" parent="Traps" index="19" unique_id=2858680 instance=ExtResource("2_uvcdu")]
+position = Vector2(224, -96)
+
+[node name="SpikeTrap21" parent="Traps" index="20" unique_id=23443314 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, 96)
+
+[node name="SpikeTrap22" parent="Traps" index="21" unique_id=1259700923 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, 32)
+
+[node name="SpikeTrap23" parent="Traps" index="22" unique_id=1662241222 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, -32)
+
+[node name="SpikeTrap24" parent="Traps" index="23" unique_id=1053582803 instance=ExtResource("2_uvcdu")]
+position = Vector2(-224, -96)

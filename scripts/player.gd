@@ -86,7 +86,8 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	last_safe_position = global_position
 	
-	name_label.text = NetworkManager.players[int(name)].name
+	if not NetworkManager.players.is_empty():
+		name_label.text = NetworkManager.players[int(name)].name
 	_update_hotbar_ui()
 	if channel_bar:
 		channel_bar.hide()
