@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://c4rq8s0w0xgla"]
 
+[ext_resource type="Script" uid="uid://dgfpkcvncka73" path="res://scripts/dungeon/room.gd" id="1_67cd1"]
 [ext_resource type="TileSet" uid="uid://ccay3ghkw52da" path="res://resources/tilesets/kenney_tiny_dungeon_64x64.tres" id="1_y63vv"]
 [ext_resource type="PackedScene" uid="uid://dtmot3i6q8o8m" path="res://scenes/dungeon_rooms/misc/door_blockers.tscn" id="2_67cd1"]
 
@@ -7,6 +8,7 @@
 size = Vector2(1910, 1144)
 
 [node name="MutationRoom" type="Node2D" unique_id=1776633203]
+script = ExtResource("1_67cd1")
 
 [node name="Background" type="TileMapLayer" parent="." unique_id=460686320]
 z_index = -1

@@ -7,6 +7,9 @@ extends Control
 @onready var equip_grid: GridContainer = %EquipGrid
 @onready var ready_button: Button = %ReadyButton
 
+@onready var major_texture: TextureRect = %MajorTexture
+@onready var minor_grid: GridContainer = %MinorContainer
+
 @onready var sprite_textures: Dictionary = {
 	"base": %BaseTexture,
 	"back": %BackTexture,
@@ -68,6 +71,7 @@ func _refresh_ui() -> void:
 	_populate_stash_ui()
 	_update_stash_buttons()
 	_populate_equip_ui()
+	_populate_mutation_ui()
 
 func _dress_up_sprite() -> void:
 	var file_path: String = ""
@@ -122,6 +126,7 @@ func _populate_stash_ui() -> void:
 		# Optional: If your EquipmentData has an icon, add it here!
 		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		btn.icon = item.sprite_texture
+		btn.expand_icon = true
 		btn.theme = load("res://resources/ui/stash_ui.tres")
 		
 		# We bind the item data to the button's pressed signal so we know WHICH item was clicked later
@@ -158,6 +163,7 @@ func _populate_equip_ui() -> void:
 			var item = local_profile.equipped_items[slot_name]
 			#btn.text = slot_name.capitalize() + ": " + item.item_name
 			btn.icon = item.sprite_texture
+			btn.expand_icon = true
 		else:
 			#btn.text = slot_name.capitalize() + ": [Empty]"
 			btn.icon = load(slot_buttons[slot_name][1].trim_prefix(".remap"))
@@ -174,6 +180,35 @@ func _on_equip_slot_clicked(slot_name: String) -> void:
 	local_profile.stash.append(item_data)
 	
 	_refresh_ui()
+
+func _populate_mutation_ui() -> void:
+	if major_texture.texture == null:
+		if local_profile.major_mutation != null:
+			major_texture.texture = local_profile.major_mutation.icon
+	
+	for child in minor_grid.get_children():
+		child.queue_free()
+	
+	for mutation in local_profile.minor_mutations:
+		
+		var m_container = MarginContainer.new()
+		m_container.custom_minimum_size = Vector2(128,128)
+		m_container.add_theme_constant_override("margin_left", 10)
+		m_container.add_theme_constant_override("margin_top", 10)
+		m_container.add_theme_constant_override("margin_right", 10)
+		m_container.add_theme_constant_override("margin_bottom", 10)
+		
+		var btn = Button.new()
+		btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		btn.icon = mutation.icon
+		btn.expand_icon = true
+		btn.pressed.connect(_on_minor_mutation_clicked.bind(btn))
+		
+		minor_grid.add_child(m_container)
+		m_container.add_child(btn)
+
+func _on_minor_mutation_clicked(btn: Button) -> void:
+	pass
 
 func _on_ready_pressed() -> void:
 	if !is_ready:

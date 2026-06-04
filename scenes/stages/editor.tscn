@@ -179,6 +179,27 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.2
 
+[node name="MajorContainer" type="MarginContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/MutationContainer" unique_id=1490317432]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.35
+
+[node name="MajorTexture" type="TextureRect" parent="MainContainer/VBoxContainer/LoadoutContainer/MutationContainer/MajorContainer" unique_id=1689054180]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 4
+
+[node name="MinorContainer" type="GridContainer" parent="MainContainer/VBoxContainer/LoadoutContainer/MutationContainer" unique_id=916988058]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.65
+columns = 3
+
 [node name="EquipmentContainer" type="VBoxContainer" parent="MainContainer/VBoxContainer/LoadoutContainer" unique_id=313411736]
 layout_mode = 2
 size_flags_horizontal = 3

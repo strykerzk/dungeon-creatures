@@ -425,6 +425,7 @@ func _start_channeling() -> void:
 	elif active_interactable is MinorOrb:
 		if minor_pickups >= CreatureManager.minor_slot_limit:
 			_show_feedback("DNA Capacity Reached this run! (Limit: " + str(CreatureManager.minor_slot_limit) + ")")
+			return
 	elif active_interactable is Lever:
 		if active_interactable.is_pulled or active_interactable.is_locked:
 			return
