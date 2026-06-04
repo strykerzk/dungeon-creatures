@@ -40,6 +40,8 @@ var generator = DungeonGenerator.new()
 
 var camera_tween: Tween
 
+signal room_entered()
+
 func _ready() -> void:
 	# Ref setup
 	setup_room_scenes()
@@ -183,6 +185,7 @@ func build_dungeon() -> void:
 				
 				if minimap_instance:
 					room_instance.room_discovered.connect(minimap_instance.discover_room)
+					
 
 	_scatter_loot(spawned_rooms)
 	_assign_minor_orbs()
@@ -322,7 +325,7 @@ func _spawn_players() -> void:
 		runner.global_position = Vector2.ZERO 
 		print("[Dungeon] Spawned player: ", peer_id)
 
-func _on_room_entered(target_pos: Vector2) -> void:
+func _on_room_entered(target_pos: Vector2, grid_pos: Vector2i) -> void:
 	if not dungeon_camera: return
 	
 	if camera_tween and camera_tween.is_valid():
@@ -330,6 +333,8 @@ func _on_room_entered(target_pos: Vector2) -> void:
 	
 	camera_tween = create_tween().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	camera_tween.tween_property(dungeon_camera, "global_position", target_pos, 0.3)
+	
+	minimap_instance.update_player_room(grid_pos)
 
 func _on_escape_portal_opened() -> void:
 	if not escape_portal_scene:

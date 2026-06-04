@@ -11,7 +11,7 @@ extends Node2D
 @onready var camera_trigger = $CameraTrigger
 @onready var fog_of_war: ColorRect = get_node_or_null("FogOfWar")
 
-signal player_entered_room(room_center_pos: Vector2)
+signal player_entered_room(room_center_pos: Vector2, grid_pos: Vector2i)
 signal room_discovered(grid_pos: Vector2i)
 
 var grid_pos: Vector2i
@@ -46,7 +46,7 @@ func _on_camera_trigger_body_entered(body: Node2D) -> void:
 			body.current_room_center = global_position
 		
 		if body.name.to_int() == multiplayer.get_unique_id(): 
-			player_entered_room.emit(global_position)
+			player_entered_room.emit(global_position, grid_pos)
 			
 			lift_fog()
 

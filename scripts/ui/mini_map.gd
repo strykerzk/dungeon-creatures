@@ -6,10 +6,11 @@ class_name MiniMap
 
 var grid: Array = []
 var discovered_rooms: Array[Vector2i] = []
+var current_player_room: Vector2i = Vector2i(-1, -1)
 
 # Visual Settings
-var room_size: float = 40.0
-var spacing: float = 60.0
+var room_size: float = 60.0
+var spacing: float = 80.0
 
 func _ready() -> void:
 	hide_map() # Hidden by default
@@ -24,6 +25,11 @@ func discover_room(grid_pos: Vector2i) -> void:
 	if not grid_pos in discovered_rooms:
 		discovered_rooms.append(grid_pos)
 		map_control.queue_redraw()
+
+func update_player_room(grid_pos: Vector2i) -> void:
+	current_player_room = grid_pos
+	discover_room(grid_pos)
+	map_control.queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_map"):
@@ -76,19 +82,23 @@ func _on_map_draw() -> void:
 						
 				# 2. Draw Room Background
 				if blueprint.ring_level == 0:
-					map_control.draw_rect(rect, Color.DARK_GREEN, true)
+					map_control.draw_rect(rect, Color.LIME_GREEN, true)
 				elif blueprint.template_type == "MajorAltar":
 					map_control.draw_rect(rect, Color.DARK_RED, true)
 				elif blueprint.template_type == "MinorAltar":
 					map_control.draw_rect(rect, Color.DEEP_SKY_BLUE, true)
 				else:
-					map_control.draw_rect(rect, Color.BLACK, true)
+					map_control.draw_rect(rect, Color.DARK_SLATE_GRAY, true)
 				
 				# 3. Draw Room Border
 				map_control.draw_rect(rect, Color.WHITE, false, 3.0)
 				
-				# 4. Highlight Major Event Rooms (Red Dot)
+				# 4. Draw Player Indicator
+				if blueprint.grid_pos == current_player_room:
+					map_control.draw_circle(draw_pos, 8.0, Color.RED)
+				
+				# 5. Highlight Major Event Rooms
 				#if blueprint.template_type == "MajorAltar":
-				#	map_control.draw_circle(draw_pos, 6.0, Color.RED)
+				#	map_control.draw_circle(draw_pos, 6.0, Color.MAGENTA)
 				#elif blueprint.template_type == "MinorAltar":
 				#	map_control.draw_circle(draw_pos, 6.0, Color.AQUA)
