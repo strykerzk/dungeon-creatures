@@ -83,8 +83,8 @@ func _dress_up_sprite() -> void:
 				sprite_textures[key].texture = load(file_path )
 			elif local_profile.equipped_items.has(key):
 				var item: EquipmentData = local_profile.equipped_items[key]
-				file_path = "res://art/equipment/" + key + "/" + item.visual_id \
-				+ "_" + local_profile.species + ".png"
+				file_path = "res://art/equipment/" + key + "/" + local_profile.species \
+				+ "/" + item.visual_id + "_" + local_profile.species + ".png"
 				if FileAccess.file_exists(file_path):
 					sprite_textures[key].texture = load(file_path)
 		elif not local_profile.equipped_items.has(key):

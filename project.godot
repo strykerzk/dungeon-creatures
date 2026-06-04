@@ -42,9 +42,14 @@ version_control/autoload_on_startup=true
 
 folder_colors={
 "res://art/": "red",
+"res://aseprite_saves/": "orange",
+"res://fonts/": "yellow",
 "res://resources/": "purple",
 "res://scenes/": "blue",
-"res://scripts/": "green"
+"res://scripts/": "green",
+"res://shaders/": "teal",
+"res://sounds/": "pink",
+"res://steamguide/": "gray"
 }
 
 [global_group]

@@ -8,6 +8,7 @@ class CreatureProfile:
 	var minor_mutations: Array[MutationData] = []
 	var equipped_items: Dictionary = {} 
 	var stash: Array[EquipmentData] = [] 
+	var projectile_scene: PackedScene = null
 	var wins: int = 0 
 	var custom_sounds: Dictionary = {} # String -> AudioStreamWAV
 	var sound_pitches: Dictionary = { # String -> float (pitch_scale)

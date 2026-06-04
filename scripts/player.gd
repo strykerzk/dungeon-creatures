@@ -88,6 +88,7 @@ func _ready() -> void:
 	
 	if not NetworkManager.players.is_empty():
 		name_label.text = NetworkManager.players[int(name)].name
+	_apply_sprite_outline()
 	_update_hotbar_ui()
 	if channel_bar:
 		channel_bar.hide()
@@ -313,6 +314,13 @@ func handle_animations() -> void:
 		else:
 			run_dust.emitting = false
 			water_splash.emitting = false
+
+func _apply_sprite_outline() -> void:
+	var profile = CreatureManager.get_profile(name.to_int())
+	if not profile: return
+	
+	sprite.material.set_shader_parameter("outline_color", profile.player_color)
+	name_label.label_settings.outline_color = profile.player_color
 
 @rpc("authority","call_local","reliable")
 func _start_roll() -> void:
