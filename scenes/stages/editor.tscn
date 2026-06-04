@@ -2,7 +2,12 @@
 
 [ext_resource type="Script" uid="uid://clpagxfdel4bk" path="res://scripts/core/editor.gd" id="1_f210w"]
 [ext_resource type="Theme" uid="uid://4hpxrmmec3jg" path="res://resources/ui/equipment_ui.tres" id="2_gp261"]
+[ext_resource type="Texture2D" uid="uid://fvs3oiuumpjx" path="res://art/equipment/ui/head_empty.png" id="4_mailt"]
 [ext_resource type="Theme" uid="uid://c6da02h073a32" path="res://resources/ui/stash_tabs.tres" id="4_upaha"]
+[ext_resource type="Texture2D" uid="uid://booxiarkvqtyl" path="res://art/equipment/ui/body_empty.png" id="5_pjxps"]
+[ext_resource type="Texture2D" uid="uid://cxqtujjsmi2o4" path="res://art/equipment/ui/back_empty.png" id="6_vy7u1"]
+[ext_resource type="Texture2D" uid="uid://bna23jgcbqtby" path="res://art/equipment/ui/boots_empty.png" id="7_bcghr"]
+[ext_resource type="Texture2D" uid="uid://cxki0ma344gri" path="res://art/equipment/ui/weapon_empty.png" id="8_bui4c"]
 
 [node name="Editor" type="Control" unique_id=416042701]
 layout_mode = 3
@@ -304,41 +309,57 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.1
 
-[node name="Button" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=571380884]
+[node name="StashAll" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=571380884]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
 text = "All"
 
-[node name="Button2" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=909406201]
+[node name="StashHead" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=909406201]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
-text = "All"
+icon = ExtResource("4_mailt")
+icon_alignment = 1
+expand_icon = true
 
-[node name="Button3" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=2107465519]
+[node name="StashBody" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=2107465519]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
-text = "All"
+icon = ExtResource("5_pjxps")
+icon_alignment = 1
+expand_icon = true
 
-[node name="Button4" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1359292276]
+[node name="StashBack" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1359292276]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
-text = "All"
+icon = ExtResource("6_vy7u1")
+icon_alignment = 1
+expand_icon = true
 
-[node name="Button5" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1461138222]
+[node name="StashBoots" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1461138222]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
-text = "All"
+icon = ExtResource("7_bcghr")
+icon_alignment = 1
+expand_icon = true
 
-[node name="Button6" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1395193537]
+[node name="StashWeapon" type="Button" parent="MainContainer/VBoxContainer/StashContainer/TabsContainer" unique_id=1395193537]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 theme = ExtResource("4_upaha")
-text = "All"
+icon = ExtResource("8_bui4c")
+icon_alignment = 1
+expand_icon = true
 
 [node name="StashPanel" type="PanelContainer" parent="MainContainer/VBoxContainer/StashContainer" unique_id=1951070989]
 layout_mode = 2
@@ -370,3 +391,10 @@ grow_horizontal = 2
 
 [node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1710332229]
 autoplay = true
+
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashAll" to="." method="_on_stash_all_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashHead" to="." method="_on_stash_head_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashBody" to="." method="_on_stash_body_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashBack" to="." method="_on_stash_back_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashBoots" to="." method="_on_stash_boots_pressed"]
+[connection signal="pressed" from="MainContainer/VBoxContainer/StashContainer/TabsContainer/StashWeapon" to="." method="_on_stash_weapon_pressed"]

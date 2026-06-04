@@ -24,9 +24,20 @@ extends Control
 	"back": [%BackSlot,"res://art/equipment/ui/back_empty.png"]
 }
 
+@onready var stash_buttons: Dictionary[String, Button] = {
+	"all": %StashAll,
+	"head": %StashHead,
+	"body": %StashBody,
+	"back": %StashBack,
+	"boots": %StashBoots,
+	"weapon": %StashWeapon
+}
+
+
 var ready_players: Array[int] = []
 var is_ready: bool = false
 var local_profile: CreatureManager.CreatureProfile
+var stash_mode = "all"
 
 func _ready() -> void:
 	# 1. Get our local ID
@@ -55,6 +66,7 @@ func _ready() -> void:
 func _refresh_ui() -> void:
 	_dress_up_sprite()
 	_populate_stash_ui()
+	_update_stash_buttons()
 	_populate_equip_ui()
 
 func _dress_up_sprite() -> void:
@@ -91,6 +103,8 @@ func _populate_stash_ui() -> void:
 	
 	for i in range(stash_items.size()):
 		var item: EquipmentData = stash_items[i]
+		
+		if stash_mode != "all" and item.slot != stash_mode: continue
 		
 		var m_container = MarginContainer.new()
 		
@@ -129,6 +143,13 @@ func _on_stash_item_clicked(item_data: EquipmentData) -> void:
 	local_profile.equipped_items[target_slot] = item_data
 	
 	_refresh_ui()
+
+func _update_stash_buttons() -> void:
+	for slot in stash_buttons.keys():
+		if slot == stash_mode:
+			stash_buttons[slot].flat = true
+		else:
+			stash_buttons[slot].flat = false
 
 func _populate_equip_ui() -> void:
 	for slot_name in slot_buttons.keys():
@@ -217,3 +238,39 @@ func toggle_ready_button() -> void:
 func rpc_start_arena() -> void:
 	if typeof(StageManager) != TYPE_NIL:
 		StageManager.change_stage(StageManager.GameState.COMBAT)
+
+
+func _on_stash_all_pressed() -> void:
+	if stash_mode != "all":
+		stash_mode = "all"
+	_refresh_ui()
+
+
+func _on_stash_head_pressed() -> void:
+	if stash_mode != "head":
+		stash_mode = "head"
+	_refresh_ui()
+
+
+func _on_stash_body_pressed() -> void:
+	if stash_mode != "body":
+		stash_mode = "body"
+	_refresh_ui()
+
+
+func _on_stash_back_pressed() -> void:
+	if stash_mode != "back":
+		stash_mode = "back"
+	_refresh_ui()
+
+
+func _on_stash_boots_pressed() -> void:
+	if stash_mode != "boots":
+		stash_mode = "boots"
+	_refresh_ui()
+
+
+func _on_stash_weapon_pressed() -> void:
+	if stash_mode != "weapon":
+		stash_mode = "weapon"
+	_refresh_ui()
